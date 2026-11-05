@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Path — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0b0b0c;--panel:#161618;--panel2:#1f1f22;--panel3:#2a2a2e;--line:#2c2c31;--text:#ececef;--muted:#9c9ca5;--primary:#2f40c4;--primary-hi:#5566e8;--ok:#5fd394;--bad:#ff7b72;--lv0:#8f9bb3;--lv1:#5fa8ff;--lv2:#b58cff;--lv3:#f2c14e;--r:22px}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.5 "DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2px solid var(--primary-hi);outline-offset:2px}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.lv0{--lvc:var(--lv0)}.lv1{--lvc:var(--lv1)}.lv2{--lvc:var(--lv2)}.lv3{--lvc:var(--lv3)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12.5px;background:var(--panel3);color:var(--muted);white-space:nowrap}
+.chip[class*=" lv"],.chip.lv0,.chip.lv1,.chip.lv2,.chip.lv3{color:var(--lvc);background:color-mix(in srgb,var(--lvc) 15%,transparent)}
+.chip.warn{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.bar{height:6px;border-radius:99px;background:var(--panel3);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:var(--lvc,var(--primary-hi))}
+.pips{display:flex;gap:4px}.pips i{width:24px;height:6px;border-radius:3px;background:var(--panel3)}.pips i.on{background:var(--lvc)}
+.icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.icon-btn:hover{background:var(--panel3);color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:999px;background:var(--panel3);font-weight:500}
+.btn:hover{background:#34343a}
+.btn.primary{background:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-hi)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:500}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.topbar{display:flex;align-items:center;gap:20px;padding:18px 28px;max-width:1236px;margin:0 auto}
+.pills{display:flex;gap:6px;margin-left:12px}
+.pill{padding:8px 16px;border-radius:999px;color:var(--muted)}
+.pill[aria-pressed=true]{background:var(--panel2);color:var(--text)}
+.grow{flex:1}
+.search{display:flex;align-items:center;gap:10px;padding:0 18px;height:44px;width:min(380px,40vw);border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.search input{background:none;border:0;outline:0;width:100%}
+.layout-toggle{display:flex;background:var(--panel);border-radius:999px;padding:3px}
+.layout-toggle button{width:36px;height:34px;border-radius:999px;display:grid;place-items:center;color:var(--muted)}
+.layout-toggle button[aria-pressed=true]{background:var(--panel3);color:var(--text)}
+.avatar{width:40px;height:40px;border-radius:50%;background:#6a3fd3;display:grid;place-items:center;font-weight:600}
+.home{max-width:1180px;margin:0 auto;padding:0 28px 80px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:34px 0 20px}
+.sec-head h2{font-size:26px;font-weight:500}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.card{background:var(--panel);border-radius:var(--r);padding:22px;text-align:left;display:flex;flex-direction:column;gap:10px;min-height:220px}
+.card:hover{background:var(--panel2)}
+.card-ic{width:44px;height:44px;border-radius:14px;background:var(--panel3);display:grid;place-items:center;color:var(--lv1)}
+.card-title{font-size:20px;font-weight:500;margin-top:auto}
+.card-meta{color:var(--muted);font-size:13.5px}
+.card .chips{display:flex;flex-wrap:wrap;gap:6px}
+.card-next{font-size:13.5px;color:var(--text)}
+.cards.list{grid-template-columns:1fr}
+.cards.list .card{flex-direction:row;align-items:center;min-height:0;gap:18px;flex-wrap:wrap}
+.cards.list .card-title{margin-top:0;min-width:200px}
+.empty{padding:60px 0;color:var(--muted);text-align:center}
+
+.ws-top{display:flex;align-items:center;gap:14px;padding:12px 22px;height:68px}
+.ws-top .title{font-size:20px;font-weight:500}
+.ws-top .logo-btn{display:flex;align-items:center}
+.ws-top .title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nextup{margin-bottom:6px}
+.mtabs{display:none}
+.ws{display:grid;grid-template-columns:var(--cl,330px) minmax(0,1fr) var(--cr,350px);gap:14px;padding:0 14px 14px;height:calc(100vh - 68px)}
+.ws[data-left=c]{--cl:64px}.ws[data-right=c]{--cr:64px}
+.panel{background:var(--panel);border-radius:var(--r);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 8px 22px;font-weight:500;font-size:16px}
+.panel-body{overflow:auto;padding:4px 16px 18px;min-height:0;flex:1}
+.ws[data-left=c] #p-sources .panel-body,.ws[data-left=c] #p-sources .t,.ws[data-right=c] #p-studio .panel-body,.ws[data-right=c] #p-studio .t{display:none}
+.ws[data-left=c] #p-sources .panel-head,.ws[data-right=c] #p-studio .panel-head{padding:14px 10px;justify-content:center}
+.btn-row{display:flex;gap:10px;margin-bottom:14px}
+.btn-row .btn{flex:1;border:1px solid var(--line);background:transparent;padding:10px 12px}
+.btn-row .btn:hover{background:var(--panel2)}
+.sel-all{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px;padding:6px 4px}
+.src{display:flex;align-items:center;gap:12px;padding:10px 6px;border-radius:12px;transition:background .3s}
+.src.flash{background:color-mix(in srgb,var(--primary-hi) 30%,transparent)}
+.src .nm{flex:1;min-width:0}
+.src .nm b{display:block;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src .nm small{color:var(--muted);font-size:12.5px}
+.src svg.i{color:#e8645a}
+input[type=checkbox]{accent-color:var(--primary-hi);width:18px;height:18px}
+.h-sub{font-size:13px;color:var(--muted);margin:20px 4px 8px}
+.topic{display:block;width:100%;text-align:left;padding:12px;border-radius:14px;margin-bottom:6px;border:1px solid transparent}
+.topic:hover{background:var(--panel2)}
+.topic[aria-pressed=true]{background:var(--panel2);border-color:var(--line)}
+.topic .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.topic .row b{font-weight:500}
+.topic small{display:block;color:var(--muted);font-size:12.5px;margin-top:6px}
+.locked{opacity:.65}
+
+.chat{background:var(--bg);position:relative}
+.nextup{margin:6px auto 0;width:min(780px,calc(100% - 32px));background:var(--panel);border-radius:18px;padding:12px 16px;display:flex;gap:14px;align-items:center}
+.nextup .tx{flex:1;min-width:0;font-size:14px}
+.nextup .tx b{font-weight:600}
+.nextup .tx span{color:var(--muted)}
+.msgs{flex:1;overflow:auto;padding:18px 16px;min-height:0}
+.msgs-in{width:min(780px,100%);margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.m-user{align-self:flex-end;background:var(--panel2);padding:12px 20px;border-radius:24px;max-width:85%}
+.m-tutor{line-height:1.65}
+.m-tutor p{margin-bottom:10px}
+.m-tutor ul,.m-tutor ol{padding-left:22px;margin:8px 0 10px}
+.m-tutor li{margin-bottom:6px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip-btn{padding:8px 14px;border-radius:999px;border:1px solid var(--line);font-size:14px;color:var(--text)}
+.chip-btn:hover{background:var(--panel2)}
+.cite{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:10px;background:var(--panel3);font-size:11.5px;color:var(--muted);margin:0 2px;padding:0 5px;vertical-align:1px}
+.cite:hover{background:var(--primary-hi);color:#fff}
+.dots{display:inline-flex;gap:5px}.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:b 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.composer{width:min(780px,calc(100% - 32px));margin:0 auto 6px}
+.sugg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.cform{display:flex;align-items:center;gap:12px;background:var(--panel);border-radius:999px;padding:8px 10px 8px 24px}
+.cform input{flex:1;background:none;border:0;outline:0;height:36px;min-width:0}
+.cform small{color:var(--muted)}
+.send{width:40px;height:40px;border-radius:50%;background:var(--panel3);display:grid;place-items:center}
+.cform input:not(:placeholder-shown)~.send{background:var(--primary-hi)}
+.foot-note{text-align:center;color:var(--muted);font-size:12.5px;padding:8px 0 10px}
+
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.tile{display:flex;align-items:center;gap:10px;padding:14px;border-radius:16px;background:var(--panel2);text-align:left}
+.tile:hover{background:var(--panel3)}
+.tile svg.i{color:var(--lv1)}
+.tile.wide{grid-column:1/-1}
+.art{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px;border-radius:14px}
+.art:hover{background:var(--panel2)}
+.art svg.i{color:var(--lv2)}
+.art .nm{flex:1;min-width:0}
+.art b{display:block;font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.art small{color:var(--muted);font-size:12.5px}
+.hint{color:var(--muted);font-size:13.5px;padding:6px 4px}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:grid;place-items:center;padding:20px;z-index:50}
+.modal{background:#1b1b1e;border-radius:28px;width:min(760px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;outline:0}
+.modal.wide{width:min(980px,100%)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px 6px 30px}
+.modal-head h2{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:500}
+.modal-body{padding:10px 30px 24px;overflow:auto}
+.modal-foot{display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:16px 30px;border-top:1px solid var(--line)}
+.modal-foot .grow{color:var(--muted);font-size:13.5px}
+.field{margin-bottom:22px}
+.field>label,.field>.lbl{display:block;color:var(--muted);margin-bottom:10px;font-size:15px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{padding:9px 18px;display:flex;align-items:center;gap:8px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--panel3)}
+.seg button[aria-pressed=true]::before{content:"✓"}
+select,input[type=text],input[type=date]{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:11px 14px;min-width:260px}
+.lvl-note{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px}
+.drop{border:1.5px dashed var(--line);border-radius:20px;padding:34px 20px;display:grid;place-items:center;gap:6px;color:var(--muted);text-align:center;cursor:pointer}
+.drop:hover,.drop.over{border-color:var(--primary-hi);background:var(--panel2)}
+.files{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.files div{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--panel2);border-radius:12px}
+
+.prog{display:flex;align-items:center;gap:14px;margin-bottom:22px;color:var(--muted);font-size:14px}
+.prog .bar{flex:1}
+.qtext{font-size:21px;line-height:1.4;margin-bottom:22px;font-weight:500}
+.opt{display:flex;gap:14px;width:100%;text-align:left;padding:15px 18px;border:1px solid var(--line);border-radius:16px;margin-bottom:10px;background:var(--panel2)}
+.opt:hover:not(:disabled){border-color:var(--primary-hi)}
+.opt:disabled{cursor:default}
+.opt .k{width:26px;height:26px;border-radius:50%;background:var(--panel3);display:grid;place-items:center;font-size:13px;flex:none}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 13%,transparent)}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,transparent)}
+.expl{background:var(--panel2);border-radius:16px;padding:14px 18px;margin-top:6px;color:#d4d4da}
+.fc-wrap{perspective:1200px;max-width:560px;margin:10px auto 18px}
+.fc{position:relative;height:280px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1);cursor:pointer;width:100%;display:block}
+.fc.flip{transform:rotateY(180deg)}
+.fc .f{position:absolute;inset:0;backface-visibility:hidden;background:var(--panel2);border:1px solid var(--line);border-radius:24px;display:grid;place-items:center;padding:28px;text-align:center;font-size:19px;line-height:1.45}
+.fc .b{transform:rotateY(180deg);background:color-mix(in srgb,var(--lv1) 12%,var(--panel2));font-size:17px}
+.fc small{display:block;margin-top:14px;color:var(--muted);font-size:14px}
+.center{display:flex;justify-content:center;align-items:center;gap:16px}
+.score{display:flex;align-items:center;gap:26px;margin-bottom:22px;flex-wrap:wrap}
+.ring{width:130px;height:130px;flex:none}
+.big{font-size:26px;font-weight:600;line-height:1.2}
+.move{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.card2{background:var(--panel2);border-radius:18px;padding:16px 18px;margin-bottom:12px}
+.card2 h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.miss{border-top:1px solid var(--line);padding-top:10px;margin-top:10px;font-size:14px}
+.miss b{font-weight:500}.miss span{color:var(--ok)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0 0 14px}
+.steps li{counter-increment:s;display:flex;gap:14px;padding:14px 16px;background:var(--panel2);border-radius:16px;margin-bottom:8px}
+.steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--primary);display:grid;place-items:center;font-size:13px;flex:none}
+.day{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.day:last-child{border:0}
+.day b{font-weight:600}.day small{color:var(--muted);display:block}
+.day ul{margin:0;padding-left:18px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{color:var(--muted);font-weight:400;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line)}
+.prow{display:grid;grid-template-columns:1.2fr 1.4fr 70px 1.4fr;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.prow:last-child{border:0}
+svg.map text{fill:var(--text);font-family:inherit}
+svg.map .node{cursor:pointer}
+svg.map .node:hover circle.m{fill:var(--panel3)}
+.srcs{color:var(--muted);font-size:13px;margin-top:16px}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#2d2d33;padding:12px 20px;border-radius:14px;opacity:0;pointer-events:none;transition:.25s;z-index:80}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:980px){
+  .topbar{flex-wrap:wrap;padding:14px 16px}.search{width:100%;order:5}.pills{margin-left:0}
+  .home{padding:0 16px 60px}
+  .ws-top{padding:10px 14px;gap:8px}.ws-top .title{font-size:18px}.hide-m,.ws-top .avatar{display:none}.ws-top .btn{padding:10px 12px}
+  .ws{display:block;height:calc(100vh - 124px);padding:0 10px 10px}
+  .ws .panel{height:100%}
+  .ws[data-mtab=sources] #p-chat,.ws[data-mtab=sources] #p-studio,.ws[data-mtab=chat] #p-sources,.ws[data-mtab=chat] #p-studio,.ws[data-mtab=studio] #p-sources,.ws[data-mtab=studio] #p-chat{display:none}
+  .ws .icon-btn.collapse{display:none}
+  .mtabs{display:flex;gap:6px;padding:0 14px 10px}
+  .mtabs button{flex:1;padding:10px;border-radius:999px;background:var(--panel);color:var(--muted)}
+  .mtabs button[aria-pressed=true]{background:var(--panel3);color:var(--text)}
+  .day{grid-template-columns:1fr;gap:6px}.prow{grid-template-columns:1fr 1fr}
+  .modal-body{padding:8px 18px 18px}.modal-head{padding:18px 16px 4px 20px}.modal-foot{padding:14px 18px}
+  select,input[type=text],input[type=date]{min-width:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let uid = 0;
+const nid = () => 'id' + (++uid);
+const DAY = 864e5;
+
+const svg = p => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+const I = {
+  plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  close: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+  send: svg('<path d="M12 19V5M6 11l6-6 6 6"/>'),
+  back: svg('<path d="M19 12H5M11 6l-6 6 6 6"/>'),
+  panel: svg('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M14 4v16"/>'),
+  file: svg('<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/>'),
+  lock: svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
+  summary: svg('<path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/>'),
+  flashcards: svg('<rect x="3" y="7" width="13" height="11" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v9"/>'),
+  quiz: svg('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>'),
+  problems: svg('<path d="M4 20l5-5M9 15l2-6 6-5 3 3-5 6z"/>'),
+  map: svg('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 11l7-4M8.5 13l7 4"/>'),
+  plan: svg('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>'),
+  progress: svg('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
+  upload: svg('<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>'),
+  book: svg('<path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/><path d="M9 8h6"/>'),
+  grid: svg('<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>'),
+  list: svg('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+  search: svg('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/>')
+};
+const LOGO = '<svg width="30" height="30" viewBox="0 0 32 32" fill="none" stroke-linecap="round" aria-hidden="true"><path d="M4 25a12 12 0 0 1 24 0" stroke="#6b8cff" stroke-width="3"/><path d="M9 25a7 7 0 0 1 14 0" stroke="#8fa8ff" stroke-width="3"/><path d="M14 25a2 2 0 0 1 4 0" stroke="#b8c7ff" stroke-width="3"/></svg>';
+
+/* ==== MOCK TUTOR DATA (stands in for the FastAPI + LangGraph backend) ==== */
+const Q = (t, o, e) => ({ t, o, e });
+const TOPIC_DEFS = {
+  hash: { name: 'Hash Maps', prereq: [], srcs: [1], sub: ['Hashing', 'Collisions', 'Load factor'], kw: ['hash', 'dictionary', 'collision', 'load factor', 'bucket'] },
+  trees: { name: 'Trees', prereq: [], srcs: [2], sub: ['Traversals', 'Search trees', 'Balancing'], kw: ['tree', 'bst', 'traversal', 'binary', 'avl', 'ancestor'] },
+  heaps: { name: 'Heaps', prereq: ['trees'], srcs: [2, 1], sub: ['Priority queues', 'Heapify', 'Top-k'], kw: ['heap', 'priority', 'heapify', 'top-k', 'top k'] }
+};
+const QUESTIONS = {
+  hash: [
+    [Q('What does a hash map store?', ['Key–value pairs, located by hashing the key', 'Only sorted keys', 'Only integer values', 'Values in insertion order only'], 'A hash function maps each key to a bucket, so a key leads straight to its value.'),
+     Q('What is the average time to look up a key in a hash map?', ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)'], 'Hashing jumps directly to the bucket, so average lookup is constant time.')],
+    [Q('Two different keys hash to the same bucket. What is this called?', ['A collision', 'An overflow', 'An underflow', 'A rehash'], 'Different keys sharing a bucket is a collision, and every hash map needs a strategy for it.'),
+     Q('Which technique keeps a list of entries inside each bucket?', ['Separate chaining', 'Linear probing', 'Double hashing', 'Binary probing'], 'Separate chaining stores colliding entries in a list attached to the bucket.')],
+    [Q('The load factor passes its threshold. What does a typical hash map do?', ['Allocates a larger table and rehashes every entry', 'Deletes the oldest entries', 'Switches to a sorted array', 'Stops accepting inserts'], 'Growing and rehashing keeps chains short and lookups near O(1).'),
+     Q('Why can a poor hash function degrade lookups to O(n)?', ['Many keys land in one bucket, so lookups scan a long chain', 'It makes the table smaller', 'It forces keys to be sorted', 'It disables resizing'], 'If keys cluster in a few buckets, a lookup scans a chain that can approach n entries.')],
+    [Q('Find two numbers in an array that sum to a target in a single pass. What is optimal?', ['Store each value in a hash map and look up the complement while scanning: O(n)', 'Sort, then binary search for every element: O(n log n)', 'Check every pair with nested loops: O(n²)', 'Recurse over every subset'], 'The complement lookup is O(1) per element, so one scan gives O(n) time and O(n) space.'),
+     Q('An LRU cache uses a hash map. Which extra structure gives O(1) reordering and eviction?', ['A doubly linked list', 'A sorted array', 'A min-heap', 'A stack'], 'The map finds the node in O(1) and the doubly linked list moves or removes it in O(1).')]
+  ],
+  trees: [
+    [Q('What is a node with no children called?', ['A leaf', 'The root', 'A parent', 'An edge'], 'Nodes with no children sit at the bottom of the tree and are called leaves.'),
+     Q('How many children can a node in a binary tree have at most?', ['2', '1', '3', 'Unlimited'], 'A binary tree allows at most a left and a right child.')],
+    [Q('Which traversal of a binary search tree visits keys in sorted order?', ['In-order', 'Pre-order', 'Post-order', 'Level-order'], 'In-order visits left subtree, node, then right subtree, which yields ascending keys in a BST.'),
+     Q('Which traversal is typically implemented with a queue?', ['Level-order (breadth-first)', 'In-order', 'Pre-order', 'Post-order'], 'Level-order visits nodes row by row, using a queue to hold the next level.')],
+    [Q('What is the worst-case lookup time in an unbalanced BST with n nodes?', ['O(n)', 'O(1)', 'O(log n)', 'O(n log n)'], 'Inserting sorted keys makes the tree a chain, so lookup walks all n nodes.'),
+     Q('Which property do AVL trees maintain?', ['Subtree heights differ by at most 1 at every node', 'All leaves are at the same depth', 'Every node has two children', 'A parent is larger than its children'], 'Rebalancing rotations keep the height difference within 1, guaranteeing O(log n) operations.')],
+    [Q('How do you find the lowest common ancestor of two keys in a BST?', ['Walk from the root: go left if both are smaller, right if both are larger, otherwise stop', 'Run a full BFS from each node', 'Sort all keys first', 'Convert the tree to an array and binary search'], 'The first node where the keys split (or equal a key) is the LCA, found in O(h).'),
+     Q('Why is checking each node only against its direct children not enough to validate a BST?', ['A deeper descendant can violate an ancestor’s bound', 'It is too slow', 'Children can be null', 'BSTs may have duplicate roots'], 'Pass min and max bounds down the recursion so every node respects all of its ancestors.')]
+  ],
+  heaps: [
+    [Q('Which element is at the root of a min-heap?', ['The smallest', 'The largest', 'The median', 'The most recently inserted'], 'The heap property puts the minimum at the root.'),
+     Q('A binary heap is usually stored in:', ['An array', 'A hash table', 'A linked list only', 'A stack'], 'The tree is complete, so an array stores it compactly with index arithmetic.')],
+    [Q('In a 0-indexed array heap, where is the left child of index i?', ['2i + 1', '2i', 'i + 1', '2i + 2'], 'Left child is 2i + 1 and right child is 2i + 2.'),
+     Q('What is the time complexity of inserting into a binary heap?', ['O(log n)', 'O(1) worst case', 'O(n)', 'O(n log n)'], 'The new item sifts up at most the height of the tree, which is log n.')],
+    [Q('Building a heap from n unordered items with bottom-up heapify takes:', ['O(n)', 'O(n log n)', 'O(log n)', 'O(n²)'], 'Most nodes are near the bottom and sift very little, so the total is linear.'),
+     Q('Which operation does a heap-based priority queue perform in O(log n)?', ['Extract the minimum', 'Peek at the minimum', 'Search for an arbitrary value', 'Sort all elements'], 'Extract swaps in the last item and sifts down; peek is O(1) and arbitrary search is O(n).')],
+    [Q('To get the k largest items from a stream of n numbers with O(k) memory, you should:', ['Keep a min-heap of size k and drop the smallest when it grows past k', 'Keep a max-heap of all n items', 'Sort the stream', 'Count items in a hash map'], 'The min-heap holds the k largest seen so far; time is O(n log k).'),
+     Q('Merging k sorted lists with a heap takes:', ['O(N log k) for N total items', 'O(N · k)', 'O(N²)', 'O(k log N)'], 'The heap holds one head per list, so each of N pops and pushes costs log k.')]
+  ]
+};
+const SUMMARY = {
+  hash: [
+    ['A hash map stores key–value pairs. A hash function turns each key into a number that picks the bucket holding the value, so lookups avoid scanning everything [1].', 'Average-case insert, lookup and delete are O(1). Reach for a hash map whenever you need fast access by key, such as counting words or caching results [1].'],
+    ['When two keys land in the same bucket, that is a collision. Separate chaining keeps a list per bucket; open addressing probes for the next free slot [1].', 'The load factor (entries ÷ buckets) tells the table when to grow. Crossing the threshold triggers a resize and a rehash of every entry [1].'],
+    ['Lookup cost depends on chain length. A weak hash function or adversarial keys can pile entries into a few buckets and push operations toward O(n) [1].', 'Resizing is amortised O(1) per insert: doubling is costly once but rare. If you know the final size, pick the initial capacity up front [1].'],
+    ['Interview patterns: complement lookup for two-sum, frequency maps, and grouping by a canonical key. Say the O(n) time / O(n) space trade-off aloud [1].', 'An LRU cache pairs a hash map (O(1) lookup) with a doubly linked list (O(1) reorder and evict). Be ready to explain why each half is needed [1].']
+  ],
+  trees: [
+    ['A tree is a hierarchy of nodes joined by edges. The top node is the root and nodes with no children are leaves [2].', 'A binary tree allows at most two children per node: left and right [2].'],
+    ['A binary search tree keeps smaller keys on the left and larger keys on the right, so in-order traversal returns keys in sorted order [2].', 'Pre-order, in-order and post-order go depth-first; level-order uses a queue to go breadth-first [2].'],
+    ['BST operations cost O(h), where h is the height. An unbalanced tree can degrade into a linked list with h = n [2].', 'Self-balancing trees such as AVL keep subtree heights within 1 of each other, guaranteeing O(log n) operations [2].'],
+    ['Validate a BST by passing min and max bounds down the recursion, not by comparing a node only with its children [2].', 'For the lowest common ancestor in a BST, walk from the root: go left if both keys are smaller, right if both are larger, otherwise you found it, in O(h) [2].']
+  ],
+  heaps: [
+    ['A heap is a tree-shaped structure where every parent is ordered relative to its children. In a min-heap the smallest element sits at the root [2].', 'Heaps are normally stored in a plain array rather than with pointers [2].'],
+    ['In a 0-indexed array heap the children of index i are 2i + 1 and 2i + 2, and the parent is (i − 1) / 2 rounded down [2].', 'Insert places the item at the end and sifts it up. Both steps are O(log n) [2].'],
+    ['Building a heap from n items by heapifying bottom-up is O(n), faster than n separate inserts at O(n log n) [2].', 'A priority queue backed by a heap offers O(1) peek and O(log n) insert and extract [2][1].'],
+    ['Top-k pattern: keep a min-heap of size k, push each new item, and pop the smallest when the size exceeds k. Time is O(n log k) and memory is O(k) [1].', 'Merging k sorted lists: push each list’s head into a min-heap, pop the smallest, then push its successor. Time is O(N log k) for N total items [1].']
+  ]
+};
+const PROBLEMS = {
+  hash: { title: 'Two Sum in a single pass', prompt: 'Given an array of integers and a target, return the indices of two numbers that add up to the target.', steps: ['Clarify: can values repeat, and is exactly one answer guaranteed? State your assumptions out loud.', 'Brute force: check every pair. That is O(n²) time and O(1) space. Say it, then look for an improvement.', 'Key idea: for each value x you need target − x. A hash map answers “have I seen that?” in O(1).', 'Scan once: if the complement is already in the map, return both indices; otherwise store x with its index.', 'Complexity: O(n) time, O(n) space. Trace [2, 7, 11, 15] with target 9 to verify.'] },
+  trees: { title: 'Validate a binary search tree', prompt: 'Given the root of a binary tree, decide whether it is a valid binary search tree.', steps: ['Clarify: are duplicate keys allowed? Decide and state it.', 'Tempting mistake: comparing each node only with its children. A deeper node can still break an ancestor’s bound.', 'Key idea: carry an allowed range (min, max) down the recursion. The left child narrows max, the right child narrows min.', 'Recurse: if a node’s value is outside (min, max) return false; otherwise validate both subtrees with updated bounds.', 'Complexity: O(n) time, O(h) stack space. Test with a tree where a grandchild violates the root.'] },
+  heaps: { title: 'Kth largest element in a stream', prompt: 'Design a class that accepts numbers one at a time and can always return the kth largest number seen so far.', steps: ['Clarify: is k fixed, and how many numbers can arrive? Assume k is fixed and the stream is long.', 'Naive: keep everything sorted. Each insert costs O(n), and memory grows without bound.', 'Key idea: only the k largest values matter. A min-heap of size k keeps them, with the kth largest at the root.', 'On each new number: push it; if the heap size exceeds k, pop the smallest. The root is the answer.', 'Complexity: O(log k) per insert, O(k) memory. Trace k = 3 with 4, 5, 8, 2.'] }
+};
+
+/* ==== STATE ==== */
+const state = { view: 'home', filter: 'all', query: '', layout: 'grid', activeId: null, notebooks: [] };
+let M = null;
+const nb = () => state.notebooks.find(n => n.id === state.activeId);
+const tdef = id => TOPIC_DEFS[id];
+const topicOf = (n, id) => n.topics.find(t => t.id === id);
+const isLocked = (n, t) => tdef(t.id).prereq.some(p => topicOf(n, p).level < 1);
+const mastery = t => Math.min(100, t.level * 25 + (t.last == null ? 0 : Math.round(t.last / 100 * 25)));
+const isMastered = t => t.level === 3 && t.last != null && t.last >= 80;
+const fmtDate = ts => new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const ago = ts => { const m = Math.round((Date.now() - ts) / 6e4); if (m < 1) return 'just now'; if (m < 60) return m + 'm ago'; const h = Math.round(m / 60); if (h < 24) return h + 'h ago'; return Math.round(h / 24) + 'd ago'; };
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+function seedNotebook() {
+  const now = Date.now();
+  return {
+    id: nid(), title: 'DSA Interview Prep', created: now - 3 * DAY, focus: 'trees',
+    sources: [{ id: nid(), name: 'Interview-Syllabus.pdf', status: 'ready', checked: true }, { id: nid(), name: 'Trees-and-Heaps-Lecture-Notes.pdf', status: 'ready', checked: true }],
+    topics: [{ id: 'hash', level: 1, last: 75, attempts: 2, remediate: false }, { id: 'trees', level: 0, last: 40, attempts: 1, remediate: true }, { id: 'heaps', level: 0, last: null, attempts: 0, remediate: false }],
+    history: [
+      { ts: now - 6 * DAY, topic: 'hash', level: 0, score: 4, total: 4, outcome: 'Promoted to Intermediate' },
+      { ts: now - 3 * DAY, topic: 'hash', level: 1, score: 3, total: 4, outcome: 'Level held' },
+      { ts: now - 2 * DAY, topic: 'trees', level: 0, score: 2, total: 5, outcome: 'Level held — remediation recommended' }
+    ],
+    artifacts: [],
+    chat: [{ role: 'tutor', html: 'Hi — I’m your tutor for <b>DSA Interview Prep</b>. I teach each topic at your current level, quiz you, and move you up a level as you improve. Ask a question about your sources, or pick a suggestion below.' }]
+  };
+}
+state.notebooks.push(seedNotebook());
+
+/* ==== LEARNING LOGIC ==== */
+function recommend(n) {
+  const pool = n.topics.filter(t => !isLocked(n, t) && !isMastered(t)).sort((a, b) => mastery(a) - mastery(b));
+  if (!pool.length) return null;
+  const t = pool[0];
+  const unlocks = n.topics.filter(x => tdef(x.id).prereq.includes(t.id) && isLocked(n, x));
+  let reason = `${mastery(t)}% mastery, the lowest of your open topics`;
+  if (unlocks.length) reason += `, and it unlocks ${unlocks.map(u => tdef(u.id).name).join(', ')}`;
+  if (t.remediate) reason += '. Remediation was flagged after your last quiz';
+  return { topic: t, reason };
+}
+function buildQuestions(topicId, level, count) {
+  const order = [level];
+  for (let d = 1; d < 4; d++) { if (level - d >= 0) order.push(level - d); if (level + d <= 3) order.push(level + d); }
+  const out = [];
+  for (const l of order) for (const q of QUESTIONS[topicId][l]) if (out.length < count) out.push({ ...q, level: l });
+  return out.sort((a, b) => a.level - b.level).map(q => {
+    const opts = shuffle(q.o.map((text, i) => ({ text, ok: i === 0 })));
+    return { t: q.t, e: q.e, level: q.level, opts: opts.map(o => o.text), a: opts.findIndex(o => o.ok) };
+  });
+}
+function applyProgression(n, topicId, score, total) {
+  const t = topicOf(n, topicId), pct = Math.round(score / total * 100), before = t.level;
+  let outcome, kind;
+  if (pct >= 80) {
+    t.remediate = false;
+    if (t.level < 3) { t.level++; t.last = null; outcome = `Promoted to ${LEVELS[t.level]}`; kind = 'up'; }
+    else { t.last = pct; outcome = 'Expert level maintained'; kind = 'hold'; }
+  } else if (pct >= 50) { t.last = pct; t.remediate = false; outcome = 'Level held'; kind = 'hold'; }
+  else if (t.level > 0) { t.level--; t.last = null; t.remediate = true; outcome = `Moved down to ${LEVELS[t.level]} for review`; kind = 'down'; }
+  else { t.last = pct; t.remediate = true; outcome = 'Level held — remediation recommended'; kind = 'down'; }
+  t.attempts++;
+  n.history.push({ ts: Date.now(), topic: topicId, level: before, score, total, outcome });
+  return { before, after: t.level, pct, outcome, kind };
+}
+function topicOrder(n) {
+  return n.topics.slice().sort((a, b) => (isLocked(n, a) - isLocked(n, b)) || (mastery(a) - mastery(b)));
+}
+function buildPlan(n, examStr, minutes) {
+  const days = Math.max(1, Math.min(14, Math.ceil((new Date(examStr + 'T00:00:00') - Date.now()) / DAY)));
+  const order = topicOrder(n), out = [];
+  for (let i = 0; i < days; i++) {
+    const t = order[i % order.length], name = tdef(t.id).name, study = Math.round(minutes * .6), quiz = minutes - study;
+    const date = Date.now() + i * DAY;
+    if (days > 1 && i === days - 1) out.push({ date, tasks: [{ l: 'Mixed review across every topic', m: study }, { l: `Final quiz on your weakest topic: ${tdef(order[0].id).name}`, m: quiz }] });
+    else out.push({ date, tasks: [{ l: `Study ${name} at ${LEVELS[t.level]} level (summary and flashcards)`, m: study }, { l: `Quiz: ${name}`, m: quiz }] });
+  }
+  return { exam: examStr, minutes, days: out };
+}
+const addDays = k => new Date(Date.now() + k * DAY).toISOString().slice(0, 10);
+const readySources = n => n.sources.filter(s => s.checked && s.status === 'ready');
+function cites(text, n) {
+  return esc(text).replace(/\[(\d)\]/g, (m, i) => +i <= n.sources.length ? `<button class="cite" data-action="cite" data-src="${i}" aria-label="Source ${i}">${i}</button>` : '');
+}
+
+function makeArtifact(n, cfg, srcCount) {
+  const base = { id: nid(), ts: Date.now(), srcCount, type: cfg.type };
+  if (cfg.type === 'plan') {
+    const plan = buildPlan(n, cfg.exam, +cfg.minutes);
+    return { ...base, title: `Study plan · ${plan.days.length} days`, level: null, topic: null, data: plan };
+  }
+  const t = topicOf(n, cfg.topic), name = tdef(t.id).name, count = { fewer: 3, std: 4, more: 6 }[cfg.count || 'std'];
+  if (cfg.type === 'quiz') return { ...base, title: `${name} quiz · ${LEVELS[t.level]}`, level: t.level, topic: t.id, data: { questions: buildQuestions(t.id, t.level, count) }, run: null, result: null };
+  if (cfg.type === 'flashcards') return { ...base, title: `${name} flashcards · ${LEVELS[t.level]}`, level: t.level, topic: t.id, data: { cards: buildQuestions(t.id, t.level, count).map(q => ({ f: q.t, b: q.opts[q.a], e: q.e })) } };
+  if (cfg.type === 'summary') return { ...base, title: `${name} summary · ${LEVELS[t.level]}`, level: t.level, topic: t.id, data: { paras: SUMMARY[t.id][t.level] } };
+  return { ...base, title: `${name} problem guide`, level: t.level, topic: t.id, data: PROBLEMS[t.id], step: 0 };
+}
+
+/* ==== TUTOR (mock) ==== */
+const actBtn = (type, topic, label) => `<button class="chip-btn" data-action="open-config" data-type="${type}" data-topic="${topic || ''}">${esc(label)}</button>`;
+function tutorReply(text) {
+  const n = nb(), q = text.toLowerCase();
+  if (!readySources(n).length) return { html: 'Select at least one ready source in the Sources panel and I’ll answer from it.' };
+  if (/plan|schedule/.test(q)) {
+    const art = makeArtifact(n, { type: 'plan', exam: addDays(14), minutes: 30 }, readySources(n).length);
+    n.artifacts.unshift(art); renderStudio();
+    return { html: `I built a <b>${art.data.days.length}-day study plan</b> (30 min a day, exam in 14 days). It starts with <b>${tdef(topicOrder(n)[0].id).name}</b>, your weakest open topic, and ends with a mixed review.<div class="acts"><button class="chip-btn" data-action="open-art" data-id="${art.id}">Open the plan</button>${actBtn('plan', '', 'Change exam date')}</div>` };
+  }
+  if (/next|what should i|recommend|study today/.test(q)) {
+    const r = recommend(n);
+    if (!r) return { html: 'Every topic is at Expert level. Nothing left to unlock — nice work.' };
+    const name = tdef(r.topic.id).name;
+    return { html: `Study <b>${name}</b> next. ${esc(r.reason)}.<div class="acts">${actBtn('summary', r.topic.id, 'Read a summary')}${actBtn('quiz', r.topic.id, 'Take the quiz')}</div>` };
+  }
+  if (/quiz|test me/.test(q)) {
+    const t = topicOf(n, n.focus), name = tdef(t.id).name;
+    return { html: `I’ll match the questions to your <b>${LEVELS[t.level]}</b> level in <b>${name}</b>. Score 80% or more and you move up a level.<div class="acts">${actBtn('quiz', t.id, `Quiz me on ${name}`)}</div>` };
+  }
+  const hit = n.topics.find(t => tdef(t.id).kw.some(k => q.includes(k)));
+  if (hit) {
+    const d = tdef(hit.id), paras = SUMMARY[hit.id][hit.level];
+    return { html: `<p>Explained at your <b>${LEVELS[hit.level]}</b> level for ${d.name}:</p><p>${cites(paras[0], n)}</p><p>${cites(paras[1], n)}</p><div class="acts">${actBtn('flashcards', hit.id, 'Make flashcards')}${actBtn('quiz', hit.id, 'Quiz me')}</div>` };
+  }
+  return { html: `I couldn’t find that in your selected sources, so I won’t guess. Try a topic from your material (${n.topics.map(t => tdef(t.id).name).join(', ')}), or add a source that covers it.` };
+}
+function send(text) {
+  text = text.trim(); const n = nb(); if (!text) return;
+  n.chat.push({ role: 'user', text }); n.chat.push({ role: 'tutor', typing: true });
+  renderChat();
+  setTimeout(() => {
+    const idx = n.chat.findIndex(m => m.typing);
+    if (idx > -1) n.chat[idx] = { role: 'tutor', ...tutorReply(text) };
+    if (state.activeId === n.id) { renderChat(); renderStudio(); }
+  }, 650);
+}
+
+/* ==== HOME ==== */
+function nbStatus(n) { return n.topics.every(isMastered) ? 'mastered' : 'progress'; }
+function cardHTML(n) {
+  const r = recommend(n), avg = Math.round(n.topics.reduce((s, t) => s + mastery(t), 0) / n.topics.length);
+  return `<button class="card" data-action="open-nb" data-id="${n.id}">
+    <span class="card-ic">${I.book}</span>
+    <span class="card-title">${esc(n.title)}</span>
+    <span class="card-meta">${fmtDate(n.created)} · ${plural(n.sources.length, 'source')} · ${avg}% mastery</span>
+    <span class="chips">${n.topics.map(t => `<span class="chip lv${t.level}">${tdef(t.id).name} · ${LEVELS[t.level]}</span>`).join('')}</span>
+    <span class="card-next">${r ? 'Next: <b>' + tdef(r.topic.id).name + '</b>' : 'All topics mastered'}</span></button>`;
+}
+function renderCards() {
+  const q = state.query.trim().toLowerCase();
+  const list = state.notebooks.filter(n => (!q || n.title.toLowerCase().includes(q)) && (state.filter === 'all' || nbStatus(n) === state.filter));
+  const el = $('#cards');
+  el.className = 'cards' + (state.layout === 'list' ? ' list' : '');
+  el.innerHTML = list.length ? list.map(cardHTML).join('') : '<div class="empty">No notebooks match. Create one with “New notebook”.</div>';
+}
+function renderHome() {
+  state.view = 'home';
+  $('#app').innerHTML = `
+  <header class="topbar">
+    <div class="logo">${LOGO}<span>Study Path</span></div>
+    <div class="pills" role="group" aria-label="Filter notebooks">
+      ${[['all', 'All'], ['progress', 'In progress'], ['mastered', 'Mastered']].map(([k, l]) => `<button class="pill" data-action="filter" data-v="${k}" aria-pressed="${state.filter === k}">${l}</button>`).join('')}
+    </div>
+    <div class="grow"></div>
+    <label class="search">${I.search}<span class="sr">Search notebooks</span><input id="q" type="search" placeholder="Search notebooks" value="${esc(state.query)}"></label>
+    <div class="layout-toggle" role="group" aria-label="Layout">
+      <button data-action="layout" data-v="grid" aria-label="Grid" aria-pressed="${state.layout === 'grid'}">${I.grid}</button>
+      <button data-action="layout" data-v="list" aria-label="List" aria-pressed="${state.layout === 'list'}">${I.list}</button>
+    </div>
+    <div class="avatar" aria-hidden="true">H</div>
+  </header>
+  <main class="home">
+    <div class="sec-head"><h2>Recent notebooks</h2><button class="btn primary" data-action="new-nb">${I.plus} New notebook</button></div>
+    <div id="cards"></div>
+  </main>`;
+  renderCards();
+  $('#q').addEventListener('input', e => { state.query = e.target.value; renderCards(); });
+}
+
+/* ==== WORKSPACE ==== */
+function openNotebook(id) {
+  state.activeId = id; state.view = 'ws';
+  const n = nb();
+  $('#app').innerHTML = `
+  <header class="ws-top">
+    <button class="logo-btn icon-btn" data-action="home" aria-label="Back to notebooks">${I.back}</button>
+    <h1 class="title">${esc(n.title)}</h1><div class="grow"></div>
+    <button class="btn" data-action="open-view" data-v="progress" aria-label="Progress">${I.progress}<span class="hide-m">Progress</span></button>
+    <button class="btn" data-action="new-nb" aria-label="Create notebook">${I.plus}<span class="hide-m">Create notebook</span></button>
+    <div class="avatar" aria-hidden="true">H</div>
+  </header>
+  <div class="mtabs" role="group" aria-label="Panels">
+    ${['sources', 'chat', 'studio'].map(k => `<button data-action="mtab" data-v="${k}" aria-pressed="${k === 'chat'}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('')}
+  </div>
+  <main class="ws" id="ws" data-mtab="chat">
+    <section class="panel" id="p-sources" aria-label="Sources"></section>
+    <section class="panel chat" id="p-chat" aria-label="Tutor chat"></section>
+    <section class="panel" id="p-studio" aria-label="Studio"></section>
+  </main>
+  <input type="file" id="addSrc" multiple hidden>`;
+  renderSources(); renderChat(); renderStudio();
+  $('#addSrc').addEventListener('change', e => { addSources([...e.target.files].map(f => f.name)); e.target.value = ''; });
+}
+function advanceSource(n, s) {
+  const steps = ['uploading', 'parsing', 'ready'];
+  const i = steps.indexOf(s.status);
+  if (i < 0 || i >= steps.length - 1) return;
+  setTimeout(() => { s.status = steps[i + 1]; if (state.activeId === n.id) renderSources(); advanceSource(n, s); }, 700);
+}
+function addSources(names) {
+  const n = nb();
+  names.forEach(name => { const s = { id: nid(), name, status: 'uploading', checked: true }; n.sources.push(s); advanceSource(n, s); });
+  renderSources(); toast(`Adding ${plural(names.length, 'source')}`);
+}
+function renderSources() {
+  const n = nb(), p = $('#p-sources'); if (!p) return;
+  const allOn = n.sources.every(s => s.checked);
+  p.innerHTML = `
+  <div class="panel-head"><span class="t">Sources</span><button class="icon-btn collapse" data-action="collapse" data-side="left" aria-label="Collapse sources panel">${I.panel}</button></div>
+  <div class="panel-body">
+    <div class="btn-row"><button class="btn" data-action="add-src">${I.plus} Add sources</button></div>
+    <div class="sel-all"><span>Select all sources</span><input type="checkbox" data-change="sel-all" aria-label="Select all sources" ${allOn ? 'checked' : ''}></div>
+    ${n.sources.map((s, i) => `<div class="src" id="src-${i + 1}">${I.file}<div class="nm"><b title="${esc(s.name)}">${esc(s.name)}</b><small>${s.status === 'ready' ? 'Source ' + (i + 1) : s.status[0].toUpperCase() + s.status.slice(1) + '…'}</small></div><input type="checkbox" data-change="src-toggle" data-id="${s.id}" aria-label="Use ${esc(s.name)}" ${s.checked ? 'checked' : ''} ${s.status !== 'ready' ? 'disabled' : ''}></div>`).join('')}
+    <div class="h-sub">Topics and your level</div>
+    ${n.topics.map(t => {
+      const d = tdef(t.id), locked = isLocked(n, t), m = mastery(t);
+      const need = locked ? 'Needs ' + d.prereq.map(p => tdef(p).name).join(', ') + ' at Intermediate' : (t.remediate ? 'Needs remediation' : (isMastered(t) ? 'Mastered' : plural(t.attempts, 'attempt')));
+      return `<button class="topic ${locked ? 'locked' : ''} lv${t.level}" data-action="focus" data-id="${t.id}" aria-pressed="${n.focus === t.id}">
+        <div class="row"><b>${d.name}</b><span class="chip lv${t.level}">${locked ? 'Locked' : LEVELS[t.level]}</span></div>
+        <div class="bar" role="progressbar" aria-valuenow="${m}" aria-valuemin="0" aria-valuemax="100" aria-label="${d.name} mastery"><i style="width:${m}%"></i></div>
+        <small>${m}% mastery · ${need}</small></button>`;
+    }).join('')}
+  </div>`;
+}
+function renderChat() {
+  const n = nb(), p = $('#p-chat'); if (!p) return;
+  const r = recommend(n);
+  const msgs = n.chat.map(m => m.role === 'user' ? `<div class="m-user">${esc(m.text)}</div>` : `<div class="m-tutor">${m.typing ? '<span class="dots" aria-label="Tutor is typing"><i></i><i></i><i></i></span>' : m.html}</div>`).join('');
+  const f = tdef(n.focus).name;
+  const suggestions = ['Create a tailored study plan', 'What should I study next?', `Explain ${f} at my level`, 'Quiz me'];
+  const prev = $('.msgs', p), keep = prev ? prev.scrollTop : 0, stick = !prev || prev.scrollHeight - prev.scrollTop - prev.clientHeight < 80;
+  p.innerHTML = `
+  ${r ? `<div class="nextup"><div class="tx"><b>Next up: ${tdef(r.topic.id).name}</b> <span class="chip lv${r.topic.level}">${LEVELS[r.topic.level]}</span>${r.topic.remediate ? ' <span class="chip warn">Remediation</span>' : ''}<br><span>${esc(r.reason)}.</span></div><button class="btn primary" data-action="open-config" data-type="quiz" data-topic="${r.topic.id}">Start quiz</button></div>` : ''}
+  <div class="msgs"><div class="msgs-in">${msgs}</div></div>
+  <div class="composer">
+    <div class="sugg">${suggestions.map(s => `<button class="chip-btn" data-action="suggest" data-text="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+    <form class="cform" id="cform" autocomplete="off"><input id="cin" placeholder="Ask a question or create something" aria-label="Message the tutor"><small>${plural(readySources(n).length, 'source')}</small><button class="send" aria-label="Send">${I.send}</button></form>
+  </div>
+  <div class="foot-note">Study Path can make mistakes, so double-check it. Answers come only from your selected sources.</div>`;
+  const msgsEl = $('.msgs', p); msgsEl.scrollTop = stick ? msgsEl.scrollHeight : keep;
+  $('#cform').addEventListener('submit', e => { e.preventDefault(); const i = $('#cin'); const v = i.value; i.value = ''; send(v); });
+}
+const TILES = [['summary', 'Summary'], ['flashcards', 'Flashcards'], ['quiz', 'Quiz'], ['problems', 'Problem guide'], ['plan', 'Study plan'], ['map', 'Knowledge map'], ['progress', 'Progress & history']];
+function renderStudio() {
+  const n = nb(), p = $('#p-studio'); if (!p) return;
+  const open = k => ['map', 'progress'].includes(k) ? `data-action="open-view" data-v="${k}"` : `data-action="open-config" data-type="${k}" data-topic=""`;
+  p.innerHTML = `
+  <div class="panel-head"><span class="t">Studio</span><button class="icon-btn collapse" data-action="collapse" data-side="right" aria-label="Collapse studio panel">${I.panel}</button></div>
+  <div class="panel-body">
+    <div class="tiles">${TILES.map(([k, l], i) => `<button class="tile ${i === TILES.length - 1 ? 'wide' : ''}" ${open(k)}>${I[k]}<span>${l}</span></button>`).join('')}</div>
+    <div class="h-sub" style="margin-top:4px">Generated for you</div>
+    ${n.artifacts.length ? n.artifacts.map(a => `<button class="art" data-action="open-art" data-id="${a.id}">${I[a.type]}<span class="nm"><b>${esc(a.title)}</b><small>${a.result ? a.result.pct + '% · ' : ''}${a.level != null ? LEVELS[a.level] + ' · ' : ''}${plural(a.srcCount, 'source')} · ${ago(a.ts)}</small></span></button>`).join('') : '<p class="hint">Quizzes, flashcards, summaries and plans you generate are saved here.</p>'}
+  </div>`;
+}
+
+/* ==== MODALS ==== */
+function showModal(title, icon, body, foot, wide) {
+  $('#modal-root').innerHTML = `<div class="overlay" data-overlay><div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" tabindex="-1">
+    <div class="modal-head"><h2>${icon || ''}${esc(title)}</h2><button class="icon-btn" data-action="close-modal" aria-label="Close">${I.close}</button></div>
+    <div class="modal-body">${body}</div>${foot ? `<div class="modal-foot">${foot}</div>` : ''}</div></div>`;
+}
+function focusModal() { const m = $('.modal'); if (m) m.focus(); }
+function closeModal() { $('#modal-root').innerHTML = ''; M = null; }
+function renderModal() {
+  if (!M) return;
+  ({ config: renderConfig, viewer: renderViewer, map: renderMap, progress: renderProgress, newnb: renderNew })[M.view]();
+}
+
+const CFG_TITLES = { summary: 'Summary', flashcards: 'Flashcards', quiz: 'Quiz', problems: 'Problem guide', plan: 'Study plan' };
+function openConfig(type, topic) {
+  const n = nb();
+  const ok = topic && topicOf(n, topic) && !isLocked(n, topicOf(n, topic));
+  const r = recommend(n);
+  const def = ok ? topic : (!isLocked(n, topicOf(n, n.focus)) ? n.focus : (r ? r.topic.id : n.topics[0].id));
+  M = { view: 'config', cfg: { type, topic: def, count: 'std', exam: addDays(14), minutes: 30 } };
+  renderModal(); focusModal();
+}
+function renderConfig() {
+  const n = nb(), c = M.cfg, t = topicOf(n, c.topic), ready = readySources(n).length;
+  const topicField = c.type === 'plan' ? '' : `<div class="field"><label for="cfgTopic">Topic</label><select id="cfgTopic" data-change="cfg-topic">${n.topics.map(x => `<option value="${x.id}" ${x.id === c.topic ? 'selected' : ''} ${isLocked(n, x) ? 'disabled' : ''}>${tdef(x.id).name}${isLocked(n, x) ? ' (locked)' : ''}</option>`).join('')}</select></div>
+    <div class="field"><span class="lbl">Level</span><div class="lvl-note"><span class="chip lv${t.level}">${LEVELS[t.level]}</span><span>Content is matched to your current level in this topic and changes as your quiz results improve.</span></div></div>`;
+  const countField = ['quiz', 'flashcards'].includes(c.type) ? `<div class="field"><span class="lbl">Number of ${c.type === 'quiz' ? 'questions' : 'cards'}</span><div class="seg">${[['fewer', 'Fewer'], ['std', 'Standard (Default)'], ['more', 'More']].map(([k, l]) => `<button data-action="cfg-count" data-v="${k}" aria-pressed="${c.count === k}">${l}</button>`).join('')}</div></div>` : '';
+  const planField = c.type === 'plan' ? `<div class="field"><label for="cfgExam">Exam date</label><input type="date" id="cfgExam" data-change="cfg-exam" value="${c.exam}" min="${addDays(1)}"></div>
+    <div class="field"><label for="cfgMin">Study time per day</label><select id="cfgMin" data-change="cfg-min">${[20, 30, 45, 60].map(m => `<option value="${m}" ${+c.minutes === m ? 'selected' : ''}>${m} minutes</option>`).join('')}</select></div>` : '';
+  showModal(CFG_TITLES[c.type], I[c.type], topicField + countField + planField + `<div class="field"><span class="lbl">Sources</span><span class="chip">${ready} of ${n.sources.length} selected</span></div>`,
+    `<span class="grow">${ready ? '' : 'Select at least one source to generate.'}</span><button class="btn" data-action="close-modal">Cancel</button><button class="btn primary" data-action="generate" ${ready ? '' : 'disabled'}>Generate now</button>`);
+}
+function generate() {
+  const n = nb(), ready = readySources(n);
+  if (!ready.length) { toast('Select at least one ready source first'); return; }
+  const btn = $('[data-action=generate]'); if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
+  const cfg = { ...M.cfg };
+  setTimeout(() => {
+    const art = makeArtifact(n, cfg, ready.length);
+    n.artifacts.unshift(art);
+    if (cfg.topic) n.focus = cfg.topic;
+    renderSources(); renderStudio(); renderChat();
+    openArtifact(art.id);
+  }, 650);
+}
+function openArtifact(id) { M = { view: 'viewer', id, card: 0, flip: false, sel: null }; renderModal(); focusModal(); }
+
+function renderViewer() {
+  const n = nb(), a = n.artifacts.find(x => x.id === M.id);
+  if (!a) { closeModal(); return; }
+  const fn = { quiz: viewQuiz, flashcards: viewCards, summary: viewSummary, problems: viewProblem, plan: viewPlan }[a.type];
+  const out = fn(a, n);
+  showModal(a.title, I[a.type], out.body, out.foot || '', a.type === 'plan');
+}
+function viewSummary(a, n) {
+  const names = readySources(n).map(s => esc(s.name)).join(', ');
+  return { body: `<div class="lvl-note" style="margin-bottom:16px"><span class="chip lv${a.level}">${LEVELS[a.level]}</span><span>Written for your level in ${tdef(a.topic).name}.</span></div><div class="m-tutor">${a.data.paras.map(p => `<p>${cites(p, n)}</p>`).join('')}</div><p class="srcs">Based on: ${names}</p>`,
+    foot: `${actBtn('flashcards', a.topic, 'Make flashcards')}${actBtn('quiz', a.topic, 'Take the quiz')}` };
+}
+function viewCards(a) {
+  const c = a.data.cards[M.card];
+  return { body: `<div class="prog"><span>Card ${M.card + 1} of ${a.data.cards.length}</span><div class="bar"><i style="width:${(M.card + 1) / a.data.cards.length * 100}%"></i></div></div>
+    <div class="fc-wrap"><button class="fc ${M.flip ? 'flip' : ''}" data-action="flip" aria-label="Flip card"><span class="f">${esc(c.f)}</span><span class="f b"><span>${esc(c.b)}<small>${esc(c.e)}</small></span></span></button></div>
+    <div class="center"><button class="btn" data-action="card-prev" ${M.card === 0 ? 'disabled' : ''}>Previous</button><button class="btn" data-action="flip">Flip</button><button class="btn primary" data-action="card-next" ${M.card === a.data.cards.length - 1 ? 'disabled' : ''}>Next</button></div>` };
+}
+function viewProblem(a) {
+  const d = a.data, shown = a.step;
+  return { body: `<div class="card2"><h3>${esc(d.title)}</h3><p>${esc(d.prompt)}</p></div><ol class="steps">${d.steps.slice(0, shown).map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+    ${shown < d.steps.length ? `<button class="btn primary" data-action="reveal">${shown === 0 ? 'Show first step' : 'Reveal next step'}</button><span class="hint"> Try it yourself before each step.</span>` : `<p class="hint">That’s the full walk-through.</p>`}`,
+    foot: actBtn('quiz', a.topic, 'Take the quiz') };
+}
+function viewPlan(a) {
+  const d = a.data, show = d.days.slice(0, 7);
+  return { body: `<p class="hint" style="margin-bottom:6px">Exam on ${fmtDate(new Date(d.exam + 'T00:00:00').getTime())} · ${d.minutes} minutes a day · weakest topics first, locked topics after their prerequisites.</p>
+    ${show.map((day, i) => `<div class="day"><div><b>Day ${i + 1}</b><small>${new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</small></div><ul>${day.tasks.map(t => `<li>${esc(t.l)} <span class="chip">${t.m} min</span></li>`).join('')}</ul></div>`).join('')}
+    ${d.days.length > 7 ? `<p class="hint">+ ${d.days.length - 7} more days following the same pattern.</p>` : ''}` };
+}
+function viewQuiz(a, n) {
+  if (a.result && !a.run) return viewQuizResult(a, n);
+  if (!a.run) a.run = { idx: 0, sel: null, answers: [] };
+  const r = a.run, qs = a.data.questions, q = qs[r.idx], done = r.sel != null;
+  const letters = 'ABCD';
+  return { body: `<div class="prog"><span>Question ${r.idx + 1} of ${qs.length}</span><div class="bar"><i style="width:${(r.idx + (done ? 1 : 0)) / qs.length * 100}%"></i></div><span class="chip lv${q.level}">${LEVELS[q.level]}</span></div>
+    <div class="qtext">${esc(q.t)}</div>
+    ${q.opts.map((o, i) => `<button class="opt ${done ? (i === q.a ? 'ok' : (i === r.sel ? 'bad' : '')) : ''}" data-action="pick" data-i="${i}" ${done ? 'disabled' : ''}><span class="k">${letters[i]}</span><span>${esc(o)}</span></button>`).join('')}
+    ${done ? `<div class="expl"><b>${r.sel === q.a ? 'Correct.' : 'Not quite.'}</b> ${esc(q.e)}</div>` : ''}`,
+    foot: done ? `<button class="btn primary" data-action="qnext">${r.idx === qs.length - 1 ? 'See results' : 'Next question'}</button>` : '<span class="grow">Pick an answer to continue</span>' };
+}
+function finishQuiz(a, n) {
+  const r = a.run, qs = a.data.questions, score = r.answers.filter(Boolean).length;
+  const res = applyProgression(n, a.topic, score, qs.length);
+  a.result = { ...res, score, total: qs.length, missed: qs.map((q, i) => ({ q, i })).filter(x => !r.answers[x.i]).map(x => x.q) };
+  a.run = null; a.ts = Date.now();
+  renderSources(); renderChat(); renderStudio();
+}
+function viewQuizResult(a, n) {
+  const R = a.result, C = 2 * Math.PI * 54, col = R.pct >= 80 ? 'var(--ok)' : R.pct >= 50 ? 'var(--lv3)' : 'var(--bad)';
+  const rule = R.kind === 'up' ? 'You scored 80% or more, so the next quiz and materials are harder.' : R.kind === 'down' ? (R.before > 0 ? 'You scored under 50%, so I moved you down a level for review and flagged remediation.' : 'You scored under 50%. You are already at Beginner, so your level stays and remediation is flagged.') : 'Scores from 50% to 79% keep your level. 80% or more promotes you.';
+  const after = R.after, rec = recommend(n);
+  return { body: `<div class="score"><svg class="ring" viewBox="0 0 130 130" role="img" aria-label="${R.pct} percent"><circle cx="65" cy="65" r="54" fill="none" stroke="var(--panel3)" stroke-width="12"/><circle cx="65" cy="65" r="54" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - R.pct / 100)}" transform="rotate(-90 65 65)"/><text x="65" y="73" text-anchor="middle" font-size="26" font-weight="600" fill="currentColor" style="fill:var(--text)">${R.pct}%</text></svg>
+    <div><div class="big">${esc(R.outcome)}</div><p class="hint" style="padding:4px 0 0">${R.score} of ${R.total} correct · ${tdef(a.topic).name}</p>
+    <div class="move"><span class="chip lv${R.before}">${LEVELS[R.before]}</span><span aria-hidden="true">→</span><span class="chip lv${after}">${LEVELS[after]}</span><div class="pips lv${after}" aria-label="Level ${after + 1} of 4">${[0, 1, 2, 3].map(i => `<i class="${i <= after ? 'on' : ''}"></i>`).join('')}</div></div></div></div>
+    <div class="card2"><h3>How levels change</h3><p class="hint" style="padding:0">${rule} This attempt is saved to your history.</p></div>
+    ${R.missed.length ? `<div class="card2"><h3>Review what you missed (${R.missed.length})</h3>${R.missed.map(q => `<div class="miss"><b>${esc(q.t)}</b><br><span>${esc(q.opts[q.a])}</span> — ${esc(q.e)}</div>`).join('')}</div>` : ''}`,
+    foot: `${R.missed.length ? '<button class="btn" data-action="remediate">Flashcards for missed questions</button>' : ''}<button class="btn" data-action="open-view" data-v="progress">View history</button>${rec ? `<button class="btn primary" data-action="open-config" data-type="quiz" data-topic="${rec.topic.id}">Next: ${tdef(rec.topic.id).name} quiz</button>` : ''}` };
+}
+function remediate(a, n) {
+  const cards = a.result.missed.map(q => ({ f: q.t, b: q.opts[q.a], e: q.e }));
+  const art = { id: nid(), ts: Date.now(), srcCount: readySources(n).length, type: 'flashcards', title: `${tdef(a.topic).name} remediation cards`, level: a.result.after, topic: a.topic, data: { cards } };
+  n.artifacts.unshift(art); renderStudio(); openArtifact(art.id); toast('Remediation flashcards created');
+}
+
+function renderNew() {
+  const files = M.files;
+  showModal('New notebook', I.plus, `
+    <div class="field"><label for="nbTitle">Notebook name</label><input type="text" id="nbTitle" value="${esc(M.title)}" data-change="nb-title"></div>
+    <div class="field"><span class="lbl">Upload your syllabus or notes</span>
+      <label class="drop" id="drop" for="nbFiles">${I.upload}<b>Drop files here, or click to browse</b><span>PDF, DOCX or PPTX</span><input type="file" id="nbFiles" multiple hidden accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md"></label>
+      <div class="files">${files.map((f, i) => `<div>${I.file}<span style="flex:1">${esc(f)}</span><button class="icon-btn" style="width:30px;height:30px" data-action="nb-remove" data-i="${i}" aria-label="Remove ${esc(f)}">${I.close}</button></div>`).join('')}</div></div>`,
+    `<span class="grow">${files.length ? '' : 'Add at least one file.'}</span><button class="btn" data-action="close-modal">Cancel</button><button class="btn primary" data-action="nb-create" ${files.length ? '' : 'disabled'}>Create notebook</button>`);
+  const drop = $('#drop'), inp = $('#nbFiles');
+  inp.addEventListener('change', e => { M.files.push(...[...e.target.files].map(f => f.name)); renderModal(); });
+  ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); M.files.push(...[...e.dataTransfer.files].map(f => f.name)); renderModal(); });
+}
+function createNotebook() {
+  const title = (M.title || '').trim() || 'Untitled notebook', files = M.files.slice();
+  const n = {
+    id: nid(), title, created: Date.now(), focus: 'hash',
+    sources: files.map(name => ({ id: nid(), name, status: 'uploading', checked: true })),
+    topics: Object.keys(TOPIC_DEFS).map(id => ({ id, level: 0, last: null, attempts: 0, remediate: false })),
+    history: [], artifacts: [], chat: [{ role: 'tutor', html: `Processing <b>${plural(files.length, 'file')}</b>. I’ll build your topic map when it’s ready.` }]
+  };
+  state.notebooks.unshift(n); closeModal(); openNotebook(n.id);
+  n.sources.forEach(s => advanceSource(n, s));
+  const check = setInterval(() => {
+    if (n.sources.every(s => s.status === 'ready')) {
+      clearInterval(check);
+      const subs = n.topics.reduce((c, t) => c + tdef(t.id).sub.length, 0);
+      n.chat.push({ role: 'tutor', html: `Done. I found <b>${n.topics.length} topics</b> and <b>${subs} subtopics</b> (this prototype uses a demo extraction). Everyone starts at Beginner. Take a quiz to place yourself.<div class="acts">${actBtn('quiz', 'hash', 'Take a placement quiz')}</div>` });
+      if (state.activeId === n.id) { renderChat(); renderSources(); }
+    }
+  }, 400);
+}
+
+function renderMap() {
+  const n = nb(), sel = M.sel || n.focus;
+  const pos = { hash: [125, 90], trees: [350, 90], heaps: [575, 90] }, off = [[-72, 110], [0, 130], [72, 110]];
+  const color = t => `var(--lv${t.level})`;
+  let g = '';
+  n.topics.forEach(t => { tdef(t.id).prereq.forEach(p => { const a = pos[p], b = pos[t.id]; g += `<path d="M${a[0] + 52} ${a[1]} L${b[0] - 58} ${b[1]}" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="${isLocked(n, t) ? '5 5' : '0'}" marker-end="url(#arr)"/>`; }); });
+  n.topics.forEach(t => {
+    const [x, y] = pos[t.id], d = tdef(t.id), locked = isLocked(n, t);
+    d.sub.forEach((s, i) => { const sx = x + off[i][0], sy = y + off[i][1]; g += `<line x1="${x}" y1="${y + 50}" x2="${sx}" y2="${sy - 13}" stroke="var(--line)" stroke-width="1.4"/><circle cx="${sx}" cy="${sy}" r="13" fill="var(--panel3)"/><text x="${sx}" y="${sy + 32}" text-anchor="middle" font-size="12" style="fill:var(--muted)">${s}</text>`; });
+    g += `<g class="node" data-action="map-sel" data-id="${t.id}" tabindex="0" role="button" aria-label="${d.name}, ${LEVELS[t.level]}${locked ? ', locked' : ''}"><circle class="m" cx="${x}" cy="${y}" r="52" fill="var(--panel2)" stroke="${color(t)}" stroke-width="${sel === t.id ? 5 : 3}" ${locked ? 'stroke-dasharray="6 5"' : ''}/><text x="${x}" y="${y - 2}" text-anchor="middle" font-size="14" font-weight="600">${d.name}</text><text x="${x}" y="${y + 16}" text-anchor="middle" font-size="12" style="fill:${color(t)}">${locked ? 'Locked' : LEVELS[t.level]}</text></g>`;
+  });
+  const t = topicOf(n, sel), d = tdef(sel), locked = isLocked(n, t);
+  showModal('Knowledge map', I.map, `<svg class="map" viewBox="0 0 700 270" role="img" aria-label="Topics, subtopics and prerequisites" style="width:100%;height:auto"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9c9ca5"/></marker></defs>${g}</svg>
+    <div class="card2"><h3>${d.name}</h3><div class="move" style="margin:0 0 10px"><span class="chip lv${t.level}">${LEVELS[t.level]}</span><span class="chip">${mastery(t)}% mastery</span>${t.remediate ? '<span class="chip warn">Needs remediation</span>' : ''}</div>
+    <p class="hint" style="padding:0">Subtopics: ${d.sub.join(', ')}.${d.prereq.length ? ' Requires ' + d.prereq.map(p => tdef(p).name).join(', ') + ' at Intermediate.' : ''}${locked ? ' This topic is locked until then.' : ''}</p></div>
+    <p class="hint">Colour shows your level. Dashed circles are locked topics; arrows point from a prerequisite to the topic it unlocks.</p>`,
+    locked ? '' : `<button class="btn primary" data-action="open-config" data-type="quiz" data-topic="${sel}">Quiz on ${d.name}</button>`, true);
+}
+function renderProgress() {
+  const n = nb(), r = recommend(n);
+  const rows = n.topics.map(t => { const d = tdef(t.id), m = mastery(t), locked = isLocked(n, t); return `<div class="prow lv${t.level}"><div><b>${d.name}</b><br><span class="chip lv${t.level}">${locked ? 'Locked' : LEVELS[t.level]}</span></div><div class="pips" aria-label="Level ${t.level + 1} of 4">${[0, 1, 2, 3].map(i => `<i class="${i <= t.level ? 'on' : ''}"></i>`).join('')}</div><b>${m}%</b><span class="hint" style="padding:0">${locked ? 'Needs ' + d.prereq.map(p => tdef(p).name).join(', ') + ' at Intermediate' : t.remediate ? 'Needs remediation' : isMastered(t) ? 'Mastered' : t.last == null ? 'Just reached this level' : 'Last score ' + t.last + '%'}</span></div>`; }).join('');
+  const hist = n.history.slice().reverse();
+  showModal('Progress & history', I.progress, `
+    ${r ? `<div class="card2"><h3>Recommended next: ${tdef(r.topic.id).name}</h3><p class="hint" style="padding:0">${esc(r.reason)}.</p></div>` : ''}
+    <h3 class="h-sub" style="font-weight:500">Levels by topic</h3>${rows}
+    <h3 class="h-sub" style="font-weight:500">Quiz history (${hist.length})</h3>
+    ${hist.length ? `<table><thead><tr><th>When</th><th>Topic</th><th>Level</th><th>Score</th><th>Result</th></tr></thead><tbody>${hist.map(h => `<tr><td>${ago(h.ts)}</td><td>${tdef(h.topic).name}</td><td><span class="chip lv${h.level}">${LEVELS[h.level]}</span></td><td>${h.score}/${h.total} (${Math.round(h.score / h.total * 100)}%)</td><td>${esc(h.outcome)}</td></tr>`).join('')}</tbody></table>` : '<p class="hint">No quizzes yet. Take one to place yourself.</p>'}`, '', true);
+}
+
+/* ==== EVENTS ==== */
+const toastEl = $('#toast'); let toastT;
+function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2200); }
+
+const actions = {
+  'home': () => { closeModal(); renderHome(); },
+  'open-nb': d => openNotebook(d.id),
+  'filter': d => { state.filter = d.v; renderHome(); },
+  'layout': d => { state.layout = d.v; renderHome(); },
+  'new-nb': () => { M = { view: 'newnb', title: 'Untitled notebook', files: [] }; renderModal(); focusModal(); },
+  'nb-remove': d => { M.files.splice(+d.i, 1); renderModal(); },
+  'nb-create': () => createNotebook(),
+  'close-modal': () => closeModal(),
+  'mtab': d => { $('#ws').dataset.mtab = d.v; document.querySelectorAll('.mtabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === d.v)); },
+  'collapse': d => { const w = $('#ws'), k = d.side === 'left' ? 'left' : 'right'; w.dataset[k] = w.dataset[k] === 'c' ? '' : 'c'; },
+  'add-src': () => $('#addSrc').click(),
+  'focus': d => { nb().focus = d.id; renderSources(); renderChat(); },
+  'suggest': d => send(d.text),
+  'cite': d => { const el = $('#src-' + d.src); if (!el) return; const ws = $('#ws'); if (ws && getComputedStyle($('#p-sources')).display === 'none') ws.dataset.mtab = 'sources'; el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1400); },
+  'open-config': d => openConfig(d.type, d.topic),
+  'open-view': d => { M = { view: d.v, sel: null }; renderModal(); focusModal(); },
+  'open-art': d => openArtifact(d.id),
+  'cfg-count': d => { M.cfg.count = d.v; renderModal(); },
+  'generate': () => generate(),
+  'flip': () => { M.flip = !M.flip; renderModal(); },
+  'card-prev': () => { M.card--; M.flip = false; renderModal(); },
+  'card-next': () => { M.card++; M.flip = false; renderModal(); },
+  'reveal': () => { const a = nb().artifacts.find(x => x.id === M.id); a.step++; renderModal(); },
+  'pick': d => { const a = nb().artifacts.find(x => x.id === M.id); if (!a.run) a.run = { idx: 0, sel: null, answers: [] }; const r = a.run; if (r.sel != null) return; r.sel = +d.i; r.answers.push(+d.i === a.data.questions[r.idx].a); renderModal(); },
+  'qnext': () => { const n = nb(), a = n.artifacts.find(x => x.id === M.id), r = a.run; if (r.idx === a.data.questions.length - 1) finishQuiz(a, n); else { r.idx++; r.sel = null; } renderModal(); },
+  'remediate': () => { const n = nb(); remediate(n.artifacts.find(x => x.id === M.id), n); },
+  'map-sel': d => { M.sel = d.id; renderModal(); }
+};
+const changes = {
+  'sel-all': el => { nb().sources.forEach(s => { if (s.status === 'ready') s.checked = el.checked; }); renderSources(); renderChat(); },
+  'src-toggle': el => { nb().sources.find(s => s.id === el.dataset.id).checked = el.checked; renderSources(); renderChat(); },
+  'cfg-topic': el => { M.cfg.topic = el.value; renderModal(); },
+  'cfg-exam': el => { if (el.value) M.cfg.exam = el.value; },
+  'cfg-min': el => { M.cfg.minutes = +el.value; },
+  'nb-title': el => { M.title = el.value; }
+};
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-overlay]')) { closeModal(); return; }
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  const fn = actions[el.dataset.action]; if (fn) fn(el.dataset);
+});
+document.addEventListener('change', e => { const el = e.target.closest('[data-change]'); if (el && changes[el.dataset.change]) changes[el.dataset.change](el); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && M) closeModal();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('g[data-action]')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+});
+
+renderHome();
+</script>
+</body>
+</html>
