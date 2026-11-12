@@ -1,0 +1,6 @@
+[
+  {"portal": "student", "name": "Meera Iyer", "note": "Mid-way through a plan", "email": "meera.iyer@gradient.edu", "password": "student123"},
+  {"portal": "student", "name": "Fatima Khan", "note": "New student, no courses yet", "email": "fatima.khan@gradient.edu", "password": "student123"},
+  {"portal": "staff", "name": "Dr. Ananya Rao", "note": "Faculty · Computer Science", "email": "ananya.rao@gradient.edu", "password": "faculty123"},
+  {"portal": "staff", "name": "Prof. Richard Hale", "note": "Management · Dean", "email": "richard.hale@gradient.edu", "password": "admin123"}
+]

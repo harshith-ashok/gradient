@@ -1,0 +1,1574 @@
+[
+  {
+    "id": "c-cs101",
+    "code": "CS 101",
+    "title": "Programming in C",
+    "department": "Computer Science",
+    "credits": 4,
+    "level": "Undergraduate · Year 1",
+    "accent": "#8e2433",
+    "description": "A first course in programming using C. Covers the core language, functions, and the memory model that makes C powerful and unforgiving.",
+    "instructorId": "u-rao",
+    "status": "published",
+    "source": {
+      "fileName": "CS101-syllabus.pdf"
+    },
+    "topics": [
+      {
+        "id": "c-t1",
+        "title": "Language Fundamentals",
+        "subtopics": [
+          {
+            "id": "c-vars",
+            "title": "Variables and data types",
+            "description": "Declaring variables, integer and floating-point types, type sizes and conversions.",
+            "points": [
+              "A variable names a typed region of memory",
+              "int, char, float and double have different sizes and ranges",
+              "Implicit conversion happens in mixed expressions",
+              "sizeof reports the size of a type in bytes"
+            ],
+            "summary": [
+              "A variable is a named piece of memory with a fixed type. The type decides how many bytes it uses and how those bytes are read. Common types are char (one byte), int (usually four), float and double for real numbers.",
+              "When different types meet in one expression, C converts them implicitly, usually towards the wider type. Dividing two ints discards the fraction, so 7 / 2 is 3, not 3.5. Use a cast such as (double)7 / 2 when you need the real quotient."
+            ],
+            "flashcards": [
+              {
+                "front": "What does sizeof(int) return on most modern systems?",
+                "back": "4 — the size of an int in bytes."
+              },
+              {
+                "front": "What is the result of 7 / 2 when both are int?",
+                "back": "3. Integer division drops the fractional part."
+              },
+              {
+                "front": "How do you force real-number division of two ints a and b?",
+                "back": "Cast one operand: (double)a / b."
+              }
+            ],
+            "questions": [
+              {
+                "id": "c-vars-q1",
+                "text": "What is the value of 7 / 2 in C when both operands are int?",
+                "options": [
+                  "3",
+                  "3.5",
+                  "4",
+                  "2"
+                ],
+                "answer": 0,
+                "explanation": "Integer division truncates toward zero, so the fractional .5 is discarded."
+              },
+              {
+                "id": "c-vars-q2",
+                "text": "Which type is normally used to store a single character?",
+                "options": [
+                  "char",
+                  "string",
+                  "int[]",
+                  "text"
+                ],
+                "answer": 0,
+                "explanation": "char holds one byte and is the standard type for a single character."
+              },
+              {
+                "id": "c-vars-q3",
+                "text": "What does the sizeof operator return?",
+                "options": [
+                  "The size of a type or object in bytes",
+                  "The number of elements in an array always",
+                  "The value stored in a variable",
+                  "The address of a variable"
+                ],
+                "answer": 0,
+                "explanation": "sizeof yields the size in bytes, as a value of type size_t."
+              },
+              {
+                "id": "c-vars-q4",
+                "text": "Which expression gives 3.5 for int a = 7, b = 2?",
+                "options": [
+                  "(double)a / b",
+                  "a / b",
+                  "a % b",
+                  "(int)a / b"
+                ],
+                "answer": 0,
+                "explanation": "Casting one operand to double makes the division a floating-point division."
+              }
+            ],
+            "remediation": {
+              "explanation": "Think of each type as a different sized box. An int box holds a whole number, so when the answer has a fraction the box simply cannot hold it and the fraction is cut off. Use a double box when you need the fraction.",
+              "steps": [
+                "Write 7 / 2 and 7.0 / 2 on paper and predict both results before running them.",
+                "Print sizeof(char), sizeof(int), sizeof(double) on your own machine.",
+                "Rewrite a division of two ints so it keeps the fractional part."
+              ]
+            }
+          },
+          {
+            "id": "c-flow",
+            "title": "Operators and control flow",
+            "description": "Arithmetic, relational and logical operators; if/else, switch and loops.",
+            "points": [
+              "Relational operators yield 1 (true) or 0 (false)",
+              "&& and || short-circuit",
+              "for, while and do-while differ in when they test the condition",
+              "break leaves a loop; continue skips to the next iteration"
+            ],
+            "summary": [
+              "C has no separate boolean in its original form: any non-zero value is true and zero is false. Relational operators such as == and < produce 1 or 0. The logical operators && and || short-circuit, so the right-hand side is only evaluated if it can still change the result.",
+              "Use for when the iteration count is known, while when you loop until a condition changes, and do-while when the body must run at least once. A common bug is writing = (assignment) where == (comparison) was intended."
+            ],
+            "flashcards": [
+              {
+                "front": "What is the difference between = and ==?",
+                "back": "= assigns a value; == compares two values."
+              },
+              {
+                "front": "What does short-circuit evaluation mean for A && B?",
+                "back": "If A is false, B is not evaluated at all."
+              },
+              {
+                "front": "Which loop always runs its body at least once?",
+                "back": "do-while, because the condition is tested after the body."
+              }
+            ],
+            "questions": [
+              {
+                "id": "c-flow-q1",
+                "text": "Which loop guarantees the body executes at least once?",
+                "options": [
+                  "do-while",
+                  "while",
+                  "for",
+                  "None of them"
+                ],
+                "answer": 0,
+                "explanation": "do-while checks its condition after running the body."
+              },
+              {
+                "id": "c-flow-q2",
+                "text": "What does if (x = 5) do?",
+                "options": [
+                  "Assigns 5 to x and is always true",
+                  "Compares x with 5",
+                  "Causes a compile error",
+                  "Is always false"
+                ],
+                "answer": 0,
+                "explanation": "A single = is assignment; the expression value is 5, which is non-zero and therefore true."
+              },
+              {
+                "id": "c-flow-q3",
+                "text": "In (a != 0 && b / a > 2), why is the division safe?",
+                "options": [
+                  "If a is 0 the && short-circuits and b / a is never evaluated",
+                  "The compiler rewrites the division",
+                  "Division by zero is defined as 0",
+                  "It is not safe"
+                ],
+                "answer": 0,
+                "explanation": "Short-circuit evaluation skips the right operand when the left operand is already false."
+              },
+              {
+                "id": "c-flow-q4",
+                "text": "What does continue do inside a loop?",
+                "options": [
+                  "Skips the rest of the current iteration",
+                  "Exits the loop",
+                  "Restarts the program",
+                  "Exits the function"
+                ],
+                "answer": 0,
+                "explanation": "continue jumps to the next iteration; break would exit the loop."
+              }
+            ],
+            "remediation": {
+              "explanation": "Control flow is just decisions and repetition. Trace a loop by hand with a small table: one column per variable, one row per iteration. Most mistakes (off-by-one, = vs ==) show up immediately.",
+              "steps": [
+                "Trace for (i = 0; i < 3; i++) by hand and list every value of i.",
+                "Fix the bug in: if (n = 0) { ... } so it compares.",
+                "Rewrite a while loop as a for loop and back again."
+              ]
+            }
+          },
+          {
+            "id": "c-func",
+            "title": "Functions",
+            "description": "Defining functions, parameters, return values, prototypes and scope.",
+            "points": [
+              "A prototype declares a function before its use",
+              "Arguments are passed by value",
+              "Local variables live only during the call",
+              "A function returns at most one value"
+            ],
+            "summary": [
+              "A function packages reusable work behind a name, a parameter list and a return type. A prototype such as int add(int a, int b); tells the compiler the shape of the function before its definition appears.",
+              "C passes arguments by value: the function receives copies, so changing a parameter does not change the caller’s variable. To modify the caller’s data you pass its address (a pointer). Local variables exist only while the function runs."
+            ],
+            "flashcards": [
+              {
+                "front": "What does pass by value mean?",
+                "back": "The function gets a copy of each argument; changes do not affect the caller’s variables."
+              },
+              {
+                "front": "What is a function prototype for?",
+                "back": "It declares the name, parameters and return type before the definition so calls can be checked."
+              },
+              {
+                "front": "How long does a local variable live?",
+                "back": "Until the function returns."
+              }
+            ],
+            "questions": [
+              {
+                "id": "c-func-q1",
+                "text": "In C, what happens when you modify a parameter inside a function?",
+                "options": [
+                  "Only the local copy changes",
+                  "The caller’s variable changes too",
+                  "The program crashes",
+                  "The compiler rejects it"
+                ],
+                "answer": 0,
+                "explanation": "Arguments are passed by value, so the function works on a copy."
+              },
+              {
+                "id": "c-func-q2",
+                "text": "What is the purpose of a function prototype?",
+                "options": [
+                  "To declare a function before it is defined",
+                  "To allocate memory for it",
+                  "To make it run faster",
+                  "To hide it from other files"
+                ],
+                "answer": 0,
+                "explanation": "A prototype lets the compiler check calls made before the definition."
+              },
+              {
+                "id": "c-func-q3",
+                "text": "Which return type is used for a function that returns nothing?",
+                "options": [
+                  "void",
+                  "null",
+                  "int",
+                  "empty"
+                ],
+                "answer": 0,
+                "explanation": "void indicates that no value is returned."
+              },
+              {
+                "id": "c-func-q4",
+                "text": "Where is a local variable visible?",
+                "options": [
+                  "Only inside the block or function where it is declared",
+                  "In every function in the file",
+                  "In every file of the program",
+                  "Until the program exits"
+                ],
+                "answer": 0,
+                "explanation": "Block scope limits the variable to its enclosing braces."
+              }
+            ],
+            "remediation": {
+              "explanation": "Imagine photocopying a worksheet and handing the copy to a friend. Whatever they write on it does not change your original. That is pass by value. To let them edit your original you must hand over where it lives: its address.",
+              "steps": [
+                "Write swap(int a, int b) and show that the caller’s values do not change.",
+                "Add a prototype above main and move the definition below it.",
+                "List the scope of every variable in a small program."
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "c-t2",
+        "title": "Memory and Pointers",
+        "subtopics": [
+          {
+            "id": "c-ptr",
+            "title": "Pointers",
+            "description": "Addresses, the & and * operators, pointer arithmetic and passing by pointer.",
+            "points": [
+              "A pointer stores a memory address",
+              "& gives the address of; * dereferences",
+              "Pointers let functions modify the caller’s data",
+              "A NULL or uninitialised pointer must not be dereferenced"
+            ],
+            "summary": [
+              "A pointer is a variable that holds the address of another variable. The address-of operator & produces an address and the dereference operator * follows it to the value. If int x = 5; int *p = &x; then *p is 5, and writing *p = 9 changes x.",
+              "Passing a pointer to a function lets it modify the caller’s data, which is how swap works. Dereferencing a NULL, uninitialised or dangling pointer is undefined behaviour, so always initialise pointers and check for NULL."
+            ],
+            "flashcards": [
+              {
+                "front": "What does the & operator do?",
+                "back": "It yields the address of its operand."
+              },
+              {
+                "front": "What does *p mean when p is a pointer?",
+                "back": "The value stored at the address held in p (dereferencing)."
+              },
+              {
+                "front": "Why is dereferencing NULL dangerous?",
+                "back": "It is undefined behaviour and typically crashes the program."
+              }
+            ],
+            "questions": [
+              {
+                "id": "c-ptr-q1",
+                "text": "Given int x = 5; int *p = &x; what does *p = 9; do?",
+                "options": [
+                  "Changes x to 9",
+                  "Changes p to 9",
+                  "Does nothing",
+                  "Causes a compile error"
+                ],
+                "answer": 0,
+                "explanation": "p holds x’s address, so *p refers to x itself."
+              },
+              {
+                "id": "c-ptr-q2",
+                "text": "What does the & operator return?",
+                "options": [
+                  "The address of a variable",
+                  "The value of a variable",
+                  "The size of a variable",
+                  "A copy of a variable"
+                ],
+                "answer": 0,
+                "explanation": "& is the address-of operator."
+              },
+              {
+                "id": "c-ptr-q3",
+                "text": "Which function correctly swaps two ints for the caller?",
+                "options": [
+                  "void swap(int *a, int *b)",
+                  "void swap(int a, int b)",
+                  "int swap(int a)",
+                  "void swap(int &a)"
+                ],
+                "answer": 0,
+                "explanation": "Only pointers give the function access to the caller’s variables in C."
+              },
+              {
+                "id": "c-ptr-q4",
+                "text": "What is the risk of dereferencing an uninitialised pointer?",
+                "options": [
+                  "Undefined behaviour, often a crash",
+                  "It returns zero",
+                  "It allocates memory automatically",
+                  "Nothing, it is safe"
+                ],
+                "answer": 0,
+                "explanation": "The pointer holds an arbitrary address, so reading or writing it is undefined."
+              }
+            ],
+            "remediation": {
+              "explanation": "A pointer is a house address written on a card. The card is not the house; * means go to that address and look inside. Two cards with the same address point to the same house, so changes through either are visible to both.",
+              "steps": [
+                "Draw boxes for x and p with arrows for int x = 5; int *p = &x;.",
+                "Print x, &x, p and *p and explain each line of output.",
+                "Write swap using pointers and test it."
+              ]
+            }
+          },
+          {
+            "id": "c-arr",
+            "title": "Arrays and strings",
+            "description": "Array indexing, the array-pointer relationship, and null-terminated strings.",
+            "points": [
+              "Arrays are contiguous blocks with zero-based indexing",
+              "An array name decays to a pointer to its first element",
+              "C does not check bounds",
+              "Strings are char arrays ending in '\\0'"
+            ],
+            "summary": [
+              "An array stores elements of one type contiguously, indexed from 0. The name of an array usually decays to a pointer to its first element, so a[i] is equivalent to *(a + i). C performs no bounds checking: reading or writing past the end is undefined behaviour.",
+              "A C string is an array of char terminated by the null character '\\0'. Functions such as strlen and strcpy rely on that terminator, so a buffer must be large enough for the text plus one extra byte."
+            ],
+            "flashcards": [
+              {
+                "front": "What marks the end of a C string?",
+                "back": "The null character '\\0'."
+              },
+              {
+                "front": "What is a[i] equivalent to?",
+                "back": "*(a + i)"
+              },
+              {
+                "front": "Does C check array bounds?",
+                "back": "No. Out-of-bounds access is undefined behaviour."
+              }
+            ],
+            "questions": [
+              {
+                "id": "c-arr-q1",
+                "text": "How many bytes are needed to store the string \"hello\" in a char array?",
+                "options": [
+                  "6",
+                  "5",
+                  "4",
+                  "7"
+                ],
+                "answer": 0,
+                "explanation": "Five letters plus the terminating '\\0'."
+              },
+              {
+                "id": "c-arr-q2",
+                "text": "For an array a, what is a[2] equivalent to?",
+                "options": [
+                  "*(a + 2)",
+                  "&a + 2",
+                  "a * 2",
+                  "*a + 2"
+                ],
+                "answer": 0,
+                "explanation": "Indexing is pointer arithmetic followed by dereference."
+              },
+              {
+                "id": "c-arr-q3",
+                "text": "What happens if you write beyond the end of an array?",
+                "options": [
+                  "Undefined behaviour",
+                  "A runtime exception is always thrown",
+                  "The array grows",
+                  "The extra write is ignored"
+                ],
+                "answer": 0,
+                "explanation": "C does not check bounds, so the result is undefined."
+              },
+              {
+                "id": "c-arr-q4",
+                "text": "What does strlen(\"abc\") return?",
+                "options": [
+                  "3",
+                  "4",
+                  "2",
+                  "0"
+                ],
+                "answer": 0,
+                "explanation": "strlen counts characters up to, but not including, the null terminator."
+              }
+            ],
+            "remediation": {
+              "explanation": "An array is a row of equal-sized lockers numbered from 0. The row has no sign saying where it ends, so if you open locker 10 in a row of 5 you are opening someone else’s locker. A string is a row of lockers whose last locker always holds the end marker.",
+              "steps": [
+                "Declare char s[6] = \"hello\"; and print each character with its index.",
+                "Predict what a[5] does for int a[5] and explain why it is unsafe.",
+                "Write your own strlen using a loop."
+              ]
+            }
+          },
+          {
+            "id": "c-heap",
+            "title": "Dynamic memory",
+            "description": "malloc, calloc, realloc and free; leaks and dangling pointers.",
+            "points": [
+              "malloc reserves bytes on the heap",
+              "Every successful allocation needs one free",
+              "Always check for a NULL return",
+              "Using memory after free is a dangling-pointer bug"
+            ],
+            "summary": [
+              "Local variables live on the stack and vanish when a function returns. Memory you request with malloc lives on the heap until you release it with free. malloc returns NULL on failure, so check the result before use.",
+              "Forgetting to free leaks memory; freeing twice or using memory after free corrupts the program. A good habit is to set a pointer to NULL after freeing it and to pair every allocation with a clearly owned free."
+            ],
+            "flashcards": [
+              {
+                "front": "What does malloc return on failure?",
+                "back": "NULL."
+              },
+              {
+                "front": "What is a memory leak?",
+                "back": "Heap memory that is no longer reachable but was never freed."
+              },
+              {
+                "front": "What is a dangling pointer?",
+                "back": "A pointer to memory that has already been freed."
+              }
+            ],
+            "questions": [
+              {
+                "id": "c-heap-q1",
+                "text": "Which call allocates space for 10 ints on the heap?",
+                "options": [
+                  "malloc(10 * sizeof(int))",
+                  "malloc(10)",
+                  "alloc(int, 10)",
+                  "new int[10]"
+                ],
+                "answer": 0,
+                "explanation": "malloc takes a size in bytes, so multiply by sizeof(int)."
+              },
+              {
+                "id": "c-heap-q2",
+                "text": "What is a memory leak?",
+                "options": [
+                  "Allocated memory that is never released",
+                  "Reading outside an array",
+                  "Freeing memory twice",
+                  "Using an uninitialised variable"
+                ],
+                "answer": 0,
+                "explanation": "A leak occurs when heap memory is lost without being freed."
+              },
+              {
+                "id": "c-heap-q3",
+                "text": "What should you check right after calling malloc?",
+                "options": [
+                  "Whether the result is NULL",
+                  "Whether it is zero-filled",
+                  "Whether it is aligned to 8 bytes",
+                  "Nothing"
+                ],
+                "answer": 0,
+                "explanation": "malloc returns NULL if the request cannot be satisfied."
+              },
+              {
+                "id": "c-heap-q4",
+                "text": "What is wrong with using p after free(p)?",
+                "options": [
+                  "p is dangling and its use is undefined behaviour",
+                  "Nothing, the data is preserved",
+                  "p becomes NULL automatically",
+                  "The program restarts"
+                ],
+                "answer": 0,
+                "explanation": "free does not change p, but the memory it pointed to is no longer yours."
+              }
+            ],
+            "remediation": {
+              "explanation": "The heap is a storage unit you rent. malloc is signing the rental, free is returning the key. Forget to return it and you pay forever (leak). Keep using the unit after returning the key and you are trespassing (dangling pointer).",
+              "steps": [
+                "Allocate an int array with malloc, fill it, print it and free it.",
+                "Add a NULL check and print an error if allocation fails.",
+                "Set the pointer to NULL after free and explain why that helps."
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cpp-cs201",
+    "code": "CS 201",
+    "title": "Object-Oriented Programming in C++",
+    "department": "Computer Science",
+    "credits": 4,
+    "level": "Undergraduate · Year 2",
+    "accent": "#2b5565",
+    "description": "Object-oriented design with C++: classes, inheritance, polymorphism and the Standard Template Library.",
+    "instructorId": "u-rao",
+    "status": "published",
+    "source": {
+      "fileName": "CS201-syllabus.pdf"
+    },
+    "topics": [
+      {
+        "id": "cpp-t1",
+        "title": "Classes and Objects",
+        "subtopics": [
+          {
+            "id": "cpp-class",
+            "title": "Classes and encapsulation",
+            "description": "Defining classes, members, access specifiers and hiding implementation details.",
+            "points": [
+              "A class bundles data and the functions that act on it",
+              "private members are accessible only inside the class",
+              "public members form the interface",
+              "struct defaults to public, class defaults to private"
+            ],
+            "summary": [
+              "A class combines data members and member functions into one type. Access specifiers control visibility: private members can only be used by the class itself, public members form its interface. Hiding data behind functions is called encapsulation and lets you change the implementation without breaking callers.",
+              "In C++ the only difference between struct and class is the default access: struct members are public by default, class members are private. By convention, struct is used for plain data and class for types with behaviour and invariants."
+            ],
+            "flashcards": [
+              {
+                "front": "What is encapsulation?",
+                "back": "Bundling data with its functions and hiding the internals behind a public interface."
+              },
+              {
+                "front": "Default access of a class member?",
+                "back": "private."
+              },
+              {
+                "front": "Default access of a struct member?",
+                "back": "public."
+              }
+            ],
+            "questions": [
+              {
+                "id": "cpp-class-q1",
+                "text": "What is the default access of members in a C++ class?",
+                "options": [
+                  "private",
+                  "public",
+                  "protected",
+                  "There is no default"
+                ],
+                "answer": 0,
+                "explanation": "Members of a class are private unless declared otherwise."
+              },
+              {
+                "id": "cpp-class-q2",
+                "text": "What is the main benefit of encapsulation?",
+                "options": [
+                  "The implementation can change without affecting callers",
+                  "Programs run faster",
+                  "Memory use is reduced",
+                  "Inheritance becomes unnecessary"
+                ],
+                "answer": 0,
+                "explanation": "Callers depend only on the public interface."
+              },
+              {
+                "id": "cpp-class-q3",
+                "text": "How does struct differ from class in C++?",
+                "options": [
+                  "Default member access is public instead of private",
+                  "Structs cannot have functions",
+                  "Structs cannot be inherited",
+                  "Structs are stored on the stack only"
+                ],
+                "answer": 0,
+                "explanation": "The only language-level difference is default access (and default inheritance access)."
+              },
+              {
+                "id": "cpp-class-q4",
+                "text": "Which members can code outside the class access directly?",
+                "options": [
+                  "public members",
+                  "private members",
+                  "All members",
+                  "Only static members"
+                ],
+                "answer": 0,
+                "explanation": "Only public members are accessible from outside the class."
+              }
+            ],
+            "remediation": {
+              "explanation": "Think of a vending machine. You use the buttons (public interface) and never reach into the machinery (private data). The owner can swap the machinery without changing how you use the buttons.",
+              "steps": [
+                "Write a BankAccount class with a private balance and public deposit() and balance() functions.",
+                "Try to access balance directly from main and read the compiler error.",
+                "Change class to struct and note what changes."
+              ]
+            }
+          },
+          {
+            "id": "cpp-ctor",
+            "title": "Constructors and destructors",
+            "description": "Object initialisation, member initialiser lists, destructors and RAII.",
+            "points": [
+              "A constructor runs when an object is created",
+              "Initialiser lists initialise members before the body runs",
+              "A destructor runs when an object’s lifetime ends",
+              "RAII ties resource release to object lifetime"
+            ],
+            "summary": [
+              "A constructor has the class name and no return type; it runs automatically when an object is created and puts it in a valid state. Member initialiser lists (Point(int x, int y) : x_(x), y_(y) {}) initialise members directly and are required for const and reference members.",
+              "A destructor, written ~ClassName(), runs when the object goes out of scope or is deleted. RAII (resource acquisition is initialisation) uses this: acquire a resource in the constructor and release it in the destructor, so cleanup happens automatically even when exceptions occur."
+            ],
+            "flashcards": [
+              {
+                "front": "When does a destructor run?",
+                "back": "When the object’s lifetime ends: leaving scope or delete."
+              },
+              {
+                "front": "What is RAII?",
+                "back": "Tying a resource’s acquisition and release to an object’s constructor and destructor."
+              },
+              {
+                "front": "Why use an initialiser list?",
+                "back": "It initialises members directly, and is required for const and reference members."
+              }
+            ],
+            "questions": [
+              {
+                "id": "cpp-ctor-q1",
+                "text": "When is a destructor called for a local object?",
+                "options": [
+                  "When it goes out of scope",
+                  "When the program starts",
+                  "Only when delete is called",
+                  "Never automatically"
+                ],
+                "answer": 0,
+                "explanation": "Local objects are destroyed automatically at the end of their scope."
+              },
+              {
+                "id": "cpp-ctor-q2",
+                "text": "What does RAII stand for?",
+                "options": [
+                  "Resource Acquisition Is Initialisation",
+                  "Runtime Allocation Is Immediate",
+                  "Reference And Instance Initialisation",
+                  "Resource Allocation In Inheritance"
+                ],
+                "answer": 0,
+                "explanation": "Resources are acquired in the constructor and released in the destructor."
+              },
+              {
+                "id": "cpp-ctor-q3",
+                "text": "Which members must be set in a constructor initialiser list?",
+                "options": [
+                  "const and reference members",
+                  "Only public members",
+                  "Only static members",
+                  "Pointer members"
+                ],
+                "answer": 0,
+                "explanation": "They cannot be assigned after construction, so they must be initialised."
+              },
+              {
+                "id": "cpp-ctor-q4",
+                "text": "What is the return type of a constructor?",
+                "options": [
+                  "It has none",
+                  "void",
+                  "The class type",
+                  "int"
+                ],
+                "answer": 0,
+                "explanation": "Constructors are declared without any return type."
+              }
+            ],
+            "remediation": {
+              "explanation": "A constructor is the check-in desk: everyone arriving is set up properly. A destructor is check-out: it tidies up. RAII says: let the desk do the tidying, instead of relying on people to remember.",
+              "steps": [
+                "Write a class that prints a message in its constructor and destructor and create it in a nested scope.",
+                "Add a const member and set it via an initialiser list.",
+                "Wrap a file handle in a class so it always closes."
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "cpp-t2",
+        "title": "Inheritance and Polymorphism",
+        "subtopics": [
+          {
+            "id": "cpp-inh",
+            "title": "Inheritance",
+            "description": "Base and derived classes, access control in inheritance and constructor order.",
+            "points": [
+              "A derived class reuses and extends a base class",
+              "Base constructors run before derived constructors",
+              "protected members are visible to derived classes",
+              "Use inheritance for \"is-a\" relationships"
+            ],
+            "summary": [
+              "Inheritance lets a derived class reuse and extend a base class: class Dog : public Animal. It models an \"is-a\" relationship; a Dog is an Animal. protected members are accessible inside the class and its derived classes but not from outside.",
+              "When a derived object is created the base-class constructor runs first, then the derived constructor. Destruction happens in the opposite order. Prefer composition (has-a) when the relationship is not truly is-a."
+            ],
+            "flashcards": [
+              {
+                "front": "Which constructor runs first for a derived object?",
+                "back": "The base-class constructor."
+              },
+              {
+                "front": "What does protected allow?",
+                "back": "Access from the class itself and its derived classes, but not from outside."
+              },
+              {
+                "front": "Inheritance models which relationship?",
+                "back": "\"is-a\"."
+              }
+            ],
+            "questions": [
+              {
+                "id": "cpp-inh-q1",
+                "text": "In what order are constructors called when creating a derived object?",
+                "options": [
+                  "Base first, then derived",
+                  "Derived first, then base",
+                  "Only the derived constructor",
+                  "In alphabetical order"
+                ],
+                "answer": 0,
+                "explanation": "The base part must exist before the derived part is initialised."
+              },
+              {
+                "id": "cpp-inh-q2",
+                "text": "Who can access a protected member?",
+                "options": [
+                  "The class and its derived classes",
+                  "Anyone",
+                  "Only the class itself",
+                  "Only friends of main"
+                ],
+                "answer": 0,
+                "explanation": "protected extends private access to derived classes."
+              },
+              {
+                "id": "cpp-inh-q3",
+                "text": "Which relationship does public inheritance model?",
+                "options": [
+                  "is-a",
+                  "has-a",
+                  "uses-a",
+                  "owns-a"
+                ],
+                "answer": 0,
+                "explanation": "Public inheritance means a derived object can be used wherever a base is expected."
+              },
+              {
+                "id": "cpp-inh-q4",
+                "text": "Which is generally preferred when classes are not truly is-a?",
+                "options": [
+                  "Composition",
+                  "Multiple inheritance",
+                  "Global variables",
+                  "Friend functions"
+                ],
+                "answer": 0,
+                "explanation": "Composition models has-a and avoids tight coupling."
+              }
+            ],
+            "remediation": {
+              "explanation": "A Dog is an Animal, so it gets everything an Animal has plus its own extras, just as a student ID card has everything a basic ID has plus a library number. If the relationship reads naturally as \"has a\", such as a Car having an Engine, use a member instead.",
+              "steps": [
+                "Create Animal and Dog classes and print from both constructors to see the order.",
+                "Make a base member protected and use it from the derived class.",
+                "Decide whether Car/Engine should use inheritance or composition and justify it."
+              ]
+            }
+          },
+          {
+            "id": "cpp-virt",
+            "title": "Virtual functions and polymorphism",
+            "description": "Dynamic dispatch, virtual destructors and abstract classes.",
+            "points": [
+              "A virtual function is resolved at run time via the object’s real type",
+              "Calls through base pointers or references need virtual to dispatch correctly",
+              "Base classes with virtual functions need virtual destructors",
+              "A pure virtual function makes a class abstract"
+            ],
+            "summary": [
+              "Marking a base function virtual lets a call through a base pointer or reference run the derived override. This run-time choice is called dynamic dispatch and is the core of polymorphism. Use the override keyword to catch signature mistakes.",
+              "Deleting a derived object through a base pointer requires a virtual destructor, otherwise the derived destructor is skipped. A function declared = 0 is pure virtual; a class with one is abstract and cannot be instantiated, acting as an interface."
+            ],
+            "flashcards": [
+              {
+                "front": "What is dynamic dispatch?",
+                "back": "Choosing which function to call at run time based on the object’s real type."
+              },
+              {
+                "front": "What does = 0 after a function declaration mean?",
+                "back": "It is pure virtual; the class becomes abstract."
+              },
+              {
+                "front": "Why a virtual destructor?",
+                "back": "So deleting through a base pointer runs the derived destructor too."
+              }
+            ],
+            "questions": [
+              {
+                "id": "cpp-virt-q1",
+                "text": "A base-class function is not virtual. A call through a base pointer to a derived object runs which version?",
+                "options": [
+                  "The base-class version",
+                  "The derived version",
+                  "Neither, it is a compile error",
+                  "Both"
+                ],
+                "answer": 0,
+                "explanation": "Without virtual, the function is chosen from the static type of the pointer."
+              },
+              {
+                "id": "cpp-virt-q2",
+                "text": "Why should polymorphic base classes have a virtual destructor?",
+                "options": [
+                  "So derived destructors run when deleting via a base pointer",
+                  "To make objects smaller",
+                  "To allow copying",
+                  "To prevent inheritance"
+                ],
+                "answer": 0,
+                "explanation": "Otherwise deleting through the base pointer is undefined behaviour."
+              },
+              {
+                "id": "cpp-virt-q3",
+                "text": "What is an abstract class?",
+                "options": [
+                  "A class with at least one pure virtual function",
+                  "A class with only private members",
+                  "A class without constructors",
+                  "A class declared in a header"
+                ],
+                "answer": 0,
+                "explanation": "Abstract classes cannot be instantiated and define an interface."
+              },
+              {
+                "id": "cpp-virt-q4",
+                "text": "What does the override keyword do?",
+                "options": [
+                  "Makes the compiler verify that the function overrides a virtual one",
+                  "Makes the function run faster",
+                  "Hides the base function",
+                  "Makes the function static"
+                ],
+                "answer": 0,
+                "explanation": "It turns signature mismatches into compile errors."
+              }
+            ],
+            "remediation": {
+              "explanation": "Imagine a remote control that works with any brand of TV. You press \"power\" and each TV does its own thing. virtual is what makes the button reach the right TV at run time.",
+              "steps": [
+                "Create Shape with virtual area() and Circle/Square overrides; call area() through Shape*.",
+                "Remove virtual and observe the difference.",
+                "Make Shape abstract with area() = 0."
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "cpp-t3",
+        "title": "Standard Template Library",
+        "subtopics": [
+          {
+            "id": "cpp-vec",
+            "title": "Vectors and iterators",
+            "description": "std::vector, dynamic resizing and iterating with iterators and range-for.",
+            "points": [
+              "std::vector is a resizable array",
+              "push_back appends and may reallocate",
+              "Iterators generalise pointers over containers",
+              "Range-based for loops are the simplest way to traverse"
+            ],
+            "summary": [
+              "std::vector stores elements contiguously and grows as needed. push_back appends, size() reports the count and operator[] gives fast indexed access. When capacity is exceeded the vector reallocates, which invalidates existing iterators and references.",
+              "Iterators are pointer-like objects that let algorithms traverse any container. begin() points to the first element and end() one past the last. A range-based for loop (for (auto& x : v)) is the easiest way to visit every element."
+            ],
+            "flashcards": [
+              {
+                "front": "What does end() point to?",
+                "back": "One past the last element."
+              },
+              {
+                "front": "Why can push_back invalidate iterators?",
+                "back": "The vector may reallocate to a larger block."
+              },
+              {
+                "front": "Fastest way to loop over every element?",
+                "back": "A range-based for loop: for (auto& x : v)."
+              }
+            ],
+            "questions": [
+              {
+                "id": "cpp-vec-q1",
+                "text": "What can happen to iterators when push_back triggers a reallocation?",
+                "options": [
+                  "They become invalid",
+                  "They move to the end",
+                  "They stay valid",
+                  "They are converted to pointers"
+                ],
+                "answer": 0,
+                "explanation": "Reallocation moves the elements, so old iterators point to freed memory."
+              },
+              {
+                "id": "cpp-vec-q2",
+                "text": "What does v.end() return?",
+                "options": [
+                  "An iterator one past the last element",
+                  "An iterator to the last element",
+                  "The size of the vector",
+                  "A null pointer"
+                ],
+                "answer": 0,
+                "explanation": "end() is a sentinel and must not be dereferenced."
+              },
+              {
+                "id": "cpp-vec-q3",
+                "text": "Which container is a resizable contiguous array?",
+                "options": [
+                  "std::vector",
+                  "std::list",
+                  "std::map",
+                  "std::set"
+                ],
+                "answer": 0,
+                "explanation": "vector stores its elements contiguously."
+              },
+              {
+                "id": "cpp-vec-q4",
+                "text": "Which loop visits every element of vector v by reference?",
+                "options": [
+                  "for (auto& x : v)",
+                  "for (x in v)",
+                  "foreach (x : v)",
+                  "for (auto x = v)"
+                ],
+                "answer": 0,
+                "explanation": "The range-based for with auto& avoids copying elements."
+              }
+            ],
+            "remediation": {
+              "explanation": "A vector is a row of seats that can be extended by moving everyone to a longer row. If you were holding a note of someone’s seat number (an iterator) before the move, the note is now wrong.",
+              "steps": [
+                "Fill a vector with push_back and print size and capacity after each insert.",
+                "Store begin() in a variable, push_back many items, and explain why it is unsafe.",
+                "Rewrite an index loop as a range-based for."
+              ]
+            }
+          },
+          {
+            "id": "cpp-map",
+            "title": "Maps and algorithms",
+            "description": "std::map and unordered_map, plus sort and find from <algorithm>.",
+            "points": [
+              "std::map stores sorted key-value pairs",
+              "std::unordered_map offers average O(1) lookup by hashing",
+              "operator[] inserts a default value for a missing key",
+              "Algorithms like std::sort work on iterator ranges"
+            ],
+            "summary": [
+              "std::map keeps key-value pairs sorted by key (a balanced tree, O(log n) operations). std::unordered_map hashes keys for average O(1) lookup but has no ordering. Note that m[key] inserts a default-constructed value when the key is missing; use find() or count() to test without inserting.",
+              "The <algorithm> header provides generic functions such as std::sort, std::find and std::count that work on an iterator range [begin, end). Separating containers from algorithms is the central idea of the STL."
+            ],
+            "flashcards": [
+              {
+                "front": "Lookup complexity of std::map?",
+                "back": "O(log n)."
+              },
+              {
+                "front": "What does m[key] do for a missing key?",
+                "back": "Inserts a default value for that key."
+              },
+              {
+                "front": "How do algorithms operate on containers?",
+                "back": "Through iterator ranges [begin, end)."
+              }
+            ],
+            "questions": [
+              {
+                "id": "cpp-map-q1",
+                "text": "What does m[k] do if k is not in a std::map?",
+                "options": [
+                  "Inserts k with a default-constructed value",
+                  "Throws an exception",
+                  "Returns null",
+                  "Does nothing"
+                ],
+                "answer": 0,
+                "explanation": "operator[] always ensures the key exists."
+              },
+              {
+                "id": "cpp-map-q2",
+                "text": "Which container offers average O(1) lookup by key?",
+                "options": [
+                  "std::unordered_map",
+                  "std::map",
+                  "std::vector",
+                  "std::set"
+                ],
+                "answer": 0,
+                "explanation": "unordered_map uses hashing."
+              },
+              {
+                "id": "cpp-map-q3",
+                "text": "How is std::map ordered?",
+                "options": [
+                  "By key",
+                  "By insertion time",
+                  "By value",
+                  "Randomly"
+                ],
+                "answer": 0,
+                "explanation": "map keeps keys sorted."
+              },
+              {
+                "id": "cpp-map-q4",
+                "text": "Which call sorts a vector v ascending?",
+                "options": [
+                  "std::sort(v.begin(), v.end())",
+                  "v.sort()",
+                  "std::sort(v)",
+                  "sort(v.end(), v.begin())"
+                ],
+                "answer": 0,
+                "explanation": "std::sort takes a begin/end iterator pair."
+              }
+            ],
+            "remediation": {
+              "explanation": "A map is a dictionary: look up a word, get its meaning. std::map keeps the words alphabetised; unordered_map is a filing cabinet that jumps straight to the right drawer. Algorithms are tools that work on any shelf you point them at.",
+              "steps": [
+                "Count word frequencies using std::unordered_map.",
+                "Show the difference between m[k] and m.find(k) for a missing key.",
+                "Sort a vector of structs by one field using std::sort."
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "econ-101",
+    "code": "ECON 101",
+    "title": "Principles of Microeconomics",
+    "department": "Economics",
+    "credits": 3,
+    "level": "Undergraduate · Year 1",
+    "accent": "#4d6b2f",
+    "description": "How individuals and firms make decisions, and how markets coordinate them. Demand, supply, elasticity and market structures.",
+    "instructorId": "u-lee",
+    "status": "published",
+    "source": {
+      "fileName": "ECON101-outline.docx"
+    },
+    "topics": [
+      {
+        "id": "econ-t1",
+        "title": "Supply and Demand",
+        "subtopics": [
+          {
+            "id": "econ-dem",
+            "title": "Demand",
+            "description": "The law of demand, the demand curve and what shifts it.",
+            "points": [
+              "Law of demand: higher price, lower quantity demanded",
+              "A price change moves along the curve",
+              "Income, tastes and related goods shift the curve",
+              "Normal goods rise with income; inferior goods fall"
+            ],
+            "summary": [
+              "The law of demand says that, other things equal, a higher price reduces the quantity demanded. This is shown as a downward-sloping demand curve. A change in the good’s own price causes a movement along the curve.",
+              "A change in anything else (consumer income, tastes, the price of substitutes or complements, expectations, the number of buyers) shifts the whole curve. For a normal good, higher income raises demand; for an inferior good, higher income lowers it."
+            ],
+            "flashcards": [
+              {
+                "front": "What is the law of demand?",
+                "back": "Other things equal, a higher price leads to a lower quantity demanded."
+              },
+              {
+                "front": "What causes movement along a demand curve?",
+                "back": "A change in the good’s own price."
+              },
+              {
+                "front": "What is an inferior good?",
+                "back": "A good whose demand falls when consumer income rises."
+              }
+            ],
+            "questions": [
+              {
+                "id": "econ-dem-q1",
+                "text": "A rise in the price of a good causes which change on its demand curve?",
+                "options": [
+                  "A movement along the curve to a lower quantity",
+                  "A rightward shift",
+                  "A leftward shift",
+                  "No change"
+                ],
+                "answer": 0,
+                "explanation": "Own-price changes move along the curve; they do not shift it."
+              },
+              {
+                "id": "econ-dem-q2",
+                "text": "Which of the following shifts the demand curve for coffee to the right?",
+                "options": [
+                  "A rise in the price of tea, a substitute",
+                  "A rise in the price of coffee",
+                  "A fall in the price of coffee",
+                  "A rise in the cost of coffee beans"
+                ],
+                "answer": 0,
+                "explanation": "A pricier substitute pushes buyers toward coffee at every price."
+              },
+              {
+                "id": "econ-dem-q3",
+                "text": "What happens to demand for an inferior good when income rises?",
+                "options": [
+                  "It falls",
+                  "It rises",
+                  "It is unchanged",
+                  "It becomes perfectly elastic"
+                ],
+                "answer": 0,
+                "explanation": "By definition, inferior goods lose demand as income grows."
+              },
+              {
+                "id": "econ-dem-q4",
+                "text": "What is held constant when drawing a demand curve?",
+                "options": [
+                  "Everything except the good’s own price",
+                  "The quantity supplied",
+                  "Consumer income only",
+                  "Nothing"
+                ],
+                "answer": 0,
+                "explanation": "This is the ceteris paribus assumption."
+              }
+            ],
+            "remediation": {
+              "explanation": "Two different questions: \"What if the price changes?\" (slide along the same curve) versus \"What if something else changes?\" (the whole curve moves). Ask which one the question is about before you draw anything.",
+              "steps": [
+                "Draw a demand curve and mark a movement caused by a price fall.",
+                "Shift the curve for a rise in income of a normal good.",
+                "Name one inferior good and explain why demand for it falls as incomes rise."
+              ]
+            }
+          },
+          {
+            "id": "econ-sup",
+            "title": "Supply",
+            "description": "The law of supply, the supply curve and what shifts it.",
+            "points": [
+              "Law of supply: higher price, higher quantity supplied",
+              "Input costs, technology and taxes shift supply",
+              "A price change moves along the curve",
+              "The number of sellers affects market supply"
+            ],
+            "summary": [
+              "The law of supply says that a higher price increases the quantity producers are willing to supply, giving an upward-sloping supply curve. Again, a change in the good’s own price moves along the curve.",
+              "Supply shifts when production conditions change: input prices, technology, taxes and subsidies, expectations and the number of sellers. Better technology or cheaper inputs shift supply right; higher costs shift it left."
+            ],
+            "flashcards": [
+              {
+                "front": "What is the law of supply?",
+                "back": "A higher price leads to a higher quantity supplied."
+              },
+              {
+                "front": "Cheaper inputs do what to supply?",
+                "back": "Shift the supply curve to the right (increase supply)."
+              },
+              {
+                "front": "Name two supply shifters.",
+                "back": "Input prices and technology (also taxes, subsidies, number of sellers)."
+              }
+            ],
+            "questions": [
+              {
+                "id": "econ-sup-q1",
+                "text": "Which event shifts the supply curve of bread to the left?",
+                "options": [
+                  "A rise in the price of flour",
+                  "A rise in the price of bread",
+                  "Improved baking technology",
+                  "A fall in the price of flour"
+                ],
+                "answer": 0,
+                "explanation": "Higher input costs reduce supply at every price."
+              },
+              {
+                "id": "econ-sup-q2",
+                "text": "A higher market price leads to what for quantity supplied?",
+                "options": [
+                  "It rises, a movement along the supply curve",
+                  "It falls",
+                  "The supply curve shifts left",
+                  "It stays fixed"
+                ],
+                "answer": 0,
+                "explanation": "The law of supply is a movement along the curve."
+              },
+              {
+                "id": "econ-sup-q3",
+                "text": "What does a per-unit tax on producers do to supply?",
+                "options": [
+                  "Shifts it to the left",
+                  "Shifts it to the right",
+                  "Has no effect",
+                  "Makes it perfectly elastic"
+                ],
+                "answer": 0,
+                "explanation": "The tax raises per-unit cost, so less is supplied at each price."
+              },
+              {
+                "id": "econ-sup-q4",
+                "text": "What happens to market supply when more firms enter the market?",
+                "options": [
+                  "It increases",
+                  "It decreases",
+                  "It is unchanged",
+                  "It becomes vertical"
+                ],
+                "answer": 0,
+                "explanation": "More sellers means more quantity at each price."
+              }
+            ],
+            "remediation": {
+              "explanation": "Supply is about the seller’s side: costs and capabilities. If it gets cheaper or easier to produce, sellers offer more at every price (shift right). If it gets pricier, they offer less (shift left).",
+              "steps": [
+                "Sketch a supply curve and shift it for improved technology.",
+                "List three things that would shift supply of wheat.",
+                "Distinguish \"quantity supplied\" from \"supply\" in one sentence."
+              ]
+            }
+          },
+          {
+            "id": "econ-eq",
+            "title": "Market equilibrium",
+            "description": "How price and quantity are determined where supply meets demand.",
+            "points": [
+              "Equilibrium is where quantity demanded equals quantity supplied",
+              "Above equilibrium there is a surplus; below it a shortage",
+              "Prices adjust to eliminate surpluses and shortages",
+              "Shifts in supply or demand create a new equilibrium"
+            ],
+            "summary": [
+              "Market equilibrium is the price at which quantity demanded equals quantity supplied. At a price above equilibrium there is a surplus and sellers cut prices; below equilibrium there is a shortage and prices are bid up. The price adjusts until the market clears.",
+              "When demand or supply shifts, the equilibrium moves. A rightward demand shift raises both price and quantity. A leftward supply shift raises the price and lowers the quantity."
+            ],
+            "flashcards": [
+              {
+                "front": "What is a surplus?",
+                "back": "Quantity supplied exceeds quantity demanded, at a price above equilibrium."
+              },
+              {
+                "front": "Demand shifts right: effect on equilibrium?",
+                "back": "Both price and quantity rise."
+              },
+              {
+                "front": "Supply shifts left: effect on equilibrium?",
+                "back": "Price rises and quantity falls."
+              }
+            ],
+            "questions": [
+              {
+                "id": "econ-eq-q1",
+                "text": "At a price above equilibrium, the market has:",
+                "options": [
+                  "A surplus",
+                  "A shortage",
+                  "Exact balance",
+                  "Zero demand"
+                ],
+                "answer": 0,
+                "explanation": "Sellers want to sell more than buyers want to buy, which pushes the price down."
+              },
+              {
+                "id": "econ-eq-q2",
+                "text": "Demand increases while supply is unchanged. What happens to the equilibrium?",
+                "options": [
+                  "Price and quantity both rise",
+                  "Price rises, quantity falls",
+                  "Price falls, quantity rises",
+                  "Both fall"
+                ],
+                "answer": 0,
+                "explanation": "The new intersection lies up and to the right."
+              },
+              {
+                "id": "econ-eq-q3",
+                "text": "Supply decreases while demand is unchanged. What happens to the equilibrium?",
+                "options": [
+                  "Price rises and quantity falls",
+                  "Price and quantity both rise",
+                  "Price falls and quantity rises",
+                  "Nothing"
+                ],
+                "answer": 0,
+                "explanation": "The new intersection lies up and to the left."
+              },
+              {
+                "id": "econ-eq-q4",
+                "text": "What drives the market toward equilibrium?",
+                "options": [
+                  "Price adjustments in response to surpluses and shortages",
+                  "Government orders",
+                  "Fixed quotas",
+                  "Advertising"
+                ],
+                "answer": 0,
+                "explanation": "Competitive pressure moves the price toward the clearing level."
+              }
+            ],
+            "remediation": {
+              "explanation": "Think of an auction. If too many people want the item, the bid rises; if nobody bids, the price drops. The equilibrium is where the bidding settles because buyers and sellers agree.",
+              "steps": [
+                "Draw supply and demand, mark equilibrium, then mark a price above and below it.",
+                "Shift demand right and trace the new equilibrium.",
+                "Do the same for a supply shift left and compare the results."
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "econ-t2",
+        "title": "Elasticity and Welfare",
+        "subtopics": [
+          {
+            "id": "econ-ela",
+            "title": "Price elasticity of demand",
+            "description": "Measuring responsiveness, and the link between elasticity and revenue.",
+            "points": [
+              "Elasticity = % change in quantity ÷ % change in price",
+              "Elastic when the magnitude is greater than 1",
+              "Substitutes and time make demand more elastic",
+              "Raising price lowers revenue when demand is elastic"
+            ],
+            "summary": [
+              "Price elasticity of demand measures how strongly quantity demanded responds to a price change: the percentage change in quantity divided by the percentage change in price. If the magnitude is greater than one, demand is elastic; below one, inelastic.",
+              "Demand tends to be more elastic when close substitutes exist, when the good is a luxury, and over longer time horizons. If demand is elastic, a price rise cuts total revenue; if inelastic, a price rise increases it."
+            ],
+            "flashcards": [
+              {
+                "front": "Formula for price elasticity of demand?",
+                "back": "% change in quantity demanded ÷ % change in price."
+              },
+              {
+                "front": "Elastic demand means?",
+                "back": "Magnitude of elasticity is greater than 1; quantity responds strongly to price."
+              },
+              {
+                "front": "Price rises and demand is inelastic: revenue?",
+                "back": "Revenue rises."
+              }
+            ],
+            "questions": [
+              {
+                "id": "econ-ela-q1",
+                "text": "Price rises 10% and quantity demanded falls 20%. The elasticity magnitude is:",
+                "options": [
+                  "2",
+                  "0.5",
+                  "10",
+                  "30"
+                ],
+                "answer": 0,
+                "explanation": "20% ÷ 10% = 2, so demand is elastic."
+              },
+              {
+                "id": "econ-ela-q2",
+                "text": "Which factor makes demand more elastic?",
+                "options": [
+                  "Availability of close substitutes",
+                  "Being a necessity",
+                  "A short time period",
+                  "Having no alternatives"
+                ],
+                "answer": 0,
+                "explanation": "Substitutes let consumers switch easily when the price rises."
+              },
+              {
+                "id": "econ-ela-q3",
+                "text": "If demand is elastic and a firm raises its price, total revenue will:",
+                "options": [
+                  "Fall",
+                  "Rise",
+                  "Stay the same",
+                  "Double"
+                ],
+                "answer": 0,
+                "explanation": "The percentage fall in quantity outweighs the percentage rise in price."
+              },
+              {
+                "id": "econ-ela-q4",
+                "text": "Demand with elasticity of 0.4 is called:",
+                "options": [
+                  "Inelastic",
+                  "Elastic",
+                  "Unit elastic",
+                  "Perfectly elastic"
+                ],
+                "answer": 0,
+                "explanation": "Magnitudes below one are inelastic."
+              }
+            ],
+            "remediation": {
+              "explanation": "Elasticity asks \"how much do customers care about the price?\". Insulin buyers barely react to a price rise (inelastic). Shoppers choosing between two brands of juice react a lot (elastic).",
+              "steps": [
+                "Compute elasticity for: price +5%, quantity −15%.",
+                "Classify milk, a luxury watch and petrol as elastic or inelastic and justify each.",
+                "Explain what happens to revenue in each case when price rises."
+              ]
+            }
+          },
+          {
+            "id": "econ-surplus",
+            "title": "Consumer and producer surplus",
+            "description": "Welfare measures for buyers and sellers, and why taxes create deadweight loss.",
+            "points": [
+              "Consumer surplus = willingness to pay minus price paid",
+              "Producer surplus = price received minus cost",
+              "Total surplus is maximised at equilibrium",
+              "A tax shrinks trade and creates deadweight loss"
+            ],
+            "summary": [
+              "Consumer surplus is the difference between what buyers are willing to pay and what they actually pay; producer surplus is the difference between the price sellers receive and their cost. At competitive equilibrium the sum of both (total surplus) is as large as it can be.",
+              "A tax drives a wedge between what buyers pay and sellers receive, reducing the quantity traded. The surplus lost on trades that no longer happen is the deadweight loss."
+            ],
+            "flashcards": [
+              {
+                "front": "Consumer surplus?",
+                "back": "Willingness to pay minus the price paid."
+              },
+              {
+                "front": "Where is total surplus maximised?",
+                "back": "At the competitive market equilibrium."
+              },
+              {
+                "front": "Deadweight loss?",
+                "back": "The surplus lost on trades that no longer occur because of a tax or other distortion."
+              }
+            ],
+            "questions": [
+              {
+                "id": "econ-surplus-q1",
+                "text": "A buyer is willing to pay 50 and pays 35. Their consumer surplus is:",
+                "options": [
+                  "15",
+                  "35",
+                  "50",
+                  "85"
+                ],
+                "answer": 0,
+                "explanation": "50 − 35 = 15."
+              },
+              {
+                "id": "econ-surplus-q2",
+                "text": "Total surplus is greatest:",
+                "options": [
+                  "At the market equilibrium quantity",
+                  "Below the equilibrium quantity",
+                  "Above the equilibrium quantity",
+                  "At the maximum price"
+                ],
+                "answer": 0,
+                "explanation": "Every trade worth making occurs and none that is not."
+              },
+              {
+                "id": "econ-surplus-q3",
+                "text": "What is deadweight loss?",
+                "options": [
+                  "Surplus lost on trades that do not happen because of a distortion",
+                  "Tax revenue collected",
+                  "Producer profit",
+                  "Consumer income"
+                ],
+                "answer": 0,
+                "explanation": "Neither buyers, sellers, nor the government captures it."
+              },
+              {
+                "id": "econ-surplus-q4",
+                "text": "Producer surplus is:",
+                "options": [
+                  "Price received minus the cost of production",
+                  "Price paid minus willingness to pay",
+                  "Total revenue",
+                  "Total cost"
+                ],
+                "answer": 0,
+                "explanation": "It measures the gain of sellers from trade."
+              }
+            ],
+            "remediation": {
+              "explanation": "Surplus is the \"feel-good\" gain from a deal. You were ready to pay 50 and only paid 35: you gained 15. Sellers gain the same way. Deadweight loss is deals that would have made both sides better off but were killed by a tax.",
+              "steps": [
+                "Pick a demand curve and shade consumer surplus at a price of your choice.",
+                "Add a tax and shade the deadweight loss triangle.",
+                "Explain in one sentence why total surplus falls with a tax."
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

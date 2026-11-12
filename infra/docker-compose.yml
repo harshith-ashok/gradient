@@ -1,0 +1,58 @@
+name: gradient
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gradient
+      POSTGRES_PASSWORD: gradient
+      POSTGRES_DB: gradient
+    ports: ["5433:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gradient"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6380:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  chromadb:
+    image: chromadb/chroma:latest
+    ports: ["8001:8000"]
+    volumes: [chroma:/chroma/chroma]
+
+  backend:
+    build: ../backend
+    environment:
+      ENV: dev
+      DATABASE_URL: postgresql+psycopg://gradient:gradient@postgres:5432/gradient
+      REDIS_URL: redis://redis:6379/0
+      CORS_ORIGINS: http://localhost:3000
+      DEMO_MODE: "true"
+    command: >
+      sh -c "alembic upgrade head && python -m app.seed.run &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes: ["../backend/app:/app/app"]
+    ports: ["8010:8000"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+
+  frontend:
+    build: ../frontend
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:8000
+    ports: ["3000:3000"]
+    depends_on: [backend]
+
+volumes:
+  pgdata:
+  chroma:

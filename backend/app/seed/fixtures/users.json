@@ -1,0 +1,12 @@
+[
+  {"id": "u-meera", "name": "Meera Iyer", "email": "meera.iyer@gradient.edu", "password": "student123", "role": "student", "student_id": "GU-24-0112", "program": "B.Sc. Computer Science", "year": "Year 1"},
+  {"id": "u-fatima", "name": "Fatima Khan", "email": "fatima.khan@gradient.edu", "password": "student123", "role": "student", "student_id": "GU-24-0231", "program": "B.Sc. Computer Science", "year": "Year 1"},
+  {"id": "u-daniel", "name": "Daniel Okafor", "email": "daniel.okafor@gradient.edu", "password": "student123", "role": "student", "student_id": "GU-23-0408", "program": "B.Tech. Information Technology", "year": "Year 2"},
+  {"id": "u-sofia", "name": "Sofia Alvarez", "email": "sofia.alvarez@gradient.edu", "password": "student123", "role": "student", "student_id": "GU-24-0377", "program": "B.Sc. Computer Science", "year": "Year 1"},
+  {"id": "u-kenji", "name": "Kenji Watanabe", "email": "kenji.watanabe@gradient.edu", "password": "student123", "role": "student", "student_id": "GU-23-0519", "program": "B.A. Economics", "year": "Year 2"},
+  {"id": "u-priya", "name": "Priya Nair", "email": "priya.nair@gradient.edu", "password": "student123", "role": "student", "student_id": "GU-23-0290", "program": "B.Tech. Information Technology", "year": "Year 2"},
+  {"id": "u-lucas", "name": "Lucas Meyer", "email": "lucas.meyer@gradient.edu", "password": "student123", "role": "student", "student_id": "GU-24-0455", "program": "B.Sc. Engineering", "year": "Year 1"},
+  {"id": "u-rao", "name": "Dr. Ananya Rao", "email": "ananya.rao@gradient.edu", "password": "faculty123", "role": "faculty", "title": "Associate Professor", "department": "Computer Science"},
+  {"id": "u-lee", "name": "Prof. Marcus Lee", "email": "marcus.lee@gradient.edu", "password": "faculty123", "role": "faculty", "title": "Professor", "department": "Economics"},
+  {"id": "u-hale", "name": "Prof. Richard Hale", "email": "richard.hale@gradient.edu", "password": "admin123", "role": "admin", "title": "Dean of Academic Affairs", "department": "Office of the Dean"}
+]
