@@ -17,6 +17,18 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     cookie_domain: str | None = None
 
+    # Sign-in throttling: failures per account+address, and per address, inside the window.
+    login_max_failures: int = 5
+    login_max_failures_per_ip: int = 30
+    login_window_minutes: int = 15
+    # Read the client address from X-Forwarded-For (set when running behind the Next.js proxy).
+    trust_forwarded_for: bool = False
+    log_json: bool = False
+    # Request and warning logs kept for the admin dashboard; older rows are deleted.
+    log_retention_days: int = 14
+    # Which process this is, shown on log lines: api or worker.
+    log_source: str = "api"
+
     cors_origins: str = "http://localhost:3000"
     demo_mode: bool = True
     # Plan days roll over at midnight in this timezone.

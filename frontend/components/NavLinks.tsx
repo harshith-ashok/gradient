@@ -16,7 +16,12 @@ const NAV: Record<Role, { to: string; label: string; exact?: boolean }[]> = {
     { to: "/faculty/new", label: "New course" },
   ],
   admin: [
-    { to: "/admin", label: "Student progress", exact: true },
+    { to: "/admin", label: "Students", exact: true },
+    { to: "/admin/users", label: "Users" },
+    { to: "/admin/access", label: "Roles & endpoints" },
+    { to: "/admin/logs", label: "Logs" },
+    { to: "/admin/issues", label: "Issues" },
+    { to: "/admin/system", label: "System" },
     { to: "/admin/settings", label: "Pass mark" },
   ],
 };

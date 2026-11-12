@@ -37,6 +37,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       CORS_ORIGINS: http://localhost:3000
       DEMO_MODE: "true"
+      TRUST_FORWARDED_FOR: "true"  # the client address arrives via the Next.js proxy
       # AI pipeline: the model server runs on your own machine (Tailscale), never a hosted API.
       OLLAMA_URL: ${OLLAMA_URL:-http://100.74.98.40:11434}
       LLM_PROVIDER: ${LLM_PROVIDER:-ollama}  # `fake` gives deterministic replies for browser tests

@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 
 os.environ["ENV"] = "dev"
 os.environ["DATABASE_URL"] = "sqlite://"
@@ -15,6 +16,7 @@ from app.core.db import Base, get_db
 from app.core.deps import require_role
 from app.main import create_app
 from app.seed import run as seed
+from app.services import monitor
 
 
 @pytest.fixture
@@ -28,9 +30,16 @@ def db():
 
 
 @pytest.fixture
-def app(db) -> FastAPI:
+def app(db, monkeypatch) -> FastAPI:
     app = create_app()
     app.dependency_overrides[get_db] = lambda: db
+
+    # Monitoring writes (request logs, issues) go to the test database too.
+    @contextmanager
+    def _monitor_session():
+        yield db
+
+    monkeypatch.setattr(monitor, "open_session", _monitor_session)
 
     # Minimal role-gated routes so RBAC can be tested before real feature routes exist.
     for role in ("student", "faculty", "admin"):
@@ -74,6 +83,17 @@ class FakeCache:
 
     def set(self, key, value, ex=None):
         self.store[key] = value
+
+    def incr(self, key):
+        self.store[key] = str(int(self.store.get(key, 0)) + 1)
+        return int(self.store[key])
+
+    def expire(self, key, seconds):
+        self.ttls = getattr(self, "ttls", {})
+        self.ttls[key] = seconds
+
+    def ttl(self, key):
+        return getattr(self, "ttls", {}).get(key, 1)
 
     def delete(self, *keys):
         for k in keys:

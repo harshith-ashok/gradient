@@ -69,3 +69,10 @@ export function taskHref(courseId: string, t: { type: TaskType; subtopic_id?: st
   if (t.type === "topic_quiz") return `${base}/quiz?kind=topic&topicId=${t.topic_id}`;
   return `${base}/quiz?kind=subtopic&subtopicId=${t.subtopic_id}`;
 }
+
+/** Timestamp in UTC with seconds ("12 Nov, 17:09:56"). Fixed zone so server and browser render the same text. */
+export const fmtUtc = (ts: string) => {
+  const d = new Date(ts);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}, ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;
+};

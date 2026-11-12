@@ -31,6 +31,14 @@ class EmbeddingUnavailable(LLMError):
 
 
 class LLM(ABC):
+    last_usage: dict = {}
+
+    def _trace(self, schema: str, attempt: int, started: float, outcome: str) -> None:
+        """One log line per model call: what it was for, how long it took, tokens in and out."""
+        ms = round((time.perf_counter() - started) * 1000)
+        info = {"schema": schema, "attempt": attempt + 1, "outcome": outcome, "ms": ms, **self.last_usage}
+        log.info("llm call %s %s in %dms", schema, outcome, ms, extra={"llm": info})
+
     @abstractmethod
     def _chat(self, messages: list[dict], schema: dict | None, think: str, temperature: float) -> str: ...
 
@@ -50,10 +58,19 @@ class LLM(ABC):
         json_schema = schema.model_json_schema()
         last_error = ""
         for attempt in range(2):  # the original try plus one repair
-            raw = self._chat(messages, json_schema, think, temperature)
+            started = time.perf_counter()
+            self.last_usage = {}
             try:
-                return schema.model_validate(json.loads(raw))
+                raw = self._chat(messages, json_schema, think, temperature)
+            except LLMError:
+                self._trace(schema.__name__, attempt, started, "unreachable")
+                raise
+            try:
+                out = schema.model_validate(json.loads(raw))
+                self._trace(schema.__name__, attempt, started, "ok")
+                return out
             except (json.JSONDecodeError, ValidationError) as e:
+                self._trace(schema.__name__, attempt, started, "invalid")
                 last_error = str(e)[:600]
                 log.warning("invalid model output (attempt %d): %s", attempt + 1, last_error)
                 messages = [
@@ -97,7 +114,9 @@ class OllamaLLM(LLM):
         }
         if schema:
             body["format"] = schema
-        return self._post("/api/chat", body)["message"]["content"]
+        res = self._post("/api/chat", body)
+        self.last_usage = {"prompt_tokens": res.get("prompt_eval_count"), "output_tokens": res.get("eval_count")}
+        return res["message"]["content"]
 
     def ocr(self, image_png: bytes) -> str:
         body = {

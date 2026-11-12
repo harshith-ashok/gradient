@@ -148,3 +148,31 @@ class StatusChange(BaseModel):
 class StatusOut(BaseModel):
     id: str
     status: CourseStatus
+
+
+class ImportProblem(BaseModel):
+    row: int
+    message: str
+
+
+class ImportedSubtopic(BaseModel):
+    topic: str
+    subtopic: str
+    added: int
+    updated: int
+    removed: int
+
+
+class QuestionImportReport(BaseModel):
+    dry_run: bool
+    saved: bool = Field(description="True only when the file was valid and changes were written")
+    mode: Literal["merge", "replace"]
+    added: int
+    updated: int
+    unchanged: int
+    removed: int
+    skipped: int = Field(description="Rows skipped because the question already exists")
+    errors: list[ImportProblem]
+    total_errors: int
+    warnings: list[str]
+    subtopics: list[ImportedSubtopic]

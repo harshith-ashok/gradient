@@ -4,7 +4,9 @@ import logging
 import signal
 import time
 
+from app.core.config import get_settings
 from app.core.db import session_factory
+from app.core.observability import configure_logging
 from app.services import jobs
 from app.services.pipeline import HANDLERS
 
@@ -31,7 +33,8 @@ def run_once() -> bool:
 
 
 def main(poll_seconds: float = 1.0) -> None:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
+    get_settings().log_source = "worker"  # tags its log lines and issues in the admin dashboard
+    configure_logging(get_settings().log_json)
     signal.signal(signal.SIGTERM, _handle_signal)
     signal.signal(signal.SIGINT, _handle_signal)
     with session_factory()() as db:

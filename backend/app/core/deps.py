@@ -34,4 +34,5 @@ def require_role(*roles: str) -> Callable[[User], User]:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "You do not have access to this area.")
         return user
 
+    checker.allowed_roles = roles  # type: ignore[attr-defined]  # read by the admin endpoint list
     return checker

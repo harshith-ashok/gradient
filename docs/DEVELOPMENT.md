@@ -118,3 +118,80 @@ text unless "Replace what is already written" is ticked.
 
 `make e2e-faculty` runs the faculty browser test. It restarts the backend and worker with
 `LLM_PROVIDER=fake` (deterministic replies, no model server), runs the test, and restarts them normally.
+
+## Hardening (Phase 7)
+
+- **Sign-in throttling** (`app/core/ratelimit.py`): only wrong passwords or unknown accounts count (not a
+  portal mismatch). 5 failures per account and address, 30 per address, per 15 minutes; a correct login clears
+  the account counter, but a locked-out caller gets 429 even with the right password. Settings:
+  `LOGIN_MAX_FAILURES`, `LOGIN_MAX_FAILURES_PER_IP`, `LOGIN_WINDOW_MINUTES`. Redis down means no throttling,
+  never a failed login. `TRUST_FORWARDED_FOR=true` is set in both compose files because the browser reaches the
+  API through the Next.js proxy; do not enable it when the API is exposed directly.
+- **Role audit** (`tests/test_hardening.py`): the test walks every route in the OpenAPI schema and asserts it
+  is 401 without a session and 403 for every role it is not meant for, so a new route without a guard fails CI.
+- **Request ids and logs**: every response carries `X-Request-ID` (a caller-supplied id is kept only if it is
+  8 to 64 safe characters). Set `LOG_JSON=true` for one JSON object per line with the id, status and duration.
+- **Model calls**: each call logs schema, attempt, outcome (`ok`, `invalid`, `unreachable`), milliseconds and
+  prompt/output token counts (`extra.llm` in JSON logs).
+- **Headers and CORS**: `nosniff`, `X-Frame-Options: DENY`, referrer and permissions policies on both the API
+  and the web app; API responses are `no-store`; CORS allows only the configured origin and the methods and
+  headers the app uses. There is no Content-Security-Policy yet.
+- **Production**: see the README. `make backup` dumps Postgres and uploads. `python -m scripts.create_user`
+  makes the first admin (the demo seed does not run in production).
+- **CI** runs backend tests, the contract and typecheck checks, and a browser job against the whole stack on the
+  fake model (`LLM_PROVIDER=fake`). With a real model the AI planner may reorder a new student's plan, so the
+  student journey is only deterministic on the fake one.
+
+## Question sheets (Excel)
+
+In the course editor, **Import or export questions (Excel)** (faculty who own the course, and admins):
+
+- **Export** downloads one `.xlsx` with a row per question: Topic, Sub-topic, Level, Question, Option A to
+  Option J (as many as the course needs, at least four), Correct answer (a letter), Explanation, Question ID.
+  **Blank template** gives the same layout with two example rows and instructions.
+- **Import** reads the same layout. Rows are matched to sub-topics by title (capitals and spacing ignored;
+  Topic may be blank when the sub-topic title is unique) and to existing questions by Question ID.
+  *Add and update* never deletes. *Replace* makes each sub-topic that appears in the file contain exactly the
+  file's questions (matching by ID, then by identical text, so ids and history links survive); sub-topics not in the
+  file are untouched. Duplicate text in a sub-topic is skipped, not added twice.
+- **All or nothing.** Any bad row (unknown sub-topic, fewer than two options, repeated options, a correct answer that
+  is not a filled option, a bad level or Question ID) blocks the whole import and is listed with its row number.
+  **Check file** runs the same checks and shows what would change without saving.
+- Safety: `.xlsx` only (not `.xls` or `.csv`), at most `MAX_UPLOAD_MB` and 5000 rows; formulas are never evaluated
+  (a formula cell reads as empty) and exported text that starts with `=` is written as text.
+- Imported questions are human-written, so they skip the AI's blind-answer check. Unsaved editor changes are saved
+  first, because saving the editor replaces a sub-topic's questions.
+
+API: `GET /faculty/courses/{id}/questions.xlsx`, `GET /faculty/questions/template.xlsx`,
+`POST /faculty/courses/{id}/questions/import` (multipart: `file`, `mode`, `dry_run`).
+
+## Admin tools
+
+Sign in as an admin. The top bar has **Users**, **Roles & endpoints**, **Logs**, **Issues** and **System**
+next to the student progress and pass mark pages.
+
+- **Users** (`/admin/users`): search and filter, create an account, change a role, deactivate or reactivate,
+  reset a password. A deactivated user is signed out at once. You cannot change your own role, deactivate
+  yourself, or remove the last active admin. Accounts are never hard-deleted from the UI (that would take
+  their quiz history with them); deactivate instead.
+- **Roles & endpoints** (`/admin/access`): the three roles are fixed (they are a database constraint). The
+  endpoint table is built from the real route guards, so it cannot drift from what the server enforces, and
+  shows calls, 4xx, 5xx and response times per route for the last 24 hours.
+- **Logs** (`/admin/logs`): every API request (method, route, status, time, who) plus warnings and errors from
+  the API and the AI worker, and an audit trail of admin changes. Filter by text, path, request id, level,
+  status, source and time; "Live" refreshes every 5 seconds. Request ids match the `X-Request-ID` header and
+  the JSON logs, so a user's error report leads straight to its lines.
+- **Issues** (`/admin/issues`): unhandled exceptions grouped by type and the file and function that raised
+  them, with the stack trace of the latest 25 occurrences, the request and user for each, a status (open,
+  resolved, ignored) and a note. A resolved issue reopens by itself if it happens again. A crash in a request
+  returns only `{"detail", "request_id"}` to the caller; the trace stays in the dashboard.
+- **System** (`/admin/system`): Postgres and Redis state, a button to check the model server, the AI job queue
+  and failed jobs with their reasons, and a 24-hour traffic chart.
+
+What is stored: method, route template, status, duration, request id and user id. Never request bodies,
+query strings, headers or cookies. Exception text is scrubbed of password hashes, tokens and `password=`
+style values before saving. Rows older than `LOG_RETENTION_DAYS` (default 14) are deleted. Saving a log row
+can never fail a request: errors writing to the log go to stderr only. Health checks and the session
+check the web app makes on every page are not stored.
+
+`python -m scripts.delete_users e2e-` (dev only) removes accounts by email prefix; the admin browser test uses it.

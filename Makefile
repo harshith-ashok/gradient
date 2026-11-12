@@ -1,6 +1,6 @@
 COMPOSE = docker compose -f infra/docker-compose.yml
 
-.PHONY: up down logs db migrate seed test e2e e2e-faculty openapi lint worker ai-check
+.PHONY: up down logs db migrate seed test e2e e2e-faculty backup openapi lint worker ai-check
 up:        ## build and start everything
 	$(COMPOSE) up --build -d
 down:
@@ -21,6 +21,8 @@ e2e-faculty: ## faculty journey on the fake model (restarts the stack with LLM_P
 	LLM_PROVIDER=fake docker compose -p gradient -f infra/docker-compose.yml up -d backend worker
 	sleep 8
 	cd frontend && E2E_FAKE_AI=1 npx playwright test faculty-journey; code=$$?; cd .. && docker compose -p gradient -f infra/docker-compose.yml up -d backend worker; exit $$code
+backup:    ## dump Postgres and uploads of the production stack to ./backups
+	infra/backup.sh gradient-prod infra/docker-compose.prod.yml
 worker:    ## run the AI job worker locally (needs `make db`)
 	cd backend && uv run python -m app.worker
 ai-check:  ## is the model server reachable, and are the models installed?

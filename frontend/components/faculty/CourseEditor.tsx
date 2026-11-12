@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { api, errorMessage } from "@/lib/api";
 import type { components } from "@/lib/api-client/schema";
 import { useToast } from "../Toast";
+import { QuestionSheets } from "./QuestionSheets";
 import { SubtopicForm } from "./SubtopicForm";
 import { stepText, useJob } from "./useJob";
 
@@ -144,6 +145,9 @@ export function CourseEditor({ initial, isNew }: { initial: Course; isNew: boole
             ? <button className="btn btn-secondary" onClick={() => setStatus("draft")}>Unpublish</button>
             : <button className="btn" onClick={() => setStatus("published")}>Publish</button>}
         </div>
+        <QuestionSheets
+          courseId={course.id} code={course.code} dirty={dirty} onSaveFirst={save} onImported={reload}
+        />
         {running && (
           <div className="card card-pad text-sm" role="status" aria-live="polite">
             <p className="font-medium">Writing study material</p>

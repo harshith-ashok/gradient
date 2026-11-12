@@ -1,0 +1,98 @@
+# Production stack. Differences from the dev compose file:
+#   - nothing but the web app is published to the host; the database, Redis and ChromaDB stay private
+#   - secrets come from the environment and the stack refuses to start without them
+#   - no source mounts, no auto-reload, no demo accounts, secure cookies, JSON logs
+# Put a TLS-terminating reverse proxy (Caddy, nginx, a cloud load balancer) in front of port 3000:
+# cookies are marked Secure, so the site must be served over HTTPS.
+#
+#   export POSTGRES_PASSWORD=... JWT_SECRET=$(openssl rand -hex 32) OLLAMA_URL=http://<tailscale-ip>:11434
+#   docker compose -p gradient-prod -f infra/docker-compose.prod.yml up -d --build
+#   docker compose -p gradient-prod -f infra/docker-compose.prod.yml exec backend \
+#       python -m scripts.create_user "Your Name" you@example.edu admin
+name: gradient-prod
+
+x-backend-env: &backend-env
+  ENV: prod
+  DATABASE_URL: postgresql+psycopg://gradient:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/gradient
+  REDIS_URL: redis://redis:6379/0
+  JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET to a long random value}
+  COOKIE_SECURE: "true"
+  DEMO_MODE: "false"
+  LOG_JSON: "true"
+  TRUST_FORWARDED_FOR: "true"
+  CORS_ORIGINS: ${PUBLIC_URL:-https://localhost}
+  LLM_PROVIDER: ollama
+  OLLAMA_URL: ${OLLAMA_URL:?set OLLAMA_URL to your own model server}
+  LLM_MODEL: ${LLM_MODEL:-gpt-oss:20b}
+  VISION_MODEL: ${VISION_MODEL:-gemma4:e4b}
+  EMBED_MODEL: ${EMBED_MODEL:-nomic-embed-text}
+  CHROMA_URL: http://chromadb:8000
+  UPLOAD_DIR: /data/uploads
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gradient
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: gradient
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gradient"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]  # cache and rate limits only; safe to lose
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  chromadb:
+    image: chromadb/chroma:latest
+    volumes: [chroma:/chroma/chroma]
+    restart: unless-stopped
+
+  backend:
+    build: ../backend
+    environment: *backend-env
+    volumes: [uploads:/data/uploads]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/api/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  worker:
+    build: ../backend
+    environment: *backend-env
+    command: python -m app.worker
+    volumes: [uploads:/data/uploads]
+    depends_on:
+      backend: {condition: service_healthy}
+      chromadb: {condition: service_started}
+    restart: unless-stopped
+
+  frontend:
+    build: ../frontend
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:8000
+    ports: ["${WEB_PORT:-3000}:3000"]
+    depends_on:
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  chroma:
+  uploads:
