@@ -1,6 +1,6 @@
 COMPOSE = docker compose -f infra/docker-compose.yml
 
-.PHONY: up down logs db migrate seed test e2e openapi lint
+.PHONY: up down logs db migrate seed test e2e e2e-faculty openapi lint worker ai-check
 up:        ## build and start everything
 	$(COMPOSE) up --build -d
 down:
@@ -17,6 +17,14 @@ test:
 	cd backend && uv run pytest
 e2e:       ## browser test of the student journey (needs the stack running)
 	cd frontend && npm run e2e
+e2e-faculty: ## faculty journey on the fake model (restarts the stack with LLM_PROVIDER=fake, then back)
+	LLM_PROVIDER=fake docker compose -p gradient -f infra/docker-compose.yml up -d backend worker
+	sleep 8
+	cd frontend && E2E_FAKE_AI=1 npx playwright test faculty-journey; code=$$?; cd .. && docker compose -p gradient -f infra/docker-compose.yml up -d backend worker; exit $$code
+worker:    ## run the AI job worker locally (needs `make db`)
+	cd backend && uv run python -m app.worker
+ai-check:  ## is the model server reachable, and are the models installed?
+	cd backend && uv run python -c "from app.agents.llm import get_llm; import json; print(json.dumps(get_llm().health(), indent=2))"
 lint:
 	cd backend && uv run ruff check .
 openapi:   ## regenerate the API contract and the typed frontend client

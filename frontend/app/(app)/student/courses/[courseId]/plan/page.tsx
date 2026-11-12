@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
-import { PlanMinutes } from "@/components/PlanMinutes";
+import { PlanSettings } from "@/components/PlanSettings";
 import { TaskRow } from "@/components/TaskRow";
 import { fmtDay, fmtTs } from "@/lib/format";
 import { serverApi, unwrap } from "@/lib/server-api";
@@ -42,8 +42,26 @@ export default async function PlanPage({ params }: PageProps<"/student/courses/[
         eyebrow="Personalised study plan"
         title={course.title}
         lede={`Day ${e.day_number} of your plan · ${e.plan_done} of ${e.plan_total} tasks done`}
-        actions={<PlanMinutes courseId={courseId} value={e.minutes_per_day} />}
+        actions={<PlanSettings courseId={courseId} minutes={e.minutes_per_day} days={e.target_days} planning={e.planning} />}
       />
+      {e.planning && (
+        <div className="card mb-4 border-l-4 px-4 py-3 text-sm" role="status" style={{ borderLeftColor: "var(--crimson)" }}>
+          The AI planner is tailoring your study time to your results. Your plan below is already usable and will
+          update in a moment.
+        </div>
+      )}
+      <div
+        className={`card mb-4 px-4 py-3 text-sm ${e.plan_window.fits ? "" : "border-l-4"}`}
+        style={e.plan_window.fits ? undefined : { borderLeftColor: "var(--warn, #b45309)" }}
+      >
+        {e.plan_window.fits ? (
+          <>Everything is scheduled to finish by <strong>{fmtDay(e.plan_window.finish_date ?? e.plan_window.ends_on)}</strong>,
+          inside your {e.target_days}-day time frame (ends {fmtDay(e.plan_window.ends_on)}).</>
+        ) : (
+          <>At {e.minutes_per_day} minutes a day this plan does not fit your {e.target_days}-day time frame. About{" "}
+          <strong>{e.plan_window.needed_minutes_per_day} minutes a day</strong>, or a longer time frame, would cover everything.</>
+        )}
+      </div>
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
           {days.map((d) => (

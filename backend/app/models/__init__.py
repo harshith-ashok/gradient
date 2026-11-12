@@ -7,6 +7,7 @@ from app.models.course import (
     SyllabusUpload,
     Topic,
 )
+from app.models.job import Job
 from app.models.learning import (
     DayStatus,
     Enrollment,
@@ -21,7 +22,7 @@ from app.models.setting import Setting
 from app.models.user import User
 
 __all__ = [
-    "Course", "DayStatus", "Enrollment", "Flashcard", "Mastery", "PlanNotice", "PlanTask",
+    "Course", "DayStatus", "Enrollment", "Flashcard", "Job", "Mastery", "PlanNotice", "PlanTask",
     "PretestResult", "Question", "QuizAttempt", "QuizSession", "RemediationItem", "Setting",
     "Subtopic", "SyllabusUpload", "Topic", "User",
 ]

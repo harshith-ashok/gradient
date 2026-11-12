@@ -15,6 +15,8 @@ type Props = {
   enrolled: boolean; studied: boolean; pendingStudy: boolean; pendingHelp: boolean;
 };
 
+const LEVEL_LABEL = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced", expert: "Expert" } as const;
+
 export function SubtopicTabs({ content, initialTab, courseId, subtopicId, enrolled, studied, pendingStudy, pendingHelp }: Props) {
   const router = useRouter();
   const toast = useToast();
@@ -62,6 +64,12 @@ export function SubtopicTabs({ content, initialTab, courseId, subtopicId, enroll
       <div className="rounded-md border border-line bg-surface p-7">
         {tab === "summary" && (
           <>
+            <p className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted">
+              <span className="badge badge-crimson">{LEVEL_LABEL[content.summary_level]} summary</span>
+              {enrolled
+                ? "Written for your current level in this sub-topic. It moves up as you pass quizzes."
+                : "Enrol to get summaries matched to your level."}
+            </p>
             {content.summary.map((p, i) => (
               <p key={i} className="mb-4 text-base leading-[1.7]">{p}</p>
             ))}

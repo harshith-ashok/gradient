@@ -96,3 +96,19 @@ def reset_clock():
 
     yield
     clock.reset()
+
+
+@pytest.fixture(autouse=True)
+def fake_ai(tmp_path, monkeypatch):
+    """Every test gets a deterministic model, an in-memory vector store and a private upload dir."""
+    from app.agents import llm as llm_mod
+    from app.agents import vectorstore
+    from app.core.config import get_settings
+
+    fake = llm_mod.FakeLLM()
+    llm_mod.set_llm(fake)
+    vectorstore.set_store(vectorstore.MemoryStore())
+    monkeypatch.setattr(get_settings(), "upload_dir", str(tmp_path / "uploads"))
+    yield fake
+    llm_mod.set_llm(None)
+    vectorstore.set_store(None)

@@ -28,6 +28,8 @@ class Enrollment(IdMixin, TimestampMixin, Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     course_id: Mapped[str] = mapped_column(ForeignKey("courses.id", ondelete="CASCADE"), index=True)
     minutes_per_day: Mapped[int] = mapped_column(Integer, default=60)
+    # The time frame the student has to finish the course, counted from plan_start_date.
+    target_days: Mapped[int] = mapped_column(Integer, default=21, server_default="21")
     plan_start_date: Mapped[date] = mapped_column(Date)
     pretest_score: Mapped[float | None] = mapped_column(Float)
     pretest_completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -101,6 +103,8 @@ class PlanTask(IdMixin, TimestampMixin, Base):
     position: Mapped[int] = mapped_column(Integer, default=0)
     status: Mapped[str] = mapped_column(String(8), default="todo")
     result: Mapped[str | None] = mapped_column(String(80))
+    # Why this task is in the plan, from the AI planner ("Concentrate on collisions").
+    note: Mapped[str | None] = mapped_column(String(200))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 

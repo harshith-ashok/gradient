@@ -1,6 +1,82 @@
 {
   "components": {
     "schemas": {
+      "AIHealth": {
+        "properties": {
+          "embed_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "text_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "vision_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "ok"
+        ],
+        "title": "AIHealth",
+        "type": "object"
+      },
       "Actions": {
         "properties": {
           "failed": {
@@ -221,6 +297,58 @@
           "created_at"
         ],
         "title": "AttemptOut",
+        "type": "object"
+      },
+      "Body_upload_syllabus_api_v1_faculty_syllabus_post": {
+        "properties": {
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_title": {
+            "title": "Course Title",
+            "type": "string"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          }
+        },
+        "required": [
+          "course_code",
+          "course_title"
+        ],
+        "title": "Body_upload_syllabus_api_v1_faculty_syllabus_post",
         "type": "object"
       },
       "BreakdownItem": {
@@ -822,6 +950,30 @@
         "title": "DemoLogin",
         "type": "object"
       },
+      "DeriveRequest": {
+        "properties": {
+          "replace": {
+            "default": false,
+            "description": "Rebuild topics that already exist (discards their content)",
+            "title": "Replace",
+            "type": "boolean"
+          },
+          "topics": {
+            "description": "Titles of the topics to expand into sub-topics",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Topics",
+            "type": "array"
+          }
+        },
+        "required": [
+          "topics"
+        ],
+        "title": "DeriveRequest",
+        "type": "object"
+      },
       "EnrollmentDetail": {
         "properties": {
           "accent": {
@@ -911,6 +1063,14 @@
             "title": "Plan Total",
             "type": "integer"
           },
+          "plan_window": {
+            "$ref": "#/components/schemas/PlanWindow"
+          },
+          "planning": {
+            "description": "True while the AI planner is still personalising the plan",
+            "title": "Planning",
+            "type": "boolean"
+          },
           "pretest": {
             "$ref": "#/components/schemas/PretestInfo"
           },
@@ -942,6 +1102,10 @@
             ],
             "title": "Status",
             "type": "string"
+          },
+          "target_days": {
+            "title": "Target Days",
+            "type": "integer"
           },
           "tasks": {
             "items": {
@@ -1014,6 +1178,9 @@
           "today",
           "start_date",
           "minutes_per_day",
+          "target_days",
+          "plan_window",
+          "planning",
           "notices",
           "tasks",
           "day_statuses",
@@ -1180,6 +1347,17 @@
           "front": {
             "title": "Front",
             "type": "string"
+          },
+          "level": {
+            "default": "beginner",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "expert"
+            ],
+            "title": "Level",
+            "type": "string"
           }
         },
         "required": [
@@ -1226,6 +1404,54 @@
         "title": "FollowUp",
         "type": "object"
       },
+      "GenerateRequest": {
+        "properties": {
+          "force": {
+            "default": false,
+            "description": "Regenerate even where content already exists",
+            "title": "Force",
+            "type": "boolean"
+          },
+          "levels": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "beginner",
+                    "intermediate",
+                    "advanced",
+                    "expert"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Default: all four levels",
+            "title": "Levels"
+          },
+          "subtopic_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Default: every sub-topic in the course",
+            "title": "Subtopic Ids"
+          }
+        },
+        "title": "GenerateRequest",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1237,6 +1463,135 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "JobOut": {
+        "properties": {
+          "course_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Course Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "progress": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Progress",
+            "type": "object"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "analyze",
+              "derive",
+              "generate",
+              "plan"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "upload_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upload Id"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "status",
+          "created_at"
+        ],
+        "title": "JobOut",
+        "type": "object"
+      },
+      "JobQueued": {
+        "properties": {
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id"
+        ],
+        "title": "JobQueued",
         "type": "object"
       },
       "Kpis": {
@@ -1367,6 +1722,24 @@
           "detail"
         ],
         "title": "Message",
+        "type": "object"
+      },
+      "ModelStatus": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "available"
+        ],
+        "title": "ModelStatus",
         "type": "object"
       },
       "NavLink": {
@@ -1550,14 +1923,75 @@
       "PlanMinutesRequest": {
         "properties": {
           "minutes_per_day": {
-            "title": "Minutes Per Day",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes Per Day"
+          },
+          "target_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Days allowed to finish the course",
+            "title": "Target Days"
+          }
+        },
+        "title": "PlanMinutesRequest",
+        "type": "object"
+      },
+      "PlanWindow": {
+        "properties": {
+          "ends_on": {
+            "description": "Last day of the time frame",
+            "format": "date",
+            "title": "Ends On",
+            "type": "string"
+          },
+          "finish_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the last task is scheduled",
+            "title": "Finish Date"
+          },
+          "fits": {
+            "description": "Whether everything left is scheduled inside the time frame",
+            "title": "Fits",
+            "type": "boolean"
+          },
+          "needed_minutes_per_day": {
+            "description": "Least daily time that still covers everything left",
+            "title": "Needed Minutes Per Day",
+            "type": "integer"
+          },
+          "target_days": {
+            "title": "Target Days",
             "type": "integer"
           }
         },
         "required": [
-          "minutes_per_day"
+          "target_days",
+          "ends_on",
+          "fits",
+          "needed_minutes_per_day"
         ],
-        "title": "PlanMinutesRequest",
+        "title": "PlanWindow",
         "type": "object"
       },
       "PracticeCourse": {
@@ -1730,6 +2164,17 @@
               }
             ],
             "title": "Id"
+          },
+          "level": {
+            "default": "beginner",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "expert"
+            ],
+            "title": "Level",
+            "type": "string"
           },
           "options": {
             "items": {
@@ -2424,7 +2869,7 @@
           },
           "topics": {
             "items": {
-              "$ref": "#/components/schemas/TopicOut"
+              "$ref": "#/components/schemas/app__schemas__course__TopicOut"
             },
             "title": "Topics",
             "type": "array"
@@ -2647,11 +3092,23 @@
             ]
           },
           "summary": {
+            "description": "The summary at the student's level for this sub-topic",
             "items": {
               "type": "string"
             },
             "title": "Summary",
             "type": "array"
+          },
+          "summary_level": {
+            "default": "beginner",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "expert"
+            ],
+            "title": "Summary Level",
+            "type": "string"
           },
           "title": {
             "title": "Title",
@@ -2719,6 +3176,25 @@
                 "type": "null"
               }
             ]
+          },
+          "summaries": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "description": "level \u2192 summary paragraphs",
+            "propertyNames": {
+              "enum": [
+                "beginner",
+                "intermediate",
+                "advanced",
+                "expert"
+              ]
+            },
+            "title": "Summaries",
+            "type": "object"
           },
           "summary": {
             "default": [],
@@ -2901,6 +3377,18 @@
             "title": "Minutes",
             "type": "integer"
           },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the planner put this here",
+            "title": "Note"
+          },
           "result": {
             "anyOf": [
               {
@@ -3010,6 +3498,18 @@
           "minutes": {
             "title": "Minutes",
             "type": "integer"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the planner put this here",
+            "title": "Note"
           },
           "result": {
             "anyOf": [
@@ -3167,32 +3667,6 @@
         "title": "TopicMastery",
         "type": "object"
       },
-      "TopicOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "subtopics": {
-            "items": {
-              "$ref": "#/components/schemas/SubtopicBrief"
-            },
-            "title": "Subtopics",
-            "type": "array"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "title",
-          "subtopics"
-        ],
-        "title": "TopicOut",
-        "type": "object"
-      },
       "UpcomingTask": {
         "properties": {
           "date": {
@@ -3233,6 +3707,122 @@
           "minutes"
         ],
         "title": "UpcomingTask",
+        "type": "object"
+      },
+      "UploadCreated": {
+        "properties": {
+          "course_id": {
+            "title": "Course Id",
+            "type": "string"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "upload_id": {
+            "title": "Upload Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "course_id",
+          "upload_id",
+          "job_id"
+        ],
+        "title": "UploadCreated",
+        "type": "object"
+      },
+      "UploadOut": {
+        "properties": {
+          "characters": {
+            "title": "Characters",
+            "type": "integer"
+          },
+          "course_id": {
+            "title": "Course Id",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "indexed": {
+            "title": "Indexed",
+            "type": "boolean"
+          },
+          "job": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JobOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The most recent job for this upload"
+          },
+          "ocr_used": {
+            "title": "Ocr Used",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "uploaded",
+              "analyzing",
+              "topics_ready",
+              "deriving",
+              "derived",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "topics": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/app__schemas__ai__TopicOut"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topics"
+          }
+        },
+        "required": [
+          "id",
+          "course_id",
+          "status",
+          "ocr_used",
+          "indexed",
+          "characters"
+        ],
+        "title": "UploadOut",
         "type": "object"
       },
       "UserOut": {
@@ -3361,6 +3951,50 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "app__schemas__ai__TopicOut": {
+        "properties": {
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "summary"
+        ],
+        "title": "TopicOut",
+        "type": "object"
+      },
+      "app__schemas__course__TopicOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "subtopics": {
+            "items": {
+              "$ref": "#/components/schemas/SubtopicBrief"
+            },
+            "title": "Subtopics",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "subtopics"
+        ],
+        "title": "TopicOut",
         "type": "object"
       }
     }
@@ -3815,6 +4449,28 @@
         ]
       }
     },
+    "/api/v1/faculty/ai/health": {
+      "get": {
+        "description": "Is the model server reachable, and are the configured models installed?",
+        "operationId": "ai_health_api_v1_faculty_ai_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIHealth"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ai Health",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
     "/api/v1/faculty/courses": {
       "get": {
         "operationId": "list_courses_api_v1_faculty_courses_get",
@@ -3992,6 +4648,118 @@
         ]
       }
     },
+    "/api/v1/faculty/courses/{course_id}/generate": {
+      "post": {
+        "operationId": "generate_api_v1_faculty_courses__course_id__generate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_id",
+            "required": true,
+            "schema": {
+              "title": "Course Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobQueued"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
     "/api/v1/faculty/courses/{course_id}/status": {
       "post": {
         "operationId": "set_status_api_v1_faculty_courses__course_id__status_post",
@@ -4071,6 +4839,424 @@
         "summary": "Set Status",
         "tags": [
           "faculty"
+        ]
+      }
+    },
+    "/api/v1/faculty/syllabus": {
+      "post": {
+        "description": "Start analysing a syllabus (file or pasted text). Creates a draft course; poll the job.",
+        "operationId": "upload_syllabus_api_v1_faculty_syllabus_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_syllabus_api_v1_faculty_syllabus_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload Syllabus",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/faculty/syllabus/{upload_id}": {
+      "get": {
+        "operationId": "get_upload_api_v1_faculty_syllabus__upload_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "upload_id",
+            "required": true,
+            "schema": {
+              "title": "Upload Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Upload",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/faculty/syllabus/{upload_id}/derive": {
+      "post": {
+        "operationId": "derive_api_v1_faculty_syllabus__upload_id__derive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "upload_id",
+            "required": true,
+            "schema": {
+              "title": "Upload Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeriveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobQueued"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Derive",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/jobs/{job_id}": {
+      "get": {
+        "operationId": "get_job_api_v1_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Job",
+        "tags": [
+          "ai"
         ]
       }
     },

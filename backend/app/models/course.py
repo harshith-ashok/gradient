@@ -51,8 +51,11 @@ class Subtopic(IdMixin, Base):
     title: Mapped[str] = mapped_column(String(200))
     description: Mapped[str] = mapped_column(Text, default="")
     key_points: Mapped[list] = mapped_column(JSONType, default=list)
-    # Summary paragraphs, in order.
+    # Baseline summary paragraphs (hand-written courses, and the fallback). Counts as the beginner level.
     summary: Mapped[list] = mapped_column(JSONType, default=list)
+    # Summaries written for each level: {"beginner": [paragraphs], "advanced": [...]}.
+    # Students see the one matching their level for this sub-topic.
+    summaries: Mapped[dict] = mapped_column(JSONType, default=dict)
 
     topic: Mapped[Topic] = relationship(back_populates="subtopics")
     flashcards: Mapped[list["Flashcard"]] = relationship(
@@ -115,3 +118,8 @@ class SyllabusUpload(IdMixin, TimestampMixin, Base):
     extracted_text: Mapped[str | None] = mapped_column(Text)
     agent_run_id: Mapped[str | None] = mapped_column(String(64))
     error: Mapped[str | None] = mapped_column(Text)
+    uploader_id: Mapped[str | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    ocr_used: Mapped[bool] = mapped_column(default=False)
+    indexed: Mapped[bool] = mapped_column(default=False)  # syllabus chunks are in the vector store
+    # Topics the agent found: [{"title": ..., "summary": ...}]. Faculty choose which to expand.
+    topics: Mapped[list | None] = mapped_column(JSONType)

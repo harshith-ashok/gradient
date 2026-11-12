@@ -1,10 +1,13 @@
 """Read-only aggregates over one enrollment, for the student dashboard and progress pages."""
 
+from datetime import timedelta
+
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core import clock
-from app.models import Course, Enrollment
-from app.services.planner import avg
+from app.models import Course, Enrollment, Job
+from app.services.planner import FLEX, MIN_FLEX, avg
 from app.services.settings import threshold_for
 
 
@@ -24,7 +27,7 @@ def task_out(r) -> dict:
     return {
         "id": r.id, "type": r.type, "topic_id": r.topic_id, "subtopic_id": r.subtopic_id,
         "title": r.title, "minutes": r.minutes, "day": r.day_index, "date": r.scheduled_for,
-        "done": r.status == "done", "done_at": r.completed_at, "result": r.result,
+        "done": r.status == "done", "done_at": r.completed_at, "result": r.result, "note": r.note,
     }
 
 
@@ -80,6 +83,26 @@ def enrollment_summary(db: Session, enr: Enrollment, course: Course, thr: int | 
     }
 
 
+def plan_window(db: Session, enr: Enrollment) -> dict:
+    open_ = [t for t in enr.tasks if t.status != "done"]
+    today_idx = max(0, (clock.today() - enr.plan_start_date).days)
+    days_left = max(1, enr.target_days - today_idx)
+    floor_total = sum(MIN_FLEX if t.type in FLEX else t.minutes for t in open_)
+    last = max((t.day_index for t in open_), default=None)
+    return {
+        "target_days": enr.target_days,
+        "ends_on": enr.plan_start_date + timedelta(days=enr.target_days - 1),
+        "fits": last is None or last < enr.target_days,
+        "finish_date": enr.plan_start_date + timedelta(days=last) if last is not None else None,
+        "needed_minutes_per_day": -(-floor_total // days_left),
+    }
+
+
+def is_planning(db: Session, enr: Enrollment) -> bool:
+    return db.scalar(select(Job.id).where(Job.type == "plan", Job.enrollment_id == enr.id,
+                                          Job.status.in_(("queued", "running"))).limit(1)) is not None
+
+
 def enrollment_detail(db: Session, enr: Enrollment, course: Course, thr: int | None = None) -> dict:
     thr = threshold_for(db, course) if thr is None else thr
     mastery = {m.subtopic_id: m for m in enr.mastery}
@@ -98,6 +121,9 @@ def enrollment_detail(db: Session, enr: Enrollment, course: Course, thr: int | N
     out.update({
         "start_date": enr.plan_start_date,
         "minutes_per_day": enr.minutes_per_day,
+        "target_days": enr.target_days,
+        "plan_window": plan_window(db, enr),
+        "planning": is_planning(db, enr),
         "notices": [
             {"id": n.id, "kind": n.kind, "text": n.text, "created_at": n.created_at}
             for n in reversed(enr.notices)

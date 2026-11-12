@@ -72,7 +72,8 @@ def complete_task(course_id: str, task_id: str, db: Session = Depends(get_db),
 @router.put("/courses/{course_id}/plan", response_model=EnrollmentDetail, responses=ERR)
 def set_plan_minutes(course_id: str, body: PlanMinutesRequest, db: Session = Depends(get_db),
                      user: User = Depends(student)):
-    return _guard(svc.update_plan_minutes, db, user, course_id, body.minutes_per_day)
+    return _guard(svc.update_plan_settings, db, user, course_id,
+                  body.minutes_per_day, body.target_days)
 
 
 @router.post("/quizzes", response_model=QuizStart, responses=ERR)

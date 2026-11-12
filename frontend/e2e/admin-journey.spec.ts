@@ -19,7 +19,7 @@ test("management reviews progress, finds a student, and changes the pass mark", 
   await page.getByLabel("Search students").fill("meera");
   await page.getByRole("button", { name: "Apply" }).click();
   await expect(page).toHaveURL(/q=meera/);
-  await expect(page.getByRole("link", { name: "Meera Iyer" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Meera Iyer" }).first()).toBeVisible(); // one row per enrolment
   await expect(page.getByRole("link", { name: "Daniel Okafor" })).toHaveCount(0);
   await page.getByRole("link", { name: "Clear" }).click();
   await expect(page).toHaveURL(/\/admin$/);
@@ -33,9 +33,9 @@ test("management reviews progress, finds a student, and changes the pass mark", 
 
   // --- student detail (read-only) shows quiz history and the failed attempt
   await page.goto("/admin?q=meera");
-  await page.getByRole("link", { name: "Meera Iyer" }).click();
+  await page.getByRole("link", { name: "Meera Iyer" }).first().click();
   await expect(page.getByRole("heading", { name: "Meera Iyer", level: 1 })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Quiz history" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Quiz history" }).first()).toBeVisible();
   await expect(page.getByText("Below pass mark").first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Open →" })).toHaveCount(0); // locked for management
 

@@ -24,6 +24,7 @@ class TaskOut(BaseModel):
     done: bool
     done_at: datetime | None = None
     result: str | None = None
+    note: str | None = Field(default=None, description="Why the planner put this here")
 
 
 class DayStatusOut(BaseModel):
@@ -123,9 +124,20 @@ class EnrollmentSummary(BaseModel):
     today: date = Field(description="Today's date in the plan's calendar (server timezone)")
 
 
+class PlanWindow(BaseModel):
+    target_days: int
+    ends_on: date = Field(description="Last day of the time frame")
+    fits: bool = Field(description="Whether everything left is scheduled inside the time frame")
+    finish_date: date | None = Field(default=None, description="When the last task is scheduled")
+    needed_minutes_per_day: int = Field(description="Least daily time that still covers everything left")
+
+
 class EnrollmentDetail(EnrollmentSummary):
     start_date: date
     minutes_per_day: int
+    target_days: int
+    plan_window: PlanWindow
+    planning: bool = Field(description="True while the AI planner is still personalising the plan")
     notices: list[NoticeOut]
     tasks: list[TaskOut]
     day_statuses: list[DayStatusOut]
@@ -271,7 +283,8 @@ class CompleteResult(BaseModel):
 
 
 class PlanMinutesRequest(BaseModel):
-    minutes_per_day: int
+    minutes_per_day: int | None = None
+    target_days: int | None = Field(default=None, description="Days allowed to finish the course")
 
 
 # ---- dashboard / progress / practice ----

@@ -31,20 +31,39 @@ services:
 
   backend:
     build: ../backend
-    environment:
+    environment: &backend-env
       ENV: dev
       DATABASE_URL: postgresql+psycopg://gradient:gradient@postgres:5432/gradient
       REDIS_URL: redis://redis:6379/0
       CORS_ORIGINS: http://localhost:3000
       DEMO_MODE: "true"
+      # AI pipeline: the model server runs on your own machine (Tailscale), never a hosted API.
+      OLLAMA_URL: ${OLLAMA_URL:-http://100.74.98.40:11434}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}  # `fake` gives deterministic replies for browser tests
+      LLM_MODEL: ${LLM_MODEL:-gpt-oss:20b}
+      VISION_MODEL: ${VISION_MODEL:-gemma4:e4b}
+      EMBED_MODEL: ${EMBED_MODEL:-nomic-embed-text}
+      CHROMA_URL: http://chromadb:8000
+      UPLOAD_DIR: /data/uploads
     command: >
       sh -c "alembic upgrade head && python -m app.seed.run &&
              uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
-    volumes: ["../backend/app:/app/app"]
+    volumes: ["../backend/app:/app/app", "uploads:/data/uploads"]
     ports: ["8010:8000"]
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
+
+  # Runs the AI jobs (reading syllabi, writing study material). One at a time: one model server.
+  worker:
+    build: ../backend
+    environment: *backend-env
+    command: python -m app.worker
+    volumes: ["../backend/app:/app/app", "uploads:/data/uploads"]
+    depends_on:
+      backend: {condition: service_started}
+      chromadb: {condition: service_started}
+    restart: unless-stopped
 
   frontend:
     build: ../frontend
@@ -56,3 +75,4 @@ services:
 volumes:
   pgdata:
   chroma:
+  uploads:

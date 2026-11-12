@@ -11,7 +11,10 @@ const NAV: Record<Role, { to: string; label: string; exact?: boolean }[]> = {
     { to: "/student/practice", label: "Practice" },
     { to: "/student/progress", label: "Progress" },
   ],
-  faculty: [{ to: "/faculty", label: "My courses", exact: true }],
+  faculty: [
+    { to: "/faculty", label: "My courses", exact: true },
+    { to: "/faculty/new", label: "New course" },
+  ],
   admin: [
     { to: "/admin", label: "Student progress", exact: true },
     { to: "/admin/settings", label: "Pass mark" },

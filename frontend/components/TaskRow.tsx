@@ -18,6 +18,7 @@ export function TaskRow({
           {task.minutes} min
           {task.done && task.result && <> · {task.result}</>}
         </div>
+        {task.note && !task.done && <div className="t-meta italic">{task.note}</div>}
       </div>
       <span className={`badge ${TASK_TONE[task.type] ?? "badge-info"}`}>{TASK_LABEL[task.type]}</span>
       {!task.done && !locked && (

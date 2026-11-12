@@ -36,9 +36,13 @@ class CourseStructure(CourseCard):
     topics: list[TopicOut]
 
 
+Level = Literal["beginner", "intermediate", "advanced", "expert"]
+
+
 class FlashcardOut(BaseModel):
     front: str
     back: str
+    level: Level = "beginner"
 
 
 class RemediationOut(BaseModel):
@@ -51,7 +55,8 @@ class SubtopicContent(BaseModel):
     title: str
     description: str = ""
     points: list[str]
-    summary: list[str]
+    summary: list[str] = Field(description="The summary at the student's level for this sub-topic")
+    summary_level: Level = "beginner"
     flashcards: list[FlashcardOut]
     remediation: RemediationOut | None = None
 
@@ -92,6 +97,7 @@ class StaffCourseItem(BaseModel):
 
 class QuestionEdit(BaseModel):
     id: str | None = None
+    level: Level = "beginner"
     text: str
     options: list[str] = Field(min_length=2)
     answer_index: int = 0
@@ -104,6 +110,7 @@ class SubtopicEdit(BaseModel):
     description: str = ""
     points: list[str] = []
     summary: list[str] = []
+    summaries: dict[Level, list[str]] = Field(default_factory=dict, description="level → summary paragraphs")
     flashcards: list[FlashcardOut] = []
     questions: list[QuestionEdit] = []
     remediation: RemediationOut | None = None

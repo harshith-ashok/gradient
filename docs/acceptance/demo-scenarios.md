@@ -49,5 +49,5 @@ M1 and M2 are covered by `backend/tests/test_admin.py` and `frontend/e2e/admin-j
 | - | -------- | ------ |
 | M1 | Management sets a global pass mark and a per-course override; new attempts use it (even a quiz already open) | ✅ |
 | M2 | Management dashboard lists every student with overall %, per-topic mastery, upcoming tasks; search, course and status filters, pagination, and a read-only detail page | ✅ |
-| F1 | Faculty uploads or pastes a syllabus, selects topics, reviews derived sub-topics, edits, and publishes | ⏳ |
-| F2 | A published faculty course appears in the student catalog | ⏳ |
+| F1 | Faculty uploads or pastes a syllabus, selects topics, reviews derived sub-topics, edits, and publishes | ✅ (e2e-faculty) |
+| F2 | A published faculty course appears in the student catalog | ✅ (API tests) |

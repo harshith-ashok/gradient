@@ -3,6 +3,7 @@ that react to a low score. Ported from the prototype's learning.js; the rules ar
 plain code (no LLM) so they stay deterministic and testable.
 """
 
+import logging
 import random
 from datetime import UTC, datetime, timedelta
 
@@ -10,6 +11,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.core import clock
+from app.core.config import get_settings
 from app.models import (
     Course,
     DayStatus,
@@ -27,25 +29,29 @@ from app.models import (
 from app.models.base import LEVELS, new_id
 from app.repos import courses as course_repo
 from app.services import courses as course_svc
-from app.services import metrics
+from app.services import jobs, metrics
 from app.services.planner import (
     MINUTES,
     QUIZ_LIKE,
+    Fit,
     SubInfo,
     Task,
     TopicInfo,
     avg,
     build_tasks,
+    fit_window,
     insert_later,
     js_round,
     make_task,
     move_topic_quiz_last,
-    repack,
 )
 from app.services.settings import threshold_for
 
 DEFAULT_MINUTES = 60
 MINUTES_OPTIONS = (30, 45, 60, 90, 120)
+DEFAULT_DAYS = 21
+DAYS_OPTIONS = (7, 14, 21, 30, 45, 60, 90)
+log = logging.getLogger(__name__)
 SESSION_TTL = timedelta(hours=2)
 rng = random.Random()  # tests and the seed can reseed this for repeatable quizzes
 
@@ -109,7 +115,7 @@ def _to_tasks(enr: Enrollment) -> list[Task]:
     return [
         Task(id=r.id, type=r.type, topic_id=r.topic_id, subtopic_id=r.subtopic_id, title=r.title,
              minutes=r.minutes, day=r.day_index, scheduled_for=r.scheduled_for,
-             done=r.status == "done", done_at=r.completed_at, result=r.result)
+             done=r.status == "done", done_at=r.completed_at, result=r.result, note=r.note)
         for r in enr.tasks
     ]
 
@@ -125,7 +131,7 @@ def _save_tasks(enr: Enrollment, tasks: list[Task]) -> None:
         r.scheduled_for = t.scheduled_for or clock.today()
         r.position = pos
         r.status = "done" if t.done else "todo"
-        r.completed_at, r.result = t.done_at, t.result
+        r.completed_at, r.result, r.note = t.done_at, t.result, t.note
         rows.append(r)
     enr.tasks = rows  # rows that were dropped are deleted (delete-orphan)
 
@@ -133,6 +139,32 @@ def _save_tasks(enr: Enrollment, tasks: list[Task]) -> None:
 def _add_notice(enr: Enrollment, kind: str, text: str) -> None:
     enr.notices.append(PlanNotice(id=new_id(), enrollment_id=enr.id, kind=kind, text=text,
                                   created_at=clock.now()))
+
+
+def schedule(enr: Enrollment, tasks: list[Task]) -> Fit:
+    """Lay the unfinished tasks out so the whole course ends inside the student's time frame."""
+    fit = fit_window(tasks, enr.plan_start_date, clock.today(), enr.minutes_per_day, enr.target_days)
+    if not fit.fits:
+        text = (f"At {enr.minutes_per_day} minutes a day this plan runs {fit.last_day + 1 - enr.target_days} "
+                f"{'day' if fit.last_day + 1 - enr.target_days == 1 else 'days'} past your {enr.target_days}-day "
+                f"time frame, even with the study sessions shortened. About {fit.needed_minutes_per_day} minutes "
+                "a day, or a longer time frame, would cover everything.")
+        if not enr.notices or enr.notices[-1].text != text:
+            _add_notice(enr, "info", text)
+    return fit
+
+
+def request_replan(db: Session, enr: Enrollment, user_id: str, reason: str) -> None:
+    """Ask the worker to have the AI planner re-shape what is left. The plan already works without
+    it (the rules above are enough), so this never blocks the student or fails the request."""
+    if not get_settings().ai_planning:
+        return
+    try:
+        jobs.enqueue(db, "plan", user_id=user_id, course_id=enr.course_id, enrollment_id=enr.id,
+                     params={"reason": reason}, dedupe_on=("queued",))
+    except Exception:  # noqa: BLE001
+        db.rollback()
+        log.exception("could not queue plan job")
 
 
 def _finish(t: Task, result: str) -> None:
@@ -165,7 +197,7 @@ def refresh(db: Session, enr: Enrollment, course: Course) -> None:
     today_idx = max(0, (today - enr.plan_start_date).days)
     overdue = sum(1 for t in kept if not t.done and (t.day or 0) < today_idx)
     if overdue or removed:
-        repack(kept, enr.plan_start_date, today, enr.minutes_per_day)
+        schedule(enr, kept)
         _save_tasks(enr, kept)
         if overdue:
             n = "task" if overdue == 1 else "tasks"
@@ -336,6 +368,7 @@ def _finish_pretest(db: Session, ctx: dict) -> dict:
     today = clock.today()
     enr = Enrollment(
         id=new_id(), user_id=user.id, course_id=course.id, minutes_per_day=DEFAULT_MINUTES,
+        target_days=DEFAULT_DAYS,
         plan_start_date=today, pretest_score=ctx["score"], pretest_completed_at=clock.now(),
         created_at=clock.now(), updated_at=clock.now(),
     )
@@ -352,7 +385,7 @@ def _finish_pretest(db: Session, ctx: dict) -> dict:
             PretestResult(id=new_id(), enrollment_id=enr.id, subtopic_id=s.id, score=p["score"])
         )
     tasks = build_tasks(_topic_infos(course), {sid: p["score"] for sid, p in per.items()}, thr)
-    repack(tasks, today, today, DEFAULT_MINUTES)
+    schedule(enr, tasks)
     _save_tasks(enr, tasks)
     known = sum(1 for p in per.values() if p["score"] >= thr)
     need = len(per) - known
@@ -363,6 +396,7 @@ def _finish_pretest(db: Session, ctx: dict) -> dict:
                  for sid, p in per.items()]
     _attempt(enr, ctx, None, None, breakdown)
     db.commit()
+    request_replan(db, enr, user.id, "The student just finished the pre-test; build the first plan.")
     return {
         "kind": "pretest", "course_id": course.id, "title": ctx["title"], "score": ctx["score"],
         "correct": ctx["correct"], "total": ctx["total"], "passed": None, "threshold": thr,
@@ -470,7 +504,7 @@ def _finish_quiz(db: Session, ctx: dict) -> dict:
         insert_later(tasks, extra, anchor.id, 2 if is_topic else 3)
         if is_topic:
             move_topic_quiz_last(tasks, anchor.id)  # a retaken topic quiz still comes last in its topic
-        actions["shifted"] = repack(tasks, enr.plan_start_date, clock.today(), enr.minutes_per_day)
+        actions["shifted"] = schedule(enr, tasks).moved
         actions["items"] = [{"title": t.title, "type": t.type, "date": t.scheduled_for, "day": (t.day or 0) + 1}
                             for t in extra]
         retake, shifted = extra[-1], actions["shifted"]
@@ -489,6 +523,9 @@ def _finish_quiz(db: Session, ctx: dict) -> dict:
     db.flush()
     day_status = _check_days(enr, course, touched)
     db.commit()
+    request_replan(db, enr, user.id, (
+        f"The student failed a quiz ({score}%, pass mark {thr}%); give the weak sub-topics more time."
+        if not passed else f"The student passed a quiz with {score}%; rebalance the time that is left."))
     nxt = next((t for t in enr.tasks if t.status != "done"), None)
     return {
         "kind": kind, "course_id": course.id, "title": ctx["title"], "score": score,
@@ -537,18 +574,27 @@ def complete_subtopic_task(db: Session, user: User, course_id: str, subtopic_id:
     return complete_task(db, user, course_id, t.id)
 
 
-def update_plan_minutes(db: Session, user: User, course_id: str, minutes: int) -> dict:
-    if minutes not in MINUTES_OPTIONS:
+def update_plan_settings(db: Session, user: User, course_id: str, minutes: int | None,
+                         days: int | None) -> dict:
+    if minutes is None and days is None:
+        raise LearningError("Choose a daily study time or a time frame.")
+    if minutes is not None and minutes not in MINUTES_OPTIONS:
         raise LearningError("Choose a daily study time from the list.")
+    if days is not None and days not in DAYS_OPTIONS:
+        raise LearningError("Choose a time frame from the list.")
     course = _course(db, course_id)
     enr = _must_enrollment(db, user, course)
-    enr.minutes_per_day = minutes
+    enr.minutes_per_day = minutes or enr.minutes_per_day
+    enr.target_days = days or enr.target_days
     tasks = _to_tasks(enr)
-    moved = repack(tasks, enr.plan_start_date, clock.today(), minutes)
+    moved = schedule(enr, tasks).moved
     _save_tasks(enr, tasks)
     tail = f" and {moved} {'task moved' if moved == 1 else 'tasks moved'} later" if moved else ""
-    _add_notice(enr, "recalc", f"Daily study time set to {minutes} minutes. The remaining plan was recalculated{tail}.")
+    what = (f"Daily study time set to {enr.minutes_per_day} minutes" if days is None else
+            f"Plan set to {enr.minutes_per_day} minutes a day over {enr.target_days} days")
+    _add_notice(enr, "recalc", f"{what}. The remaining plan was recalculated{tail}.")
     db.commit()
+    request_replan(db, enr, user.id, "The student changed their daily study time or time frame.")
     return metrics.enrollment_detail(db, enr, course)
 
 
@@ -582,23 +628,26 @@ def student_course(db: Session, user: User, course_id: str) -> dict:
 
 
 def subtopic_view(db: Session, user: User, course_id: str, subtopic_id: str) -> dict:
-    """Sub-topic content plus the student's own mastery and plan tasks for it (when enrolled)."""
+    """Sub-topic content plus the student's own mastery and plan tasks for it (when enrolled).
+
+    Flashcards are shown at the student's current level for this sub-topic (beginner if not enrolled).
+    """
+    enr = get_enrollment(db, user, course_id)
+    rec = _mastery_map(enr).get(subtopic_id) if enr else None
     try:
-        out = course_svc.subtopic_view(db, course_id, subtopic_id)
+        out = course_svc.subtopic_view(db, course_id, subtopic_id, rec.level if rec else "beginner")
     except course_svc.CourseError as e:
         raise LearningError(e.message, e.status_code) from e
-    enr = get_enrollment(db, user, course_id)
     out["mastery"], out["tasks"] = None, []
     if enr:
         course = course_repo.get_with_tree(db, course_id)
         refresh(db, enr, course)
-        thr = out["threshold"]
         rec = _mastery_map(enr).get(subtopic_id)
         if rec:
             out["mastery"] = {
                 "value": rec.score, "last_score": rec.last_score, "attempts": rec.attempts,
                 "remediation": rec.needs_review, "studied": rec.studied, "level": rec.level,
-                "status": metrics.sub_status(rec, thr),
+                "status": metrics.sub_status(rec, out["threshold"]),
             }
         out["tasks"] = [metrics.task_out(t) for t in enr.tasks if t.subtopic_id == subtopic_id]
     return out

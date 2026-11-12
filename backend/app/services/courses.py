@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core import cache
 from app.models import Course, Flashcard, Question, RemediationItem, Subtopic, Topic, User
-from app.models.base import new_id
+from app.models.base import LEVELS, new_id
 from app.repos import courses as repo
 from app.schemas.course import CourseSave
 from app.services.settings import threshold_for
@@ -79,7 +79,31 @@ def course_structure(db: Session, course_id: str) -> dict:
     return {**data, "threshold": threshold_for(db, course)}
 
 
-def subtopic_view(db: Session, course_id: str, subtopic_id: str) -> dict:
+def cards_for_level(cards: list, level: str | None) -> list:
+    """Flashcards at the level closest to `level` (ties go to the easier one). All cards if no level."""
+    if level is None or not cards:
+        return cards
+    target = LEVELS.index(level)
+    best = min({c.level for c in cards}, key=lambda lv: (abs(LEVELS.index(lv) - target), LEVELS.index(lv)))
+    return [c for c in cards if c.level == best]
+
+
+def summary_for_level(sub, level: str | None) -> tuple[list[str], str]:
+    """The summary written for `level`, or the nearest level that has one (ties go to the easier).
+
+    A hand-written baseline `summary` counts as the beginner level. Returns (paragraphs, level used).
+    """
+    options = dict(sub.summaries or {})
+    if sub.summary and "beginner" not in options:
+        options["beginner"] = sub.summary
+    if not options:
+        return [], "beginner"
+    target = LEVELS.index(level or "beginner")
+    best = min(options, key=lambda lv: (abs(LEVELS.index(lv) - target), LEVELS.index(lv)))
+    return options[best], best
+
+
+def subtopic_view(db: Session, course_id: str, subtopic_id: str, level: str | None = None) -> dict:
     c = repo.get_with_tree(db, course_id)
     if c is None or c.status != "published":
         raise CourseError("Course not found.", 404)
@@ -90,14 +114,16 @@ def subtopic_view(db: Session, course_id: str, subtopic_id: str) -> dict:
     topic, sub = flat[idx]
     nav = lambda i: {"id": flat[i][1].id, "title": flat[i][1].title} if 0 <= i < len(flat) else None  # noqa: E731
     rem = sub.remediation[0] if sub.remediation else None
+    summary, summary_level = summary_for_level(sub, level)
     return {
         "course": {"id": c.id, "title": c.title},
         "course_code": c.code,
         "topic": {"id": topic.id, "title": topic.title},
         "subtopic": {
             "id": sub.id, "title": sub.title, "description": sub.description,
-            "points": sub.key_points, "summary": sub.summary,
-            "flashcards": [{"front": f.front, "back": f.back} for f in sub.flashcards],
+            "points": sub.key_points, "summary": summary, "summary_level": summary_level,
+            "flashcards": [{"front": f.front, "back": f.back, "level": f.level}
+                           for f in cards_for_level(sub.flashcards, level)],
             "remediation": {"explanation": rem.explanation, "steps": rem.steps} if rem else None,
         },
         "threshold": threshold_for(db, c),
@@ -145,10 +171,10 @@ def _full(c: Course) -> dict:
                 "subtopics": [
                     {
                         "id": s.id, "title": s.title, "description": s.description,
-                        "points": s.key_points, "summary": s.summary,
-                        "flashcards": [{"front": f.front, "back": f.back} for f in s.flashcards],
+                        "points": s.key_points, "summary": s.summary, "summaries": s.summaries or {},
+                        "flashcards": [{"front": f.front, "back": f.back, "level": f.level} for f in s.flashcards],
                         "questions": [
-                            {"id": q.id, "text": q.text, "options": q.options,
+                            {"id": q.id, "level": q.level, "text": q.text, "options": q.options,
                              "answer_index": q.answer_index, "explanation": q.explanation}
                             for q in s.questions
                         ],
@@ -200,15 +226,17 @@ def save_course(db: Session, user: User, course_id: str, body: CourseSave) -> di
             sub.position, sub.title, sub.description = si, s.title.strip(), s.description
             sub.key_points = [p.strip() for p in s.points if p.strip()]
             sub.summary = s.summary
+            sub.summaries = {lv: [p for p in paras if p.strip()] for lv, paras in s.summaries.items()}
             # Child content is replaced wholesale; question ids are kept so history can refer to them.
             sub.flashcards = [
-                Flashcard(position=i, front=f.front, back=f.back) for i, f in enumerate(s.flashcards, 1)
+                Flashcard(position=i, level=f.level, front=f.front, back=f.back) for i, f in enumerate(s.flashcards, 1)
             ]
             old_q = {q.id: q for q in sub.questions}
             questions: list[Question] = []
             for i, q in enumerate(s.questions, 1):
                 row = old_q.get(q.id or "") or Question(id=new_id())
                 row.position, row.text, row.options = i, q.text, q.options
+                row.level = q.level
                 row.answer_index, row.explanation = q.answer_index, q.explanation
                 questions.append(row)
             sub.questions = questions

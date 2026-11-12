@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import admin, auth, faculty, health, student
+from app.api import admin, ai, auth, faculty, health, student
 from app.core.config import get_settings
 
 
@@ -20,6 +20,7 @@ def create_app() -> FastAPI:
     app.include_router(student.router, prefix="/api/v1")
     app.include_router(faculty.router, prefix="/api/v1")
     app.include_router(admin.router, prefix="/api/v1")
+    app.include_router(ai.router, prefix="/api/v1")
     return app
 
 

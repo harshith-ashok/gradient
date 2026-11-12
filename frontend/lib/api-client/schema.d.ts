@@ -178,6 +178,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/faculty/ai/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ai Health
+         * @description Is the model server reachable, and are the configured models installed?
+         */
+        get: operations["ai_health_api_v1_faculty_ai_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/faculty/courses": {
         parameters: {
             query?: never;
@@ -213,6 +233,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/faculty/courses/{course_id}/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate */
+        post: operations["generate_api_v1_faculty_courses__course_id__generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/faculty/courses/{course_id}/status": {
         parameters: {
             query?: never;
@@ -224,6 +261,77 @@ export interface paths {
         put?: never;
         /** Set Status */
         post: operations["set_status_api_v1_faculty_courses__course_id__status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/syllabus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Syllabus
+         * @description Start analysing a syllabus (file or pasted text). Creates a draft course; poll the job.
+         */
+        post: operations["upload_syllabus_api_v1_faculty_syllabus_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/syllabus/{upload_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Upload */
+        get: operations["get_upload_api_v1_faculty_syllabus__upload_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/syllabus/{upload_id}/derive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Derive */
+        post: operations["derive_api_v1_faculty_syllabus__upload_id__derive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job */
+        get: operations["get_job_api_v1_jobs__job_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -438,6 +546,20 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AIHealth */
+        AIHealth: {
+            embed_model?: components["schemas"]["ModelStatus"] | null;
+            /** Error */
+            error?: string | null;
+            /** Ok */
+            ok: boolean;
+            /** Provider */
+            provider?: string | null;
+            text_model?: components["schemas"]["ModelStatus"] | null;
+            /** Url */
+            url?: string | null;
+            vision_model?: components["schemas"]["ModelStatus"] | null;
+        };
         /** Actions */
         Actions: {
             /** Failed */
@@ -511,6 +633,19 @@ export interface components {
             title: string;
             /** Total */
             total: number;
+        };
+        /** Body_upload_syllabus_api_v1_faculty_syllabus_post */
+        Body_upload_syllabus_api_v1_faculty_syllabus_post: {
+            /** Course Code */
+            course_code: string;
+            /** Course Title */
+            course_title: string;
+            /** Department */
+            department?: string | null;
+            /** File */
+            file?: string | null;
+            /** Text */
+            text?: string | null;
         };
         /** BreakdownItem */
         BreakdownItem: {
@@ -728,6 +863,20 @@ export interface components {
              */
             portal: "student" | "staff";
         };
+        /** DeriveRequest */
+        DeriveRequest: {
+            /**
+             * Replace
+             * @description Rebuild topics that already exist (discards their content)
+             * @default false
+             */
+            replace: boolean;
+            /**
+             * Topics
+             * @description Titles of the topics to expand into sub-topics
+             */
+            topics: string[];
+        };
         /** EnrollmentDetail */
         EnrollmentDetail: {
             /** Accent */
@@ -764,6 +913,12 @@ export interface components {
             plan_done: number;
             /** Plan Total */
             plan_total: number;
+            plan_window: components["schemas"]["PlanWindow"];
+            /**
+             * Planning
+             * @description True while the AI planner is still personalising the plan
+             */
+            planning: boolean;
             pretest: components["schemas"]["PretestInfo"];
             /** Pretest Score */
             pretest_score?: number | null;
@@ -779,6 +934,8 @@ export interface components {
              * @enum {string}
              */
             status: "on-track" | "attention" | "completed";
+            /** Target Days */
+            target_days: number;
             /** Tasks */
             tasks: components["schemas"]["TaskOut"][];
             /** Threshold */
@@ -860,6 +1017,12 @@ export interface components {
             back: string;
             /** Front */
             front: string;
+            /**
+             * Level
+             * @default beginner
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced" | "expert";
         };
         /** FollowUp */
         FollowUp: {
@@ -878,10 +1041,75 @@ export interface components {
              */
             type: "study" | "quiz" | "confirm" | "remediation" | "retake" | "topic_quiz";
         };
+        /** GenerateRequest */
+        GenerateRequest: {
+            /**
+             * Force
+             * @description Regenerate even where content already exists
+             * @default false
+             */
+            force: boolean;
+            /**
+             * Levels
+             * @description Default: all four levels
+             */
+            levels?: ("beginner" | "intermediate" | "advanced" | "expert")[] | null;
+            /**
+             * Subtopic Ids
+             * @description Default: every sub-topic in the course
+             */
+            subtopic_ids?: string[] | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** JobOut */
+        JobOut: {
+            /** Course Id */
+            course_id?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Error */
+            error?: string | null;
+            /** Finished At */
+            finished_at?: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Progress
+             * @default {}
+             */
+            progress: {
+                [key: string]: unknown;
+            };
+            /** Result */
+            result?: {
+                [key: string]: unknown;
+            } | null;
+            /** Started At */
+            started_at?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "succeeded" | "failed";
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "analyze" | "derive" | "generate" | "plan";
+            /** Upload Id */
+            upload_id?: string | null;
+        };
+        /** JobQueued */
+        JobQueued: {
+            /** Job Id */
+            job_id: string;
         };
         /** Kpis */
         Kpis: {
@@ -936,6 +1164,13 @@ export interface components {
         Message: {
             /** Detail */
             detail: string;
+        };
+        /** ModelStatus */
+        ModelStatus: {
+            /** Available */
+            available: boolean;
+            /** Name */
+            name: string;
         };
         /** NavLink */
         NavLink: {
@@ -1011,7 +1246,38 @@ export interface components {
         /** PlanMinutesRequest */
         PlanMinutesRequest: {
             /** Minutes Per Day */
-            minutes_per_day: number;
+            minutes_per_day?: number | null;
+            /**
+             * Target Days
+             * @description Days allowed to finish the course
+             */
+            target_days?: number | null;
+        };
+        /** PlanWindow */
+        PlanWindow: {
+            /**
+             * Ends On
+             * Format: date
+             * @description Last day of the time frame
+             */
+            ends_on: string;
+            /**
+             * Finish Date
+             * @description When the last task is scheduled
+             */
+            finish_date?: string | null;
+            /**
+             * Fits
+             * @description Whether everything left is scheduled inside the time frame
+             */
+            fits: boolean;
+            /**
+             * Needed Minutes Per Day
+             * @description Least daily time that still covers everything left
+             */
+            needed_minutes_per_day: number;
+            /** Target Days */
+            target_days: number;
         };
         /** PracticeCourse */
         PracticeCourse: {
@@ -1077,6 +1343,12 @@ export interface components {
             explanation: string;
             /** Id */
             id?: string | null;
+            /**
+             * Level
+             * @default beginner
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced" | "expert";
             /** Options */
             options: string[];
             /** Text */
@@ -1324,7 +1596,7 @@ export interface components {
             /** Topic Count */
             topic_count: number;
             /** Topics */
-            topics: components["schemas"]["TopicOut"][];
+            topics: components["schemas"]["app__schemas__course__TopicOut"][];
         };
         /** StudentDetailOut */
         StudentDetailOut: {
@@ -1392,8 +1664,17 @@ export interface components {
             /** Points */
             points: string[];
             remediation?: components["schemas"]["RemediationOut"] | null;
-            /** Summary */
+            /**
+             * Summary
+             * @description The summary at the student's level for this sub-topic
+             */
             summary: string[];
+            /**
+             * Summary Level
+             * @default beginner
+             * @enum {string}
+             */
+            summary_level: "beginner" | "intermediate" | "advanced" | "expert";
             /** Title */
             title: string;
         };
@@ -1422,6 +1703,13 @@ export interface components {
              */
             questions: components["schemas"]["QuestionEdit"][];
             remediation?: components["schemas"]["RemediationOut"] | null;
+            /**
+             * Summaries
+             * @description level → summary paragraphs
+             */
+            summaries?: {
+                [key: string]: string[];
+            };
             /**
              * Summary
              * @default []
@@ -1497,6 +1785,11 @@ export interface components {
             id: string;
             /** Minutes */
             minutes: number;
+            /**
+             * Note
+             * @description Why the planner put this here
+             */
+            note?: string | null;
             /** Result */
             result?: string | null;
             /** Subtopic Id */
@@ -1537,6 +1830,11 @@ export interface components {
             id: string;
             /** Minutes */
             minutes: number;
+            /**
+             * Note
+             * @description Why the planner put this here
+             */
+            note?: string | null;
             /** Result */
             result?: string | null;
             /** Subtopic Id */
@@ -1588,15 +1886,6 @@ export interface components {
             /** Title */
             title: string;
         };
-        /** TopicOut */
-        TopicOut: {
-            /** Id */
-            id: string;
-            /** Subtopics */
-            subtopics: components["schemas"]["SubtopicBrief"][];
-            /** Title */
-            title: string;
-        };
         /** UpcomingTask */
         UpcomingTask: {
             /**
@@ -1615,6 +1904,41 @@ export interface components {
              * @enum {string}
              */
             type: "study" | "quiz" | "confirm" | "remediation" | "retake" | "topic_quiz";
+        };
+        /** UploadCreated */
+        UploadCreated: {
+            /** Course Id */
+            course_id: string;
+            /** Job Id */
+            job_id: string;
+            /** Upload Id */
+            upload_id: string;
+        };
+        /** UploadOut */
+        UploadOut: {
+            /** Characters */
+            characters: number;
+            /** Course Id */
+            course_id: string;
+            /** Error */
+            error?: string | null;
+            /** File Name */
+            file_name?: string | null;
+            /** Id */
+            id: string;
+            /** Indexed */
+            indexed: boolean;
+            /** @description The most recent job for this upload */
+            job?: components["schemas"]["JobOut"] | null;
+            /** Ocr Used */
+            ocr_used: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "uploaded" | "analyzing" | "topics_ready" | "deriving" | "derived" | "failed";
+            /** Topics */
+            topics?: components["schemas"]["app__schemas__ai__TopicOut"][] | null;
         };
         /** UserOut */
         UserOut: {
@@ -1652,6 +1976,22 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** TopicOut */
+        app__schemas__ai__TopicOut: {
+            /** Summary */
+            summary: string;
+            /** Title */
+            title: string;
+        };
+        /** TopicOut */
+        app__schemas__course__TopicOut: {
+            /** Id */
+            id: string;
+            /** Subtopics */
+            subtopics: components["schemas"]["SubtopicBrief"][];
+            /** Title */
+            title: string;
         };
     };
     responses: never;
@@ -1999,6 +2339,26 @@ export interface operations {
             };
         };
     };
+    ai_health_api_v1_faculty_ai_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AIHealth"];
+                };
+            };
+        };
+    };
     list_courses_api_v1_faculty_courses_get: {
         parameters: {
             query?: never;
@@ -2139,6 +2499,95 @@ export interface operations {
             };
         };
     };
+    generate_api_v1_faculty_courses__course_id__generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobQueued"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     set_status_api_v1_faculty_courses__course_id__status_post: {
         parameters: {
             query?: never;
@@ -2183,6 +2632,352 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_syllabus_api_v1_faculty_syllabus_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_syllabus_api_v1_faculty_syllabus_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadCreated"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_upload_api_v1_faculty_syllabus__upload_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                upload_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    derive_api_v1_faculty_syllabus__upload_id__derive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                upload_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeriveRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobQueued"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_job_api_v1_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Unsupported Media Type */
+            415: {
                 headers: {
                     [name: string]: unknown;
                 };

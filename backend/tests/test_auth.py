@@ -65,13 +65,17 @@ def test_refresh_issues_new_access_token(client):
 
 def test_access_token_cannot_be_used_as_refresh(client):
     login(client, *STUDENT)
-    client.cookies.set("refresh_token", client.cookies.get("access_token"))
+    access = client.cookies.get("access_token")
+    client.cookies.clear()  # send only the swapped cookie, not the real one alongside it
+    client.cookies.set("refresh_token", access)
     assert client.post("/api/v1/auth/refresh").status_code == 401
 
 
 def test_refresh_token_cannot_be_used_as_access(client):
     login(client, *STUDENT)
-    client.cookies.set("access_token", client.cookies.get("refresh_token"))
+    refresh = client.cookies.get("refresh_token")
+    client.cookies.clear()
+    client.cookies.set("access_token", refresh)
     assert client.get("/api/v1/auth/me").status_code == 401
 
 
