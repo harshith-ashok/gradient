@@ -5,6 +5,11 @@ import { useMemo, useState } from "react";
 import { api, errorMessage } from "@/lib/api";
 import type { components } from "@/lib/api-client/schema";
 import { useToast } from "./Toast";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Settings = components["schemas"]["SettingsOut"];
 type Row = Settings["courses"][number] & { useOverride: boolean; value: number };
@@ -46,33 +51,33 @@ export function SettingsForm({ initial }: { initial: Settings }) {
 
   return (
     <div className="max-w-[860px] space-y-5">
-      <div className="card card-pad">
+      <Card className="gap-0 p-6">
         <h2 className="text-xl font-semibold">Global pass mark</h2>
-        <p className="text-sm text-muted">Used for every course that does not have its own setting.</p>
+        <p className="text-sm text-muted-foreground">Used for every course that does not have its own setting.</p>
         <div className="mt-3 flex items-center gap-6">
-          <div className="w-28 font-serif text-5xl tabular-nums">{globalT}%</div>
+          <div className="w-28  text-5xl tabular-nums">{globalT}%</div>
           <div className="flex-1">
             <label className="sr-only" htmlFor="g">Global pass mark</label>
             <input
               id="g" type="range" min={min} max={max} step={5} value={globalT}
-              onChange={(e) => setGlobalT(Number(e.target.value))} className="w-full accent-[var(--crimson)]"
+              onChange={(e) => setGlobalT(Number(e.target.value))} className="w-full accent-[var(--primary)]"
             />
-            <div className="flex justify-between text-xs text-muted"><span>{min}%</span><span>{max}%</span></div>
+            <div className="flex justify-between text-xs text-muted-foreground"><span>{min}%</span><span>{max}%</span></div>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div className="card">
-        <div className="card-head"><h2 className="text-xl font-semibold">Per-course overrides</h2></div>
+      <Card className="gap-0 py-0">
+        <div className="flex items-center justify-between gap-4 border-b px-6 py-4"><h2 className="text-xl font-semibold">Per-course overrides</h2></div>
         <div className="overflow-x-auto">
-          <table className="table">
-            <thead><tr><th>Course</th><th>Status</th><th>Override</th><th className="w-36">Pass mark</th><th className="num">Applies</th></tr></thead>
-            <tbody>
+          <Table>
+            <TableHeader><TableRow><TableHead>Course</TableHead><TableHead>Status</TableHead><TableHead>Override</TableHead><TableHead className="w-36">Pass mark</TableHead><TableHead className="text-right tabular-nums">Applies</TableHead></TableRow></TableHeader>
+            <TableBody>
               {rows.map((r) => (
-                <tr key={r.id}>
-                  <td><b>{r.code}</b> · {r.title}</td>
-                  <td><span className={`badge ${r.status === "published" ? "badge-ok" : "badge-warn"}`}>{r.status === "published" ? "Published" : "Draft"}</span></td>
-                  <td>
+                <TableRow key={r.id}>
+                  <TableCell><b>{r.code}</b> · {r.title}</TableCell>
+                  <TableCell><Badge variant={r.status === "published" ? "success" : "warning"}>{r.status === "published" ? "Published" : "Draft"}</Badge></TableCell>
+                  <TableCell>
                     <label className="flex items-center gap-2 text-sm">
                       <input
                         type="checkbox" checked={r.useOverride} aria-label={`Override pass mark for ${r.title}`}
@@ -80,32 +85,27 @@ export function SettingsForm({ initial }: { initial: Settings }) {
                       />
                       Use own pass mark
                     </label>
-                  </td>
-                  <td>
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-1.5">
-                      <input
-                        type="number" min={min} max={max} step={5} value={r.value} disabled={!r.useOverride}
-                        aria-label={`Pass mark for ${r.title}`} aria-invalid={r.useOverride && invalid(r.value)}
-                        onChange={(e) => patch(r.id, { value: Number(e.target.value) })}
-                        className="input disabled:opacity-50 aria-[invalid=true]:border-bad"
-                      />
-                      <span className="text-muted">%</span>
+                      <Input type="number" min={min} max={max} step={5} value={r.value} disabled={!r.useOverride} aria-label={`Pass mark for ${r.title}`} aria-invalid={r.useOverride && invalid(r.value)} onChange={(e) => patch(r.id, { value: Number(e.target.value) })} className="disabled:opacity-50 aria-[invalid=true]:border-destructive" />
+                      <span className="text-muted-foreground">%</span>
                     </div>
-                  </td>
-                  <td className="num"><b>{r.useOverride ? r.value : globalT}%</b></td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums"><b>{r.useOverride ? r.value : globalT}%</b></TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
-      </div>
+      </Card>
 
       <div className="flex items-center gap-3">
-        <button type="button" className="btn btn-crimson btn-lg" disabled={!dirty || saving || hasError} onClick={save}>
+        <Button type="button" disabled={!dirty || saving || hasError} onClick={save} size="lg">
           {saving ? "Saving…" : "Save settings"}
-        </button>
-        {dirty && <span className="badge badge-warn">Unsaved changes</span>}
-        {hasError && <span className="text-sm text-bad">Pass marks must be whole numbers from {min} to {max}.</span>}
+        </Button>
+        {dirty && <Badge variant="warning">Unsaved changes</Badge>}
+        {hasError && <span className="text-sm text-destructive">Pass marks must be whole numbers from {min} to {max}.</span>}
       </div>
     </div>
   );

@@ -2960,6 +2960,349 @@
         "title": "PretestSub",
         "type": "object"
       },
+      "ProblemBrief": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "enum": [
+                "c",
+                "cpp",
+                "python"
+              ],
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "level": {
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "expert"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "solved": {
+            "title": "Solved",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "level",
+          "languages",
+          "solved",
+          "attempts"
+        ],
+        "title": "ProblemBrief",
+        "type": "object"
+      },
+      "ProblemDetail": {
+        "properties": {
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_id": {
+            "title": "Course Id",
+            "type": "string"
+          },
+          "course_title": {
+            "title": "Course Title",
+            "type": "string"
+          },
+          "hidden_tests": {
+            "title": "Hidden Tests",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "enum": [
+                "c",
+                "cpp",
+                "python"
+              ],
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "level": {
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "expert"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "memory_mb": {
+            "title": "Memory Mb",
+            "type": "integer"
+          },
+          "samples": {
+            "items": {
+              "$ref": "#/components/schemas/Sample"
+            },
+            "title": "Samples",
+            "type": "array"
+          },
+          "solved": {
+            "title": "Solved",
+            "type": "boolean"
+          },
+          "starter": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Starter",
+            "type": "object"
+          },
+          "statement": {
+            "title": "Statement",
+            "type": "string"
+          },
+          "subtopic_id": {
+            "title": "Subtopic Id",
+            "type": "string"
+          },
+          "subtopic_title": {
+            "title": "Subtopic Title",
+            "type": "string"
+          },
+          "time_limit_ms": {
+            "title": "Time Limit Ms",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "statement",
+          "level",
+          "languages",
+          "starter",
+          "time_limit_ms",
+          "memory_mb",
+          "samples",
+          "hidden_tests",
+          "solved",
+          "subtopic_id",
+          "subtopic_title",
+          "course_id",
+          "course_code",
+          "course_title"
+        ],
+        "title": "ProblemDetail",
+        "type": "object"
+      },
+      "ProblemFull": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "enum": [
+                "c",
+                "cpp",
+                "python"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Languages",
+            "type": "array"
+          },
+          "level": {
+            "default": "beginner",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "expert"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "memory_mb": {
+            "default": 256,
+            "maximum": 512.0,
+            "minimum": 32.0,
+            "title": "Memory Mb",
+            "type": "integer"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "starter": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "c",
+                "cpp",
+                "python"
+              ]
+            },
+            "title": "Starter",
+            "type": "object"
+          },
+          "statement": {
+            "maxLength": 20000,
+            "title": "Statement",
+            "type": "string"
+          },
+          "subtopic_id": {
+            "title": "Subtopic Id",
+            "type": "string"
+          },
+          "tests": {
+            "items": {
+              "$ref": "#/components/schemas/TestCase"
+            },
+            "maxItems": 40,
+            "minItems": 1,
+            "title": "Tests",
+            "type": "array"
+          },
+          "time_limit_ms": {
+            "default": 2000,
+            "maximum": 5000.0,
+            "minimum": 200.0,
+            "title": "Time Limit Ms",
+            "type": "integer"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "statement",
+          "languages",
+          "tests",
+          "id",
+          "subtopic_id",
+          "position"
+        ],
+        "title": "ProblemFull",
+        "type": "object"
+      },
+      "ProblemIn": {
+        "properties": {
+          "languages": {
+            "items": {
+              "enum": [
+                "c",
+                "cpp",
+                "python"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Languages",
+            "type": "array"
+          },
+          "level": {
+            "default": "beginner",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "expert"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "memory_mb": {
+            "default": 256,
+            "maximum": 512.0,
+            "minimum": 32.0,
+            "title": "Memory Mb",
+            "type": "integer"
+          },
+          "starter": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "c",
+                "cpp",
+                "python"
+              ]
+            },
+            "title": "Starter",
+            "type": "object"
+          },
+          "statement": {
+            "maxLength": 20000,
+            "title": "Statement",
+            "type": "string"
+          },
+          "tests": {
+            "items": {
+              "$ref": "#/components/schemas/TestCase"
+            },
+            "maxItems": 40,
+            "minItems": 1,
+            "title": "Tests",
+            "type": "array"
+          },
+          "time_limit_ms": {
+            "default": 2000,
+            "maximum": 5000.0,
+            "minimum": 200.0,
+            "title": "Time Limit Ms",
+            "type": "integer"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "statement",
+          "languages",
+          "tests"
+        ],
+        "title": "ProblemIn",
+        "type": "object"
+      },
       "Progress": {
         "properties": {
           "enrollments": {
@@ -3495,6 +3838,24 @@
         "title": "RoleInfo",
         "type": "object"
       },
+      "Sample": {
+        "properties": {
+          "expected": {
+            "title": "Expected",
+            "type": "string"
+          },
+          "input": {
+            "title": "Input",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input",
+          "expected"
+        ],
+        "title": "Sample",
+        "type": "object"
+      },
       "SettingsOut": {
         "properties": {
           "courses": {
@@ -3637,6 +3998,30 @@
           "threshold"
         ],
         "title": "StaffCourseItem",
+        "type": "object"
+      },
+      "StaffRunRequest": {
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "title": "Code",
+            "type": "string"
+          },
+          "language": {
+            "enum": [
+              "c",
+              "cpp",
+              "python"
+            ],
+            "title": "Language",
+            "type": "string"
+          }
+        },
+        "required": [
+          "language",
+          "code"
+        ],
+        "title": "StaffRunRequest",
         "type": "object"
       },
       "StatusChange": {
@@ -3987,6 +4372,274 @@
           "threshold"
         ],
         "title": "StudentSubtopicView",
+        "type": "object"
+      },
+      "SubmissionBrief": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "language": {
+            "enum": [
+              "c",
+              "cpp",
+              "python"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "run",
+              "submit",
+              "check"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "done"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "enum": [
+                  "accepted",
+                  "wrong_answer",
+                  "compile_error",
+                  "runtime_error",
+                  "time_limit",
+                  "output_limit",
+                  "internal_error"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          }
+        },
+        "required": [
+          "id",
+          "language",
+          "mode",
+          "state",
+          "passed",
+          "total",
+          "created_at"
+        ],
+        "title": "SubmissionBrief",
+        "type": "object"
+      },
+      "SubmissionCreated": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "SubmissionCreated",
+        "type": "object"
+      },
+      "SubmissionOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "compile_output": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compile Output"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "language": {
+            "enum": [
+              "c",
+              "cpp",
+              "python"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "mode": {
+            "enum": [
+              "run",
+              "submit",
+              "check"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "integer"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "queue_position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Submissions ahead of this one while it waits",
+            "title": "Queue Position"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/TestResult"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "runtime_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Ms"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "done"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "enum": [
+                  "accepted",
+                  "wrong_answer",
+                  "compile_error",
+                  "runtime_error",
+                  "time_limit",
+                  "output_limit",
+                  "internal_error"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          }
+        },
+        "required": [
+          "id",
+          "problem_id",
+          "language",
+          "mode",
+          "state",
+          "passed",
+          "total",
+          "results",
+          "code",
+          "created_at"
+        ],
+        "title": "SubmissionOut",
+        "type": "object"
+      },
+      "SubmitRequest": {
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "title": "Code",
+            "type": "string"
+          },
+          "language": {
+            "enum": [
+              "c",
+              "cpp",
+              "python"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "mode": {
+            "default": "run",
+            "description": "run: sample tests only; submit: all tests",
+            "enum": [
+              "run",
+              "submit"
+            ],
+            "title": "Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "language",
+          "code"
+        ],
+        "title": "SubmitRequest",
         "type": "object"
       },
       "SubtopicBrief": {
@@ -4495,6 +5148,112 @@
           "done"
         ],
         "title": "TaskOut",
+        "type": "object"
+      },
+      "TestCase": {
+        "properties": {
+          "expected": {
+            "maxLength": 20000,
+            "title": "Expected",
+            "type": "string"
+          },
+          "input": {
+            "maxLength": 20000,
+            "title": "Input",
+            "type": "string"
+          },
+          "sample": {
+            "default": false,
+            "description": "Shown to students; the others stay hidden",
+            "title": "Sample",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "input",
+          "expected"
+        ],
+        "title": "TestCase",
+        "type": "object"
+      },
+      "TestResult": {
+        "properties": {
+          "expected": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected"
+          },
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "input": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input"
+          },
+          "ms": {
+            "title": "Ms",
+            "type": "integer"
+          },
+          "sample": {
+            "title": "Sample",
+            "type": "boolean"
+          },
+          "stderr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stderr"
+          },
+          "stdout": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stdout"
+          },
+          "verdict": {
+            "enum": [
+              "ok",
+              "wrong_answer",
+              "runtime_error",
+              "time_limit",
+              "output_limit",
+              "skipped"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "index",
+          "sample",
+          "verdict",
+          "ms"
+        ],
+        "title": "TestResult",
         "type": "object"
       },
       "TodayTask": {
@@ -5626,7 +6385,8 @@
                 {
                   "enum": [
                     "api",
-                    "worker"
+                    "worker",
+                    "judge"
                   ],
                   "type": "string"
                 },
@@ -7003,6 +7763,294 @@
         ]
       }
     },
+    "/api/v1/faculty/problems/{problem_id}": {
+      "delete": {
+        "operationId": "delete_problem_api_v1_faculty_problems__problem_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Delete Problem",
+        "tags": [
+          "coding"
+        ]
+      },
+      "put": {
+        "operationId": "update_problem_api_v1_faculty_problems__problem_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProblemIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemFull"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Update Problem",
+        "tags": [
+          "coding"
+        ]
+      }
+    },
+    "/api/v1/faculty/problems/{problem_id}/test-run": {
+      "post": {
+        "description": "Run a reference solution against every test, with full detail, to check the tests are right.",
+        "operationId": "staff_run_api_v1_faculty_problems__problem_id__test_run_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Staff Run",
+        "tags": [
+          "coding"
+        ]
+      }
+    },
     "/api/v1/faculty/questions/template.xlsx": {
       "get": {
         "description": "An empty question sheet with two example rows and instructions.",
@@ -7021,6 +8069,450 @@
         "summary": "Questions Template",
         "tags": [
           "faculty"
+        ]
+      }
+    },
+    "/api/v1/faculty/students": {
+      "get": {
+        "description": "Progress of the students enrolled in the caller's own courses (admins see their own too).",
+        "operationId": "students_overview_api_v1_faculty_students_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "course_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Course Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "on-track",
+                    "attention",
+                    "completed"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Students Overview",
+        "tags": [
+          "faculty"
+        ]
+      }
+    },
+    "/api/v1/faculty/students/{student_id}": {
+      "get": {
+        "operationId": "student_progress_api_v1_faculty_students__student_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "student_id",
+            "required": true,
+            "schema": {
+              "title": "Student Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Student Progress",
+        "tags": [
+          "faculty"
+        ]
+      }
+    },
+    "/api/v1/faculty/submissions/{submission_id}": {
+      "get": {
+        "operationId": "staff_submission_api_v1_faculty_submissions__submission_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submission_id",
+            "required": true,
+            "schema": {
+              "title": "Submission Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Staff Submission",
+        "tags": [
+          "coding"
+        ]
+      }
+    },
+    "/api/v1/faculty/subtopics/{subtopic_id}/problems": {
+      "get": {
+        "operationId": "staff_problems_api_v1_faculty_subtopics__subtopic_id__problems_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subtopic_id",
+            "required": true,
+            "schema": {
+              "title": "Subtopic Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProblemFull"
+                  },
+                  "title": "Response Staff Problems Api V1 Faculty Subtopics  Subtopic Id  Problems Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Staff Problems",
+        "tags": [
+          "coding"
+        ]
+      },
+      "post": {
+        "operationId": "create_problem_api_v1_faculty_subtopics__subtopic_id__problems_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subtopic_id",
+            "required": true,
+            "schema": {
+              "title": "Subtopic Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProblemIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemFull"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Create Problem",
+        "tags": [
+          "coding"
         ]
       }
     },
@@ -7895,6 +9387,297 @@
         ]
       }
     },
+    "/api/v1/student/problems/{problem_id}": {
+      "get": {
+        "operationId": "problem_api_v1_student_problems__problem_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Problem",
+        "tags": [
+          "coding"
+        ]
+      }
+    },
+    "/api/v1/student/problems/{problem_id}/submissions": {
+      "get": {
+        "operationId": "history_api_v1_student_problems__problem_id__submissions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SubmissionBrief"
+                  },
+                  "title": "Response History Api V1 Student Problems  Problem Id  Submissions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "History",
+        "tags": [
+          "coding"
+        ]
+      }
+    },
+    "/api/v1/student/problems/{problem_id}/submit": {
+      "post": {
+        "description": "Queue code to run. Poll the submission; `run` checks the sample tests, `submit` all of them.",
+        "operationId": "submit_api_v1_student_problems__problem_id__submit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Submit",
+        "tags": [
+          "coding"
+        ]
+      }
+    },
     "/api/v1/student/progress": {
       "get": {
         "operationId": "progress_api_v1_student_progress_get",
@@ -8056,6 +9839,194 @@
         "summary": "Submit Quiz",
         "tags": [
           "student"
+        ]
+      }
+    },
+    "/api/v1/student/submissions/{submission_id}": {
+      "get": {
+        "operationId": "submission_api_v1_student_submissions__submission_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submission_id",
+            "required": true,
+            "schema": {
+              "title": "Submission Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Submission",
+        "tags": [
+          "coding"
+        ]
+      }
+    },
+    "/api/v1/student/subtopics/{subtopic_id}/problems": {
+      "get": {
+        "operationId": "problems_api_v1_student_subtopics__subtopic_id__problems_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subtopic_id",
+            "required": true,
+            "schema": {
+              "title": "Subtopic Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProblemBrief"
+                  },
+                  "title": "Response Problems Api V1 Student Subtopics  Subtopic Id  Problems Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          }
+        },
+        "summary": "Problems",
+        "tags": [
+          "coding"
         ]
       }
     }

@@ -7,6 +7,8 @@ import { api, errorMessage } from "@/lib/api";
 import type { components } from "@/lib/api-client/schema";
 import { useToast } from "../Toast";
 import { stepText } from "./useJob";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 type Upload = components["schemas"]["UploadOut"];
 const BUSY = ["uploaded", "analyzing", "deriving"];
@@ -43,43 +45,43 @@ export function UploadFlow({ initial }: { initial: Upload }) {
 
   if (up.status === "failed")
     return (
-      <div className="card empty">
+      <Card className="gap-0 py-0 empty">
         <h3>We could not read this syllabus</h3>
         <p>{up.error ?? "Something went wrong while processing it."}</p>
-        <Link href="/faculty/new" className="btn">Try again</Link>
-      </div>
+        <Link href="/faculty/new" className={buttonVariants()}>Try again</Link>
+      </Card>
     );
 
   if (BUSY.includes(up.status))
     return (
-      <div className="card card-pad max-w-2xl" role="status" aria-live="polite">
-        <p className="font-serif text-lg font-semibold">
+      <Card role="status" aria-live="polite" className="gap-0 p-6 max-w-2xl">
+        <p className=" text-lg font-semibold">
           {up.status === "deriving" ? "Drafting sub-topics" : "Reading your syllabus"}
         </p>
-        <p className="mt-1 text-sm text-muted">{stepText(up.job ?? null, "Working…")}</p>
-        <div className="mt-4 h-1.5 overflow-hidden rounded bg-ink-100"><div className="h-full w-1/3 animate-pulse rounded bg-crimson" /></div>
-        <p className="mt-3 text-xs text-faint">This can take a minute or two. You can leave this page and come back from My courses.</p>
-      </div>
+        <p className="mt-1 text-sm text-muted-foreground">{stepText(up.job ?? null, "Working…")}</p>
+        <div className="mt-4 h-1.5 overflow-hidden rounded bg-muted"><div className="h-full w-1/3 animate-pulse rounded bg-primary" /></div>
+        <p className="mt-3 text-xs text-muted-foreground">This can take a minute or two. You can leave this page and come back from My courses.</p>
+      </Card>
     );
 
   const topics = up.topics ?? [];
   return (
     <div className="max-w-3xl space-y-4">
-      {up.ocr_used && <p className="text-sm text-muted">Some pages were scanned, so the text was read with the vision model. Check the topics carefully.</p>}
-      <ul className="card divide-y divide-line-soft">
+      {up.ocr_used && <p className="text-sm text-muted-foreground">Some pages were scanned, so the text was read with the vision model. Check the topics carefully.</p>}
+      <ul className="rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 divide-y divide-border">
         {topics.map((t) => (
           <li key={t.title}>
             <label className="flex cursor-pointer gap-3 px-5 py-3">
               <input type="checkbox" className="mt-1.5" checked={picked.has(t.title)}
                 onChange={(e) => setPicked((p) => { const n = new Set(p); if (e.target.checked) n.add(t.title); else n.delete(t.title); return n; })} />
-              <span><span className="font-medium">{t.title}</span><span className="block text-sm text-muted">{t.summary}</span></span>
+              <span><span className="font-medium">{t.title}</span><span className="block text-sm text-muted-foreground">{t.summary}</span></span>
             </label>
           </li>
         ))}
       </ul>
-      <button className="btn btn-crimson" disabled={busy || picked.size === 0} onClick={derive}>
+      <Button disabled={busy || picked.size === 0} onClick={derive}>
         Build {picked.size} {picked.size === 1 ? "topic" : "topics"} →
-      </button>
+      </Button>
     </div>
   );
 }

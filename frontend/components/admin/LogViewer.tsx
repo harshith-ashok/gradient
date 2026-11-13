@@ -6,6 +6,12 @@ import { api, errorMessage } from "@/lib/api";
 import type { components } from "@/lib/api-client/schema";
 import { fmtUtc } from "@/lib/format";
 import { LEVEL_TONE, statusTone } from "./ui";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Log = components["schemas"]["LogOut"];
 const PAGE_SIZE = 50;
@@ -51,102 +57,103 @@ export function LogViewer({ initialRequestId }: { initialRequestId: string }) {
   const pages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
-    <div className="card">
-      <div className="flex flex-wrap items-center gap-3 border-b border-line-soft p-4">
-        <input value={f.q} onChange={set("q")} className="input !w-56" placeholder="Search messages" aria-label="Search messages" />
-        <input value={f.path} onChange={set("path")} className="input !w-44" placeholder="Path contains…" aria-label="Path contains" />
-        <input value={f.request_id} onChange={set("request_id")} className="input !w-56" placeholder="Request ID" aria-label="Request ID" />
-        <select value={f.level} onChange={set("level")} className="input !w-auto" aria-label="Minimum level">
+    <Card className="gap-0 py-0">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
+        <Input value={f.q} onChange={set("q")} placeholder="Search messages" aria-label="Search messages" className="!w-56" />
+        <Input value={f.path} onChange={set("path")} placeholder="Path contains…" aria-label="Path contains" className="!w-44" />
+        <Input value={f.request_id} onChange={set("request_id")} placeholder="Request ID" aria-label="Request ID" className="!w-56" />
+        <NativeSelect value={f.level} onChange={set("level")} aria-label="Minimum level" className="!w-auto">
           <option value="">All levels</option>
           <option value="WARNING">Warnings and above</option>
           <option value="ERROR">Errors only</option>
-        </select>
-        <select value={f.kind} onChange={set("kind")} className="input !w-auto" aria-label="Kind">
+        </NativeSelect>
+        <NativeSelect value={f.kind} onChange={set("kind")} aria-label="Kind" className="!w-auto">
           <option value="">Requests and events</option>
           <option value="requests">Requests only</option>
           <option value="events">Events only</option>
-        </select>
-        <select value={f.min_status} onChange={set("min_status")} className="input !w-auto" aria-label="Status">
+        </NativeSelect>
+        <NativeSelect value={f.min_status} onChange={set("min_status")} aria-label="Status" className="!w-auto">
           <option value="">Any status</option>
           <option value="400">4xx and 5xx</option>
           <option value="500">5xx only</option>
-        </select>
-        <select value={f.source} onChange={set("source")} className="input !w-auto" aria-label="Source">
+        </NativeSelect>
+        <NativeSelect value={f.source} onChange={set("source")} aria-label="Source" className="!w-auto">
           <option value="">API and worker</option>
           <option value="api">API</option>
           <option value="worker">AI worker</option>
-        </select>
-        <select value={f.minutes} onChange={set("minutes")} className="input !w-auto" aria-label="Time range">
+          <option value="judge">Code runner</option>
+        </NativeSelect>
+        <NativeSelect value={f.minutes} onChange={set("minutes")} aria-label="Time range" className="!w-auto">
           <option value="15">Last 15 minutes</option>
           <option value="60">Last hour</option>
           <option value="1440">Last 24 hours</option>
           <option value="10080">Last 7 days</option>
           <option value="">Everything kept</option>
-        </select>
+        </NativeSelect>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} /> Live (every 5 s)
         </label>
-        <span className="ml-auto text-sm text-muted">{data ? `${data.total} ${data.total === 1 ? "entry" : "entries"}` : "Loading…"}</span>
+        <span className="ml-auto text-sm text-muted-foreground">{data ? `${data.total} ${data.total === 1 ? "entry" : "entries"}` : "Loading…"}</span>
       </div>
-      {error && <p role="alert" className="border-b border-line-soft p-4 text-sm text-bad">{error}</p>}
+      {error && <p role="alert" className="border-b border-border p-4 text-sm text-destructive">{error}</p>}
       <div className="overflow-x-auto">
-        <table className="table">
-          <thead><tr><th>Time (UTC)</th><th>Level</th><th>What happened</th><th>Who</th><th className="num">ms</th></tr></thead>
-          <tbody>
+        <Table>
+          <TableHeader><TableRow><TableHead>Time (UTC)</TableHead><TableHead>Level</TableHead><TableHead>What happened</TableHead><TableHead>Who</TableHead><TableHead className="text-right tabular-nums">ms</TableHead></TableRow></TableHeader>
+          <TableBody>
             {data?.items.map((l) => (
               <LogRow key={l.id} l={l} open={open === l.id} toggle={() => setOpen(open === l.id ? null : l.id)}
                 filterRequest={() => { setF({ ...f, request_id: l.request_id ?? "" }); setPage(1); }} />
             ))}
-            {data && !data.items.length && <tr><td colSpan={5} className="empty">Nothing logged for these filters.</td></tr>}
-          </tbody>
-        </table>
+            {data && !data.items.length && <TableRow><TableCell colSpan={5} className="empty">Nothing logged for these filters.</TableCell></TableRow>}
+          </TableBody>
+        </Table>
       </div>
       {pages > 1 && (
-        <nav aria-label="Pagination" className="flex items-center justify-between border-t border-line-soft px-4 py-3 text-sm">
-          <button type="button" className="btn btn-secondary btn-sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>← Newer</button>
-          <span className="text-muted">Page {page} of {pages}</span>
-          <button type="button" className="btn btn-secondary btn-sm" disabled={page >= pages} onClick={() => setPage(page + 1)}>Older →</button>
+        <nav aria-label="Pagination" className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">
+          <Button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)} variant="outline" size="sm">← Newer</Button>
+          <span className="text-muted-foreground">Page {page} of {pages}</span>
+          <Button type="button" disabled={page >= pages} onClick={() => setPage(page + 1)} variant="outline" size="sm">Older →</Button>
         </nav>
       )}
-    </div>
+    </Card>
   );
 }
 
 function LogRow({ l, open, toggle, filterRequest }: { l: Log; open: boolean; toggle: () => void; filterRequest: () => void }) {
   return (
     <>
-      <tr className="cursor-pointer hover:bg-ink-50" onClick={toggle}>
-        <td className="whitespace-nowrap text-sm text-muted">{fmtUtc(l.ts)}</td>
-        <td><span className={`badge ${LEVEL_TONE[l.level]}`}>{l.level}</span></td>
-        <td>
+      <TableRow onClick={toggle} className="cursor-pointer hover:bg-muted">
+        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">{fmtUtc(l.ts)}</TableCell>
+        <TableCell><Badge variant={LEVEL_TONE[l.level]}>{l.level}</Badge></TableCell>
+        <TableCell>
           {l.method ? (
             <>
-              <span className={`badge ${statusTone(l.status)} mr-2`}>{l.status}</span>
+              <Badge variant={statusTone(l.status)} className="mr-2">{l.status}</Badge>
               <b>{l.method}</b> <code className="text-[13px]">{l.path}</code>
             </>
           ) : (
             <span>{l.message}</span>
           )}
-          <div className="text-xs text-muted">{l.logger} · {l.source}</div>
-        </td>
-        <td className="text-sm">{l.user_name ?? (l.user_id ? l.user_id : <span className="text-muted">anonymous</span>)}{l.role && <span className="text-muted"> · {l.role}</span>}</td>
-        <td className="num">{l.duration_ms ?? ""}</td>
-      </tr>
+          <div className="text-xs text-muted-foreground">{l.logger} · {l.source}</div>
+        </TableCell>
+        <TableCell className="text-sm">{l.user_name ?? (l.user_id ? l.user_id : <span className="text-muted-foreground">anonymous</span>)}{l.role && <span className="text-muted-foreground"> · {l.role}</span>}</TableCell>
+        <TableCell className="text-right tabular-nums">{l.duration_ms ?? ""}</TableCell>
+      </TableRow>
       {open && (
-        <tr className="bg-ink-50">
-          <td colSpan={5} className="text-sm">
+        <TableRow className="bg-muted">
+          <TableCell colSpan={5} className="text-sm">
             <p className="whitespace-pre-wrap break-words">{l.message}</p>
             {l.request_id && (
               <p className="mt-2 flex flex-wrap items-center gap-3">
                 <span>Request ID <code>{l.request_id}</code></span>
-                <button type="button" className="btn btn-secondary btn-sm" onClick={filterRequest}>Show this request only</button>
+                <Button type="button" onClick={filterRequest} variant="outline" size="sm">Show this request only</Button>
                 {l.status && l.status >= 500 && (
-                  <Link href="/admin/issues" className="text-crimson hover:underline">See issues</Link>
+                  <Link href="/admin/issues" className="text-primary hover:underline">See issues</Link>
                 )}
               </p>
             )}
-          </td>
-        </tr>
+          </TableCell>
+        </TableRow>
       )}
     </>
   );

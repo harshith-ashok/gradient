@@ -27,7 +27,7 @@ test("management reviews progress, finds a student, and changes the pass mark", 
   await page.getByLabel("Status").selectOption("attention");
   await page.getByRole("button", { name: "Apply" }).click();
   await expect(page).toHaveURL(/status=attention/);
-  const badges = page.locator("tbody td .badge");
+  const badges = page.locator("tbody td [data-slot=badge]");
   await expect(badges.first()).toHaveText("Needs attention");
   expect(await badges.allTextContents()).not.toContain("On track"); // every row matches the filter
 

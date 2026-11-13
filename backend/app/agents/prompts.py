@@ -93,7 +93,11 @@ def questions_prompt(topic: str, subtopic: str, points: list[str], context: str,
         "Each has exactly 4 options and exactly one correct option (`answer_index`, counting from 0). Wrong "
         "options must be plausible but clearly wrong to someone who knows the material. Vary which position "
         "holds the correct answer. Do not use 'all of the above' or 'none of the above'. Do not put the "
-        "answer in the question text. The explanation says why the correct option is right."
+        "answer in the question text. The explanation says why the correct option is right.\n"
+        "Formatting: text is Markdown. Put any code in a fenced block with its language, the fences on "
+        "their own lines and real line breaks inside, for example ```c on one line, the code on the next "
+        "lines, then ``` alone. Use `backticks` for short inline code such as `sizeof`. A code-only option "
+        "may be written as inline code. Do not use HTML."
         f"{avoid}{fix}"
     )
 

@@ -4,6 +4,10 @@ import { UserManager } from "@/components/admin/UserManager";
 import { Pager, Stat, one, qs } from "@/components/admin/ui";
 import { PageHeader } from "@/components/PageHeader";
 import { serverApi, unwrap } from "@/lib/server-api";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 
 export const metadata: Metadata = { title: "Users" };
 const ROLES = ["student", "faculty", "admin"] as const;
@@ -38,31 +42,31 @@ export default async function UsersPage({ searchParams }: PageProps<"/admin/user
         <Stat value={data.inactive} label="Deactivated accounts" tone={data.inactive ? "warn" : undefined} />
       </div>
 
-      <div className="card mb-6">
+      <Card className="gap-0 py-0 mb-6">
         <form method="get" className="flex flex-wrap items-center gap-3 p-4">
           <label className="sr-only" htmlFor="q">Search users</label>
-          <input id="q" name="q" defaultValue={q} className="input !w-72" placeholder="Search by name, email or ID" />
+          <Input id="q" name="q" defaultValue={q} placeholder="Search by name, email or ID" className="!w-72" />
           <label className="sr-only" htmlFor="role">Role</label>
-          <select id="role" name="role" defaultValue={role ?? ""} className="input !w-auto">
+          <NativeSelect id="role" name="role" defaultValue={role ?? ""} className="!w-auto">
             <option value="">All roles</option>
             {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-          </select>
+          </NativeSelect>
           <label className="sr-only" htmlFor="active">Account state</label>
-          <select id="active" name="active" defaultValue={one(sp.active) ?? ""} className="input !w-auto">
+          <NativeSelect id="active" name="active" defaultValue={one(sp.active) ?? ""} className="!w-auto">
             <option value="">Active and deactivated</option>
             <option value="yes">Active only</option>
             <option value="no">Deactivated only</option>
-          </select>
-          <button type="submit" className="btn btn-sm">Apply</button>
-          {(q || role || one(sp.active)) && <Link href="/admin/users" className="text-sm text-crimson hover:underline">Clear</Link>}
-          <span className="ml-auto text-sm text-muted">{data.total} {data.total === 1 ? "user" : "users"}</span>
+          </NativeSelect>
+          <Button type="submit" size="sm">Apply</Button>
+          {(q || role || one(sp.active)) && <Link href="/admin/users" className="text-sm text-primary hover:underline">Clear</Link>}
+          <span className="ml-auto text-sm text-muted-foreground">{data.total} {data.total === 1 ? "user" : "users"}</span>
         </form>
-      </div>
+      </Card>
 
       <UserManager users={data.items} meId={me.id} />
-      <div className="card -mt-px rounded-t-none border-t-0">
+      <Card className="gap-0 py-0 -mt-px rounded-t-none border-t-0">
         <Pager page={page} size={PAGE_SIZE} total={data.total} href={href} />
-      </div>
+      </Card>
     </>
   );
 }

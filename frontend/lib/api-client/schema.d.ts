@@ -446,6 +446,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/faculty/problems/{problem_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Problem */
+        put: operations["update_problem_api_v1_faculty_problems__problem_id__put"];
+        post?: never;
+        /** Delete Problem */
+        delete: operations["delete_problem_api_v1_faculty_problems__problem_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/problems/{problem_id}/test-run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Staff Run
+         * @description Run a reference solution against every test, with full detail, to check the tests are right.
+         */
+        post: operations["staff_run_api_v1_faculty_problems__problem_id__test_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/faculty/questions/template.xlsx": {
         parameters: {
             query?: never;
@@ -460,6 +498,78 @@ export interface paths {
         get: operations["questions_template_api_v1_faculty_questions_template_xlsx_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Students Overview
+         * @description Progress of the students enrolled in the caller's own courses (admins see their own too).
+         */
+        get: operations["students_overview_api_v1_faculty_students_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/students/{student_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Student Progress */
+        get: operations["student_progress_api_v1_faculty_students__student_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/submissions/{submission_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff Submission */
+        get: operations["staff_submission_api_v1_faculty_submissions__submission_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faculty/subtopics/{subtopic_id}/problems": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff Problems */
+        get: operations["staff_problems_api_v1_faculty_subtopics__subtopic_id__problems_get"];
+        put?: never;
+        /** Create Problem */
+        post: operations["create_problem_api_v1_faculty_subtopics__subtopic_id__problems_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -690,6 +800,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/student/problems/{problem_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Problem */
+        get: operations["problem_api_v1_student_problems__problem_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/problems/{problem_id}/submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_student_problems__problem_id__submissions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/problems/{problem_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit
+         * @description Queue code to run. Poll the submission; `run` checks the sample tests, `submit` all of them.
+         */
+        post: operations["submit_api_v1_student_problems__problem_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/student/progress": {
         parameters: {
             query?: never;
@@ -735,6 +899,40 @@ export interface paths {
         put?: never;
         /** Submit Quiz */
         post: operations["submit_quiz_api_v1_student_quizzes__quiz_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/submissions/{submission_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Submission */
+        get: operations["submission_api_v1_student_submissions__submission_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/subtopics/{subtopic_id}/problems": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Problems */
+        get: operations["problems_api_v1_student_subtopics__subtopic_id__problems_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1835,6 +2033,132 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** ProblemBrief */
+        ProblemBrief: {
+            /** Attempts */
+            attempts: number;
+            /** Id */
+            id: string;
+            /** Languages */
+            languages: ("c" | "cpp" | "python")[];
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced" | "expert";
+            /** Solved */
+            solved: boolean;
+            /** Title */
+            title: string;
+        };
+        /** ProblemDetail */
+        ProblemDetail: {
+            /** Course Code */
+            course_code: string;
+            /** Course Id */
+            course_id: string;
+            /** Course Title */
+            course_title: string;
+            /** Hidden Tests */
+            hidden_tests: number;
+            /** Id */
+            id: string;
+            /** Languages */
+            languages: ("c" | "cpp" | "python")[];
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced" | "expert";
+            /** Memory Mb */
+            memory_mb: number;
+            /** Samples */
+            samples: components["schemas"]["Sample"][];
+            /** Solved */
+            solved: boolean;
+            /** Starter */
+            starter: {
+                [key: string]: string;
+            };
+            /** Statement */
+            statement: string;
+            /** Subtopic Id */
+            subtopic_id: string;
+            /** Subtopic Title */
+            subtopic_title: string;
+            /** Time Limit Ms */
+            time_limit_ms: number;
+            /** Title */
+            title: string;
+        };
+        /** ProblemFull */
+        ProblemFull: {
+            /** Id */
+            id: string;
+            /** Languages */
+            languages: ("c" | "cpp" | "python")[];
+            /**
+             * Level
+             * @default beginner
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced" | "expert";
+            /**
+             * Memory Mb
+             * @default 256
+             */
+            memory_mb: number;
+            /** Position */
+            position: number;
+            /** Starter */
+            starter?: {
+                [key: string]: string;
+            };
+            /** Statement */
+            statement: string;
+            /** Subtopic Id */
+            subtopic_id: string;
+            /** Tests */
+            tests: components["schemas"]["TestCase"][];
+            /**
+             * Time Limit Ms
+             * @default 2000
+             */
+            time_limit_ms: number;
+            /** Title */
+            title: string;
+        };
+        /** ProblemIn */
+        ProblemIn: {
+            /** Languages */
+            languages: ("c" | "cpp" | "python")[];
+            /**
+             * Level
+             * @default beginner
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced" | "expert";
+            /**
+             * Memory Mb
+             * @default 256
+             */
+            memory_mb: number;
+            /** Starter */
+            starter?: {
+                [key: string]: string;
+            };
+            /** Statement */
+            statement: string;
+            /** Tests */
+            tests: components["schemas"]["TestCase"][];
+            /**
+             * Time Limit Ms
+             * @default 2000
+             */
+            time_limit_ms: number;
+            /** Title */
+            title: string;
+        };
         /** Progress */
         Progress: {
             /** Enrollments */
@@ -2032,6 +2356,13 @@ export interface components {
             /** Users */
             users: number;
         };
+        /** Sample */
+        Sample: {
+            /** Expected */
+            expected: string;
+            /** Input */
+            input: string;
+        };
         /** SettingsOut */
         SettingsOut: {
             /** Courses */
@@ -2082,6 +2413,16 @@ export interface components {
             title: string;
             /** Topic Count */
             topic_count: number;
+        };
+        /** StaffRunRequest */
+        StaffRunRequest: {
+            /** Code */
+            code: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "c" | "cpp" | "python";
         };
         /** StatusChange */
         StatusChange: {
@@ -2203,6 +2544,107 @@ export interface components {
             /** Threshold */
             threshold: number;
             topic: components["schemas"]["NavLink"];
+        };
+        /** SubmissionBrief */
+        SubmissionBrief: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "c" | "cpp" | "python";
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "run" | "submit" | "check";
+            /** Passed */
+            passed: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "queued" | "running" | "done";
+            /** Total */
+            total: number;
+            /** Verdict */
+            verdict?: ("accepted" | "wrong_answer" | "compile_error" | "runtime_error" | "time_limit" | "output_limit" | "internal_error") | null;
+        };
+        /** SubmissionCreated */
+        SubmissionCreated: {
+            /** Id */
+            id: string;
+        };
+        /** SubmissionOut */
+        SubmissionOut: {
+            /** Code */
+            code: string;
+            /** Compile Output */
+            compile_output?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "c" | "cpp" | "python";
+            /** Message */
+            message?: string | null;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "run" | "submit" | "check";
+            /** Passed */
+            passed: number;
+            /** Problem Id */
+            problem_id: string;
+            /**
+             * Queue Position
+             * @description Submissions ahead of this one while it waits
+             */
+            queue_position?: number | null;
+            /** Results */
+            results: components["schemas"]["TestResult"][];
+            /** Runtime Ms */
+            runtime_ms?: number | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "queued" | "running" | "done";
+            /** Total */
+            total: number;
+            /** Verdict */
+            verdict?: ("accepted" | "wrong_answer" | "compile_error" | "runtime_error" | "time_limit" | "output_limit" | "internal_error") | null;
+        };
+        /** SubmitRequest */
+        SubmitRequest: {
+            /** Code */
+            code: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "c" | "cpp" | "python";
+            /**
+             * Mode
+             * @description run: sample tests only; submit: all tests
+             * @default run
+             * @enum {string}
+             */
+            mode: "run" | "submit";
         };
         /** SubtopicBrief */
         SubtopicBrief: {
@@ -2404,6 +2846,41 @@ export interface components {
              * @enum {string}
              */
             type: "study" | "quiz" | "confirm" | "remediation" | "retake" | "topic_quiz";
+        };
+        /** TestCase */
+        TestCase: {
+            /** Expected */
+            expected: string;
+            /** Input */
+            input: string;
+            /**
+             * Sample
+             * @description Shown to students; the others stay hidden
+             * @default false
+             */
+            sample: boolean;
+        };
+        /** TestResult */
+        TestResult: {
+            /** Expected */
+            expected?: string | null;
+            /** Index */
+            index: number;
+            /** Input */
+            input?: string | null;
+            /** Ms */
+            ms: number;
+            /** Sample */
+            sample: boolean;
+            /** Stderr */
+            stderr?: string | null;
+            /** Stdout */
+            stdout?: string | null;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "ok" | "wrong_answer" | "runtime_error" | "time_limit" | "output_limit" | "skipped";
         };
         /** TodayTask */
         TodayTask: {
@@ -2879,7 +3356,7 @@ export interface operations {
                 path?: string;
                 min_status?: number | null;
                 user_id?: string;
-                source?: ("api" | "worker") | null;
+                source?: ("api" | "worker" | "judge") | null;
                 minutes?: number | null;
                 page?: number;
                 page_size?: number;
@@ -3872,6 +4349,240 @@ export interface operations {
             };
         };
     };
+    update_problem_api_v1_faculty_problems__problem_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                problem_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProblemIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemFull"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    delete_problem_api_v1_faculty_problems__problem_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                problem_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    staff_run_api_v1_faculty_problems__problem_id__test_run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                problem_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmissionCreated"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
     questions_template_api_v1_faculty_questions_template_xlsx_get: {
         parameters: {
             query?: never;
@@ -3889,6 +4600,313 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": unknown;
+                };
+            };
+        };
+    };
+    students_overview_api_v1_faculty_students_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                course_id?: string | null;
+                status?: ("on-track" | "attention" | "completed") | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Overview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    student_progress_api_v1_faculty_students__student_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                student_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentDetailOut"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    staff_submission_api_v1_faculty_submissions__submission_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                submission_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmissionOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    staff_problems_api_v1_faculty_subtopics__subtopic_id__problems_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subtopic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemFull"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    create_problem_api_v1_faculty_subtopics__subtopic_id__problems_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subtopic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProblemIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemFull"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
                 };
             };
         };
@@ -4575,6 +5593,238 @@ export interface operations {
             };
         };
     };
+    problem_api_v1_student_problems__problem_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                problem_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    history_api_v1_student_problems__problem_id__submissions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                problem_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmissionBrief"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    submit_api_v1_student_problems__problem_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                problem_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmissionCreated"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
     progress_api_v1_student_progress_get: {
         parameters: {
             query?: never;
@@ -4704,6 +5954,158 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submission_api_v1_student_submissions__submission_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                submission_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmissionOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    problems_api_v1_student_subtopics__subtopic_id__problems_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subtopic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemBrief"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
                 };
             };
         };

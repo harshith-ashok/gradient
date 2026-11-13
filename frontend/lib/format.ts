@@ -1,3 +1,4 @@
+import type { BadgeTone } from "@/components/ui/badge";
 import type { components } from "@/lib/api-client/schema";
 
 type S = components["schemas"];
@@ -44,17 +45,17 @@ export const TASK_LABEL: Record<TaskType, string> = {
 export const STATUS_LABEL: Record<SubStatus, string> = {
   new: "Not started", learning: "In progress", review: "Needs review", mastered: "Mastered",
 };
-export const STATUS_TONE: Record<SubStatus, string> = {
-  new: "", learning: "badge-info", review: "badge-warn", mastered: "badge-ok",
+export const STATUS_TONE: Record<SubStatus, BadgeTone> = {
+  new: "outline", learning: "secondary", review: "warning", mastered: "success",
 };
 export const ENR_STATUS: Record<EnrStatus, string> = {
   "on-track": "On track", attention: "Needs attention", completed: "Completed",
 };
-export const ENR_TONE: Record<EnrStatus, string> = {
-  "on-track": "badge-info", attention: "badge-warn", completed: "badge-ok",
+export const ENR_TONE: Record<EnrStatus, BadgeTone> = {
+  "on-track": "secondary", attention: "warning", completed: "success",
 };
-export const TASK_TONE: Partial<Record<TaskType, string>> = {
-  remediation: "badge-warn", retake: "badge-warn", topic_quiz: "badge-crimson",
+export const TASK_TONE: Partial<Record<TaskType, BadgeTone>> = {
+  remediation: "warning", retake: "warning", topic_quiz: "default",
 };
 
 /** Mastery colour relative to the pass mark. */

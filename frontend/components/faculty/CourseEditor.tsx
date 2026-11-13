@@ -7,6 +7,11 @@ import { useToast } from "../Toast";
 import { QuestionSheets } from "./QuestionSheets";
 import { SubtopicForm } from "./SubtopicForm";
 import { stepText, useJob } from "./useJob";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export type Course = components["schemas"]["CourseFull"];
 export type Topic = Course["topics"][number];
@@ -94,29 +99,29 @@ export function CourseEditor({ initial, isNew }: { initial: Course; isNew: boole
 
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-      <aside className="card lg:sticky lg:top-4">
-        <div className="card-head !py-3">
-          <span className={`badge ${course.status === "published" ? "badge-ok" : "badge-warn"}`}>
+      <aside className="rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 lg:sticky lg:top-4">
+        <div className="flex items-center justify-between gap-4 border-b px-6 py-4 !py-3">
+          <Badge variant={course.status === "published" ? "success" : "warning"}>
             {course.status === "published" ? "Published" : "Draft"}
-          </span>
-          <button className="btn btn-sm btn-secondary" onClick={() => edit((c) => { c.topics.push({ title: "New topic", summary: "", subtopics: [] }); setSel({ t: c.topics.length - 1, s: null }); })}>
+          </Badge>
+          <Button onClick={() => edit((c) => { c.topics.push({ title: "New topic", summary: "", subtopics: [] }); setSel({ t: c.topics.length - 1, s: null }); })} variant="outline" size="sm">
             + Topic
-          </button>
+          </Button>
         </div>
         <nav aria-label="Course outline" className="max-h-[60vh] overflow-y-auto py-1">
           {course.topics.map((t, ti) => (
             <div key={t.id ?? ti}>
-              <button className={`block w-full px-5 py-2 text-left text-sm font-semibold hover:bg-ink-50 ${sel.t === ti && sel.s === null ? "text-crimson" : ""}`}
+              <button className={`block w-full px-5 py-2 text-left text-sm font-semibold hover:bg-muted ${sel.t === ti && sel.s === null ? "text-primary" : ""}`}
                 onClick={() => setSel({ t: ti, s: null })}>{t.title || "Untitled topic"}</button>
               {t.subtopics.map((s, si) => {
                 const levels = LEVELS.filter((l) => s.summaries?.[l]?.length || (l === "beginner" && s.summary.length)).length;
                 return (
                   <button key={s.id ?? si} onClick={() => setSel({ t: ti, s: si })} aria-current={sel.t === ti && sel.s === si}
-                    className="flex w-full items-center justify-between gap-2 py-1.5 pl-9 pr-4 text-left text-sm hover:bg-ink-50 aria-[current=true]:bg-crimson-soft aria-[current=true]:text-crimson">
+                    className="flex w-full items-center justify-between gap-2 py-1.5 pl-9 pr-4 text-left text-sm hover:bg-muted aria-[current=true]:bg-muted aria-[current=true]:text-primary">
                     <span className="truncate">{s.title || "Untitled"}</span>
-                    <span className={`badge ${levels === 4 && s.questions.length >= 4 ? "badge-ok" : "badge-warn"}`} title={`${levels} of 4 summary levels, ${s.questions.length} questions`}>
+                    <Badge title={`${levels} of 4 summary levels, ${s.questions.length} questions`} variant={levels === 4 && s.questions.length >= 4 ? "success" : "warning"}>
                       {levels}/4
-                    </span>
+                    </Badge>
                   </button>
                 );
               })}
@@ -127,35 +132,35 @@ export function CourseEditor({ initial, isNew }: { initial: Course; isNew: boole
 
       <section className="min-w-0 space-y-4">
         {isNew && course.status === "draft" && (
-          <div className="card card-pad text-sm">
+          <Card className="gap-0 p-6 text-sm">
             The outline is ready. Next, ask the AI to write the summaries, flashcards and quiz questions, then review them.
-          </div>
+          </Card>
         )}
-        <div className="card card-pad flex flex-wrap items-center gap-3">
-          <button className="btn btn-crimson" disabled={running} onClick={() => generate(null)}>
+        <Card className="gap-0 p-6 flex flex-wrap items-center gap-3">
+          <Button disabled={running} onClick={() => generate(null)}>
             {running ? "Generating…" : "Generate study material for the whole course"}
-          </button>
-          <label className="flex items-center gap-2 text-sm text-muted">
+          </Button>
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <input type="checkbox" checked={force} onChange={(e) => setForce(e.target.checked)} />
             Replace what is already written
           </label>
           <span className="flex-1" />
-          <button className="btn btn-secondary" disabled={!dirty || saving} onClick={save}>{saving ? "Saving…" : dirty ? "Save changes" : "Saved"}</button>
+          <Button disabled={!dirty || saving} onClick={save} variant="outline">{saving ? "Saving…" : dirty ? "Save changes" : "Saved"}</Button>
           {course.status === "published"
-            ? <button className="btn btn-secondary" onClick={() => setStatus("draft")}>Unpublish</button>
-            : <button className="btn" onClick={() => setStatus("published")}>Publish</button>}
-        </div>
+            ? <Button onClick={() => setStatus("draft")} variant="outline">Unpublish</Button>
+            : <Button onClick={() => setStatus("published")}>Publish</Button>}
+        </Card>
         <QuestionSheets
           courseId={course.id} code={course.code} dirty={dirty} onSaveFirst={save} onImported={reload}
         />
         {running && (
-          <div className="card card-pad text-sm" role="status" aria-live="polite">
+          <Card role="status" aria-live="polite" className="gap-0 p-6 text-sm">
             <p className="font-medium">Writing study material</p>
-            <p className="text-muted">{stepText(job, "Starting…")}</p>
-          </div>
+            <p className="text-muted-foreground">{stepText(job, "Starting…")}</p>
+          </Card>
         )}
         {course.status === "draft" && gaps > 0 && (
-          <p className="text-sm text-muted">{gaps} {gaps === 1 ? "sub-topic still lacks" : "sub-topics still lack"} summaries at some level or fewer than 4 questions. Students can still use them, but generate or write the rest first.</p>
+          <p className="text-sm text-muted-foreground">{gaps} {gaps === 1 ? "sub-topic still lacks" : "sub-topics still lack"} summaries at some level or fewer than 4 questions. Students can still use them, but generate or write the rest first.</p>
         )}
 
         {sub && sel.s !== null ? (
@@ -167,20 +172,20 @@ export function CourseEditor({ initial, isNew }: { initial: Course; isNew: boole
             onDelete={() => { if (confirm(`Delete “${sub.title}”? Students' history for it is kept, but its content is removed.`)) { edit((c) => { c.topics[sel.t].subtopics.splice(sel.s!, 1); }); setSel({ t: sel.t, s: null }); } }}
           />
         ) : topic ? (
-          <div className="card card-pad space-y-4">
+          <Card className="gap-0 p-6 space-y-4">
             <label className="block space-y-1.5 text-sm"><span className="font-medium">Topic title</span>
-              <input className="input" value={topic.title} onChange={(e) => edit((c) => { c.topics[sel.t].title = e.target.value; })} /></label>
+              <Input value={topic.title} onChange={(e) => edit((c) => { c.topics[sel.t].title = e.target.value; })} /></label>
             <label className="block space-y-1.5 text-sm"><span className="font-medium">Topic summary</span>
-              <textarea className="input" rows={3} value={topic.summary} onChange={(e) => edit((c) => { c.topics[sel.t].summary = e.target.value; })} /></label>
+              <Textarea rows={3} value={topic.summary} onChange={(e) => edit((c) => { c.topics[sel.t].summary = e.target.value; })} /></label>
             <div className="flex flex-wrap gap-2">
-              <button className="btn btn-secondary btn-sm" onClick={() => edit((c) => { c.topics[sel.t].subtopics.push(blankSub()); setSel({ t: sel.t, s: c.topics[sel.t].subtopics.length - 1 }); })}>+ Sub-topic</button>
-              <button className="btn btn-secondary btn-sm" disabled={sel.t === 0} onClick={() => { edit((c) => { c.topics = move(c.topics, sel.t, -1); }); setSel({ t: sel.t - 1, s: null }); }}>Move up</button>
-              <button className="btn btn-secondary btn-sm" disabled={sel.t === course.topics.length - 1} onClick={() => { edit((c) => { c.topics = move(c.topics, sel.t, 1); }); setSel({ t: sel.t + 1, s: null }); }}>Move down</button>
-              <button className="btn btn-secondary btn-sm" onClick={() => { if (confirm(`Delete the topic “${topic.title}” and everything in it?`)) { edit((c) => { c.topics.splice(sel.t, 1); }); setSel({ t: 0, s: null }); } }}>Delete topic</button>
+              <Button onClick={() => edit((c) => { c.topics[sel.t].subtopics.push(blankSub()); setSel({ t: sel.t, s: c.topics[sel.t].subtopics.length - 1 }); })} variant="outline" size="sm">+ Sub-topic</Button>
+              <Button disabled={sel.t === 0} onClick={() => { edit((c) => { c.topics = move(c.topics, sel.t, -1); }); setSel({ t: sel.t - 1, s: null }); }} variant="outline" size="sm">Move up</Button>
+              <Button disabled={sel.t === course.topics.length - 1} onClick={() => { edit((c) => { c.topics = move(c.topics, sel.t, 1); }); setSel({ t: sel.t + 1, s: null }); }} variant="outline" size="sm">Move down</Button>
+              <Button onClick={() => { if (confirm(`Delete the topic “${topic.title}” and everything in it?`)) { edit((c) => { c.topics.splice(sel.t, 1); }); setSel({ t: 0, s: null }); } }} variant="outline" size="sm">Delete topic</Button>
             </div>
-          </div>
+          </Card>
         ) : (
-          <div className="card empty"><h3>No topics yet</h3><p>Add a topic from the sidebar.</p></div>
+          <Card className="gap-0 py-0 empty"><h3>No topics yet</h3><p>Add a topic from the sidebar.</p></Card>
         )}
       </section>
     </div>

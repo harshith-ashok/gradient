@@ -79,7 +79,7 @@ def access(request: Request, hours: int = Query(24, ge=1, le=720), db: Session =
 def logs(level: Literal["INFO", "WARNING", "ERROR", "CRITICAL"] | None = None,
          kind: Literal["requests", "events"] | None = None, q: str = "", request_id: str = "",
          path: str = "", min_status: int | None = Query(None, ge=100, le=599), user_id: str = "",
-         source: Literal["api", "worker"] | None = None, minutes: int | None = Query(None, ge=1, le=43200),
+         source: Literal["api", "worker", "judge"] | None = None, minutes: int | None = Query(None, ge=1, le=43200),
          page: int = Query(1, ge=1), page_size: int = Query(50, ge=1, le=svc.MAX_PAGE),
          db: Session = Depends(get_db), _: User = Depends(admin)):
     return svc.list_logs(db, level=level, kind=kind, q=q, request_id_=request_id, path=path,

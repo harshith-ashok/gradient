@@ -13,6 +13,7 @@ const NAV: Record<Role, { to: string; label: string; exact?: boolean }[]> = {
   ],
   faculty: [
     { to: "/faculty", label: "My courses", exact: true },
+    { to: "/faculty/students", label: "Students" },
     { to: "/faculty/new", label: "New course" },
   ],
   admin: [
@@ -37,7 +38,7 @@ export function NavLinks({ role }: { role: Role }) {
             key={l.to}
             href={l.to}
             aria-current={active ? "page" : undefined}
-            className="rounded-sm px-3 py-1.5 font-medium text-muted hover:text-ink-900 aria-[current=page]:text-crimson"
+            className="rounded-sm px-3 py-1.5 font-medium text-muted-foreground hover:text-foreground aria-[current=page]:text-primary"
           >
             {l.label}
           </Link>

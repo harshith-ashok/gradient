@@ -6,6 +6,12 @@ import { api, errorMessage } from "@/lib/api";
 import type { components } from "@/lib/api-client/schema";
 import { fmtUtc } from "@/lib/format";
 import { useToast } from "../Toast";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type User = components["schemas"]["ManagedUser"];
 type Role = User["role"];
@@ -28,59 +34,51 @@ export function UserManager({ users, meId }: { users: User[]; meId: string }) {
   }
 
   return (
-    <div className="card">
-      <div className="card-head">
+    <Card className="gap-0 py-0">
+      <div className="flex items-center justify-between gap-4 border-b px-6 py-4">
         <h2 className="text-xl font-semibold">Accounts</h2>
-        <button type="button" className="btn btn-sm" onClick={() => setAdding(!adding)} aria-expanded={adding}>
+        <Button type="button" onClick={() => setAdding(!adding)} aria-expanded={adding} size="sm">
           {adding ? "Cancel" : "Add user"}
-        </button>
+        </Button>
       </div>
       {adding && <AddUser onDone={() => { setAdding(false); router.refresh(); }} />}
       <div className="overflow-x-auto">
-        <table className="table">
-          <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Last active</th><th className="text-right">Actions</th></tr></thead>
-          <tbody>
+        <Table>
+          <TableHeader><TableRow><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Status</TableHead><TableHead>Last active</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+          <TableBody>
             {users.map((u) => {
               const mine = u.id === meId;
               return (
-                <tr key={u.id} className={u.is_active ? "" : "opacity-60"}>
-                  <td>
-                    <b>{u.name}</b>{mine && <span className="badge badge-crimson ml-2">You</span>}
-                    <div className="text-xs text-muted">{u.email}{u.student_id ? ` · ${u.student_id}` : ""}</div>
-                  </td>
-                  <td>
+                <TableRow key={u.id} className={u.is_active ? "" : "opacity-60"}>
+                  <TableCell>
+                    <b>{u.name}</b>{mine && <Badge variant="default" className="ml-2">You</Badge>}
+                    <div className="text-xs text-muted-foreground">{u.email}{u.student_id ? ` · ${u.student_id}` : ""}</div>
+                  </TableCell>
+                  <TableCell>
                     <label className="sr-only" htmlFor={`role-${u.id}`}>Role for {u.name}</label>
-                    <select
-                      id={`role-${u.id}`} value={u.role} disabled={mine || busy === u.id} className="input !w-auto !py-1"
-                      title={mine ? "You cannot change your own role" : undefined}
-                      onChange={(e) => change(u, { role: e.target.value as Role }, `${u.name} is now ${e.target.value}.`)}
-                    >
+                    <NativeSelect id={`role-${u.id}`} value={u.role} disabled={mine || busy === u.id} title={mine ? "You cannot change your own role" : undefined} onChange={(e) => change(u, { role: e.target.value as Role }, `${u.name} is now ${e.target.value}.`)} className="!w-auto !py-1">
                       {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                  </td>
-                  <td><span className={`badge ${u.is_active ? "badge-ok" : "badge-bad"}`}>{u.is_active ? "Active" : "Deactivated"}</span></td>
-                  <td className="text-sm text-muted">{u.last_active ? fmtUtc(u.last_active) + " UTC" : "No activity logged"}</td>
-                  <td className="text-right">
+                    </NativeSelect>
+                  </TableCell>
+                  <TableCell><Badge variant={u.is_active ? "success" : "destructive"}>{u.is_active ? "Active" : "Deactivated"}</Badge></TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{u.last_active ? fmtUtc(u.last_active) + " UTC" : "No activity logged"}</TableCell>
+                  <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => setResetFor(u)}>Reset password</button>
-                      <button
-                        type="button" className="btn btn-secondary btn-sm" disabled={mine || busy === u.id}
-                        title={mine ? "You cannot deactivate yourself" : undefined}
-                        onClick={() => change(u, { is_active: !u.is_active }, u.is_active ? `${u.name} was deactivated and signed out.` : `${u.name} can sign in again.`)}
-                      >
+                      <Button type="button" onClick={() => setResetFor(u)} variant="outline" size="sm">Reset password</Button>
+                      <Button type="button" disabled={mine || busy === u.id} title={mine ? "You cannot deactivate yourself" : undefined} onClick={() => change(u, { is_active: !u.is_active }, u.is_active ? `${u.name} was deactivated and signed out.` : `${u.name} can sign in again.`)} variant="outline" size="sm">
                         {u.is_active ? "Deactivate" : "Reactivate"}
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-            {!users.length && <tr><td colSpan={5} className="empty">No users match these filters.</td></tr>}
-          </tbody>
-        </table>
+            {!users.length && <TableRow><TableCell colSpan={5} className="empty">No users match these filters.</TableCell></TableRow>}
+          </TableBody>
+        </Table>
       </div>
       {resetFor && <ResetPassword user={resetFor} onClose={() => setResetFor(null)} />}
-    </div>
+    </Card>
   );
 }
 
@@ -100,14 +98,14 @@ function AddUser({ onDone }: { onDone: () => void }) {
     onDone();
   }
   return (
-    <form onSubmit={submit} className="grid gap-3 border-b border-line-soft p-4 sm:grid-cols-2 lg:grid-cols-5">
-      <input name="name" required className="input" placeholder="Full name" aria-label="Full name" />
-      <input name="email" type="email" required className="input" placeholder="Email" aria-label="Email" />
-      <select name="role" defaultValue="student" className="input" aria-label="Role">
+    <form onSubmit={submit} className="grid gap-3 border-b border-border p-4 sm:grid-cols-2 lg:grid-cols-5">
+      <Input name="name" required placeholder="Full name" aria-label="Full name" />
+      <Input name="email" type="email" required placeholder="Email" aria-label="Email" />
+      <NativeSelect name="role" defaultValue="student" aria-label="Role" className="w-full">
         {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-      </select>
-      <input name="password" type="password" required minLength={8} autoComplete="new-password" className="input" placeholder="Temporary password" aria-label="Temporary password" />
-      <button type="submit" className="btn btn-crimson" disabled={saving}>{saving ? "Creating…" : "Create account"}</button>
+      </NativeSelect>
+      <Input name="password" type="password" required minLength={8} autoComplete="new-password" placeholder="Temporary password" aria-label="Temporary password" />
+      <Button type="submit" disabled={saving}>{saving ? "Creating…" : "Create account"}</Button>
     </form>
   );
 }
@@ -128,14 +126,11 @@ function ResetPassword({ user, onClose }: { user: User; onClose: () => void }) {
     onClose();
   }
   return (
-    <form onSubmit={submit} className="flex flex-wrap items-center gap-3 border-t border-line-soft bg-ink-50 p-4">
+    <form onSubmit={submit} className="flex flex-wrap items-center gap-3 border-t border-border bg-muted p-4">
       <span className="text-sm">New password for <b>{user.name}</b></span>
-      <input
-        type="password" required minLength={8} autoComplete="new-password" value={pw} autoFocus
-        onChange={(e) => setPw(e.target.value)} className="input !w-64" aria-label={`New password for ${user.name}`}
-      />
-      <button type="submit" className="btn btn-crimson btn-sm" disabled={saving || pw.length < 8}>{saving ? "Saving…" : "Set password"}</button>
-      <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
+      <Input type="password" required minLength={8} autoComplete="new-password" value={pw} autoFocus onChange={(e) => setPw(e.target.value)} aria-label={`New password for ${user.name}`} className="!w-64" />
+      <Button type="submit" disabled={saving || pw.length < 8} size="sm">{saving ? "Saving…" : "Set password"}</Button>
+      <Button type="button" onClick={onClose} variant="outline" size="sm">Cancel</Button>
     </form>
   );
 }

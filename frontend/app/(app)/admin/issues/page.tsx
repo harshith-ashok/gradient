@@ -4,10 +4,16 @@ import { Pager, Stat, one, qs } from "@/components/admin/ui";
 import { PageHeader } from "@/components/PageHeader";
 import { fmtUtc } from "@/lib/format";
 import { serverApi, unwrap } from "@/lib/server-api";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export const metadata: Metadata = { title: "Issues" };
 const STATUSES = ["open", "resolved", "ignored"] as const;
-const TONE = { open: "badge-bad", resolved: "badge-ok", ignored: "badge-info" } as const;
+const TONE = { open: "destructive", resolved: "success", ignored: "secondary" } as const;
 const PAGE_SIZE = 15;
 
 export default async function IssuesPage({ searchParams }: PageProps<"/admin/issues">) {
@@ -33,42 +39,42 @@ export default async function IssuesPage({ searchParams }: PageProps<"/admin/iss
         <Stat value={data.by_status.resolved ?? 0} label="Resolved" />
         <Stat value={data.by_status.ignored ?? 0} label="Ignored" />
       </div>
-      <div className="card">
-        <form method="get" className="flex flex-wrap items-center gap-3 border-b border-line-soft p-4">
+      <Card className="gap-0 py-0">
+        <form method="get" className="flex flex-wrap items-center gap-3 border-b border-border p-4">
           <label className="sr-only" htmlFor="q">Search issues</label>
-          <input id="q" name="q" defaultValue={q} className="input !w-72" placeholder="Search error or file" />
+          <Input id="q" name="q" defaultValue={q} placeholder="Search error or file" className="!w-72" />
           <label className="sr-only" htmlFor="status">Status</label>
-          <select id="status" name="status" defaultValue={status ?? "all"} className="input !w-auto">
+          <NativeSelect id="status" name="status" defaultValue={status ?? "all"} className="!w-auto">
             <option value="all">All statuses</option>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <button type="submit" className="btn btn-sm">Apply</button>
-          <span className="ml-auto text-sm text-muted">{data.total} {data.total === 1 ? "issue" : "issues"}</span>
+          </NativeSelect>
+          <Button type="submit" size="sm">Apply</Button>
+          <span className="ml-auto text-sm text-muted-foreground">{data.total} {data.total === 1 ? "issue" : "issues"}</span>
         </form>
         <div className="overflow-x-auto">
-          <table className="table">
-            <thead><tr><th>Error</th><th>Status</th><th className="num">Times</th><th>First seen (UTC)</th><th>Last seen (UTC)</th></tr></thead>
-            <tbody>
+          <Table>
+            <TableHeader><TableRow><TableHead>Error</TableHead><TableHead>Status</TableHead><TableHead className="text-right tabular-nums">Times</TableHead><TableHead>First seen (UTC)</TableHead><TableHead>Last seen (UTC)</TableHead></TableRow></TableHeader>
+            <TableBody>
               {data.items.map((i) => (
-                <tr key={i.id} className="hover:bg-ink-50">
-                  <td className="max-w-[520px]">
-                    <Link href={`/admin/issues/${i.id}`} className="font-semibold hover:text-crimson hover:underline">{i.title}</Link>
-                    <div className="text-xs text-muted">{i.culprit} · {i.source}</div>
-                  </td>
-                  <td><span className={`badge ${TONE[i.status]}`}>{i.status}</span></td>
-                  <td className="num">{i.count}</td>
-                  <td className="text-sm text-muted">{fmtUtc(i.first_seen)}</td>
-                  <td className="text-sm text-muted">{fmtUtc(i.last_seen)}</td>
-                </tr>
+                <TableRow key={i.id} className="hover:bg-muted">
+                  <TableCell className="max-w-[520px]">
+                    <Link href={`/admin/issues/${i.id}`} className="font-semibold hover:text-primary hover:underline">{i.title}</Link>
+                    <div className="text-xs text-muted-foreground">{i.culprit} · {i.source}</div>
+                  </TableCell>
+                  <TableCell><Badge variant={TONE[i.status]}>{i.status}</Badge></TableCell>
+                  <TableCell className="text-right tabular-nums">{i.count}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{fmtUtc(i.first_seen)}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{fmtUtc(i.last_seen)}</TableCell>
+                </TableRow>
               ))}
               {!data.items.length && (
-                <tr><td colSpan={5} className="empty"><h3>No issues here</h3>{status === "open" ? "Nothing is currently failing." : "Nothing matches these filters."}</td></tr>
+                <TableRow><TableCell colSpan={5} className="empty"><h3>No issues here</h3>{status === "open" ? "Nothing is currently failing." : "Nothing matches these filters."}</TableCell></TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
         <Pager page={page} size={PAGE_SIZE} total={data.total} href={href} />
-      </div>
+      </Card>
     </>
   );
 }

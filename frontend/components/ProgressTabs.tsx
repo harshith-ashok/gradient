@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { components } from "@/lib/api-client/schema";
 import { EnrollmentProgress } from "./EnrollmentProgress";
+import { buttonVariants } from "@/components/ui/button";
 
 type Enr = components["schemas"]["EnrollmentDetail"];
 
@@ -13,12 +14,12 @@ export function ProgressTabs({ enrollments }: { enrollments: Enr[] }) {
   return (
     <>
       {enrollments.length > 1 && (
-        <div role="tablist" className="mb-5 flex flex-wrap gap-1 border-b border-line">
+        <div role="tablist" className="mb-5 flex flex-wrap gap-1 border-b border-border">
           {enrollments.map((e) => (
             <button
               key={e.course_id} role="tab" type="button" aria-selected={current.course_id === e.course_id}
               onClick={() => setSel(e.course_id)}
-              className="-mb-px border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-muted hover:text-ink-900 aria-selected:border-crimson aria-selected:text-crimson"
+              className="-mb-px border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground aria-selected:border-primary aria-selected:text-primary"
             >
               {e.code} · {e.title}
             </button>
@@ -27,7 +28,7 @@ export function ProgressTabs({ enrollments }: { enrollments: Enr[] }) {
       )}
       <EnrollmentProgress
         e={current}
-        actions={<Link href={`/student/courses/${current.course_id}/plan`} className="btn btn-secondary">Study plan</Link>}
+        actions={<Link href={`/student/courses/${current.course_id}/plan`} className={buttonVariants({ variant: "outline" })}>Study plan</Link>}
       />
     </>
   );

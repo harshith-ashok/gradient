@@ -68,12 +68,14 @@ def valid_questions(qs: list[QuestionDraft], taken: set[str]) -> list[QuestionDr
     out = []
     for q in qs:
         stem = norm(q.text)
-        opts = [norm(o) for o in q.options]
+        # Options are compared by case and spacing only: in a programming question `i++` and `i--`
+        # are different answers, though they look the same once punctuation is stripped.
+        opts = [" ".join(o.lower().split()) for o in q.options]
         if not stem or stem in taken:
             continue
         if any(not o for o in opts) or len(set(opts)) != 4:
             continue  # empty or repeated options make a question ambiguous
-        correct = opts[q.answer_index]
+        correct = norm(q.options[q.answer_index])
         if len(correct) > 6 and correct in stem:
             continue  # the stem gives the answer away
         if any(o in ("all of the above", "none of the above") for o in opts):

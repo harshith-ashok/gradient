@@ -250,3 +250,34 @@ def test_student_history_lists_attempts_with_breakdown(seeded, as_user):
     topic = next(a for a in attempts if a["kind"] == "topic")
     assert len(topic["breakdown"]) == 3
     assert as_user(*FATIMA).get("/api/v1/student/history").json() == []
+
+
+# ------------------------------------------------- faculty view (own courses only)
+
+FAC = "/api/v1/faculty"
+
+
+def test_faculty_students_are_scoped_to_own_courses(seeded, as_user):
+    rao = as_user(*RAO)
+    o = rao.get(f"{FAC}/students?page_size=100").json()
+    mine = {c["id"] for c in o["courses"]}
+    assert mine and mine < {"c-cs101", "cpp-cs201", "econ-101"}  # a strict subset: not everyone's courses
+    assert all(r["enrollment"] and r["enrollment"]["course_id"] in mine for r in o["rows"])
+    admin_total = as_user(*ADMIN).get(f"{API}/overview?page_size=100").json()["total"]
+    assert 0 < o["total"] < admin_total
+
+
+def test_faculty_student_detail_hides_other_courses(seeded, as_user):
+    rao = as_user(*RAO)
+    o = rao.get(f"{FAC}/students").json()
+    mine = {c["id"] for c in o["courses"]}
+    sid = o["rows"][0]["student"]["id"]
+    d = rao.get(f"{FAC}/students/{sid}")
+    assert d.status_code == 200
+    assert {e["course_id"] for e in d.json()["enrollments"]} <= mine
+    assert rao.get(f"{FAC}/students/nope").status_code == 404
+
+
+def test_faculty_students_require_staff(client, as_user):
+    assert client.get(f"{FAC}/students").status_code == 401
+    assert as_user(*MEERA).get(f"{FAC}/students").status_code == 403

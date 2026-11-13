@@ -10,6 +10,13 @@ import { PageHeader } from "./PageHeader";
 import { QuizRunner } from "./QuizRunner";
 import { RingProgress } from "./RingProgress";
 import { useToast } from "./Toast";
+import { Rich } from "./Rich";
+import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 type Quiz = components["schemas"]["QuizStart"];
 type Result = components["schemas"]["QuizResult"];
@@ -65,13 +72,13 @@ export function QuizSession({
     }
   }
 
-  if (phase === "loading") return <p className="py-20 text-center text-muted">Preparing questions…</p>;
+  if (phase === "loading") return <p className="py-20 text-center text-muted-foreground">Preparing questions…</p>;
 
   if (phase === "error") {
     return (
       <div className="mx-auto max-w-2xl">
-        <div className="callout callout-bad" role="alert">{error}</div>
-        <Link href={base} className="btn btn-secondary mt-4">Back to course</Link>
+        <Alert role="alert" className="border-destructive/30 bg-destructive/10 text-destructive">{error}</Alert>
+        <Link href={base} className={cn(buttonVariants({ variant: "outline" }), "mt-4")}>Back to course</Link>
       </div>
     );
   }
@@ -84,28 +91,28 @@ export function QuizSession({
           title={quiz.title}
           crumbs={[{ label: "Courses", to: "/student/courses" }, { label: "Course", to: base }, { label: isPre ? "Pre-test" : "Quiz" }]}
         />
-        <div className="card card-pad space-y-5">
+        <Card className="gap-0 p-6 space-y-5">
           <dl className="grid grid-cols-[8rem_1fr] gap-y-2 text-sm">
-            <dt className="text-muted">Scope</dt><dd>{quiz.scope}</dd>
-            <dt className="text-muted">Questions</dt><dd>{quiz.questions.length} multiple choice</dd>
-            {!isPre && <><dt className="text-muted">Pass mark</dt><dd>{quiz.threshold}%</dd></>}
+            <dt className="text-muted-foreground">Scope</dt><dd>{quiz.scope}</dd>
+            <dt className="text-muted-foreground">Questions</dt><dd>{quiz.questions.length} multiple choice</dd>
+            {!isPre && <><dt className="text-muted-foreground">Pass mark</dt><dd>{quiz.threshold}%</dd></>}
           </dl>
           {isPre ? (
-            <div className="callout">
+            <Alert className="bg-muted/50">
               <b>This is not graded.</b> The pre-test shows what you already know so your study plan can skip what
               you have mastered and spend more time where you need it. Answer honestly; guessing makes the plan less useful.
-            </div>
+            </Alert>
           ) : (
-            <div className="callout callout-crimson">
+            <Alert className="bg-muted">
               Score at least <b>{quiz.threshold}%</b> to complete this step. If you score lower, the topic is rescheduled
               for later with extra remediation material and the rest of your plan is recalculated.
-            </div>
+            </Alert>
           )}
           <div className="flex gap-3">
-            <button type="button" className="btn btn-lg" onClick={() => setPhase("running")}>{isPre ? "Begin pre-test" : "Start quiz"}</button>
-            <Link href={backTo} className="btn btn-secondary btn-lg">Not now</Link>
+            <Button type="button" onClick={() => setPhase("running")} size="lg">{isPre ? "Begin pre-test" : "Start quiz"}</Button>
+            <Link href={backTo} className={buttonVariants({ variant: "outline", size: "lg" })}>Not now</Link>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -125,92 +132,92 @@ export function QuizSession({
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <PageHeader eyebrow={isPre ? "Pre-test complete" : "Results"} title={isPre ? "Your pre-test results" : result.title} />
-      <div className="card card-pad flex flex-wrap items-center gap-6">
+      <Card className="gap-0 p-6 flex flex-wrap items-center gap-6">
         <RingProgress value={result.score} size={112} stroke={9} tone={isPre ? "" : tone} />
         <div className="flex-1">
           {isPre && result.plan ? (
             <>
               <h2 className="text-2xl font-semibold">{result.correct} of {result.total} correct</h2>
-              <p className="mt-1.5 text-muted">
+              <p className="mt-1.5 text-muted-foreground">
                 Your personalised plan covers {plural(result.plan.tasks, "task")} across {plural(result.plan.days, "day")} at{" "}
                 {result.plan.minutes_per_day} minutes a day. Sub-topics you already know get a short confirmation quiz; the rest start with study.
               </p>
             </>
           ) : (
             <>
-              <h2><span className={`badge ${result.passed ? "badge-ok" : "badge-bad"}`}>{result.passed ? "Passed" : "Below pass mark"}</span></h2>
-              <p className="mt-2 text-muted">{result.correct} of {result.total} correct · pass mark {result.threshold}%</p>
+              <h2><Badge variant={result.passed ? "success" : "destructive"}>{result.passed ? "Passed" : "Below pass mark"}</Badge></h2>
+              <p className="mt-2 text-muted-foreground">{result.correct} of {result.total} correct · pass mark {result.threshold}%</p>
               <div className="mt-3 max-w-xs"><MeterBar value={result.score} threshold={result.threshold} label="Score" /></div>
             </>
           )}
         </div>
-      </div>
+      </Card>
 
       {result.day_status && (
-        <div className="callout callout-ok"><b>{result.day_status.message}</b><br />Nice work — that closes today’s plan.</div>
+        <Alert className="border-success/30 bg-success/10 text-success"><b>{result.day_status.message}</b><br />Nice work — that closes today’s plan.</Alert>
       )}
       {a?.failed && (
-        <div className="callout callout-warn">
+        <Alert className="border-warning/30 bg-warning/10 text-warning">
           <b>Your plan has been adjusted.</b>
           <ul className="mt-2 list-disc pl-5">
             {a.items.map((i) => <li key={i.title}>{i.title} — Day {i.day} ({relDay(i.date)})</li>)}
             <li>The remaining tasks were recalculated{a.shifted ? ` (${a.shifted} moved later)` : ""}.</li>
           </ul>
-        </div>
+        </Alert>
       )}
       {result.by_subtopic.some((s) => s.promoted) && (
-        <div className="callout callout-ok">
+        <Alert className="border-success/30 bg-success/10 text-success">
           <b>Level up:</b> {result.by_subtopic.filter((s) => s.promoted).map((s) => `${s.title} → ${s.level}`).join(", ")}.
-        </div>
+        </Alert>
       )}
 
-      <div className="card">
-        <div className="card-head"><h3 className="text-lg font-semibold">{isPre ? "Starting point by sub-topic" : "By sub-topic"}</h3></div>
+      <Card className="gap-0 py-0">
+        <div className="flex items-center justify-between gap-4 border-b px-6 py-4"><h3 className="text-lg font-semibold">{isPre ? "Starting point by sub-topic" : "By sub-topic"}</h3></div>
         <div className="overflow-x-auto">
-          <table className="table">
-            <thead><tr><th>Sub-topic</th><th className="num">Correct</th><th className="num">Score</th><th className="num">{isPre ? "Starting mastery" : "Mastery"}</th><th>Level</th></tr></thead>
-            <tbody>
+          <Table>
+            <TableHeader><TableRow><TableHead>Sub-topic</TableHead><TableHead className="text-right tabular-nums">Correct</TableHead><TableHead className="text-right tabular-nums">Score</TableHead><TableHead className="text-right tabular-nums">{isPre ? "Starting mastery" : "Mastery"}</TableHead><TableHead>Level</TableHead></TableRow></TableHeader>
+            <TableBody>
               {result.by_subtopic.map((s) => (
-                <tr key={s.subtopic_id}>
-                  <td>{s.title}</td>
-                  <td className="num">{s.correct}/{s.total}</td>
-                  <td className="num">{Math.round(s.score)}%</td>
-                  <td className="num">{!isPre && s.before != null && <>{Math.round(s.before)}% → </>}<b>{Math.round(s.after)}%</b></td>
-                  <td className="capitalize">{s.level}</td>
-                </tr>
+                <TableRow key={s.subtopic_id}>
+                  <TableCell>{s.title}</TableCell>
+                  <TableCell className="text-right tabular-nums">{s.correct}/{s.total}</TableCell>
+                  <TableCell className="text-right tabular-nums">{Math.round(s.score)}%</TableCell>
+                  <TableCell className="text-right tabular-nums">{!isPre && s.before != null && <>{Math.round(s.before)}% → </>}<b>{Math.round(s.after)}%</b></TableCell>
+                  <TableCell className="capitalize">{s.level}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
-      </div>
+      </Card>
 
-      <div className="card">
-        <div className="card-head">
+      <Card className="gap-0 py-0">
+        <div className="flex items-center justify-between gap-4 border-b px-6 py-4">
           <h3 className="text-lg font-semibold">Question review</h3>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowReview(!showReview)}>{showReview ? "Hide" : "Show"}</button>
+          <Button type="button" onClick={() => setShowReview(!showReview)} variant="outline" size="sm">{showReview ? "Hide" : "Show"}</Button>
         </div>
         {showReview && (
-          <div className="card-body divide-y divide-line-soft">
+          <div className="px-6 py-4 divide-y divide-border">
             {result.review.map((r, n) => (
               <div key={r.id} className="py-3.5">
-                <div className="text-sm text-muted">Question {n + 1} · {r.subtopic_title}</div>
-                <p className="my-1 font-medium">{r.text}</p>
-                {!r.correct && <div className="text-sm text-bad">Your answer: {r.chosen == null ? "No answer" : r.options[r.chosen] ?? "—"}</div>}
-                <div className="text-sm text-ok">Correct answer: {r.options[r.answer]}</div>
-                <p className="mt-1.5 text-sm text-muted">{r.explanation}</p>
+                <div className="text-sm text-muted-foreground">Question {n + 1} · {r.subtopic_title}</div>
+                <div className="my-1 font-medium"><Rich>{r.text}</Rich></div>
+                {!r.correct && <div className="text-sm text-destructive">Your answer: {r.chosen == null ? "No answer" : <Rich inline>{r.options[r.chosen] ?? "—"}</Rich>}</div>}
+                <div className="text-sm text-success">Correct answer: <Rich inline>{r.options[r.answer]}</Rich></div>
+                <div className="mt-1.5 text-sm text-muted-foreground"><Rich>{r.explanation}</Rich></div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </Card>
 
       <div className="flex flex-wrap items-center gap-3">
-        {isPre && <Link href={`${base}/plan`} className="btn btn-lg">View my study plan</Link>}
-        {!isPre && result.next_task && <Link href={taskHref(courseId, result.next_task)} className="btn btn-lg">Next: {result.next_task.title}</Link>}
-        {!isPre && <Link href={`${base}/plan`} className="btn btn-secondary btn-lg">Study plan</Link>}
-        {!isPre && subtopicId && <Link href={backTo} className="btn btn-secondary btn-lg">Back to sub-topic</Link>}
-        {!isPre && <Link href={base} className="btn btn-secondary btn-lg">Course</Link>}
-        {!isPre && result.next_task && <span className="text-sm text-muted">{TASK_LABEL[result.next_task.type]} · {relDay(result.next_task.date)}</span>}
+        {isPre && <Link href={`${base}/plan`} className={buttonVariants({ size: "lg" })}>View my study plan</Link>}
+        {!isPre && result.next_task && <Link href={taskHref(courseId, result.next_task)} className={buttonVariants({ size: "lg" })}>Next: {result.next_task.title}</Link>}
+        {!isPre && <Link href={`${base}/plan`} className={buttonVariants({ variant: "outline", size: "lg" })}>Study plan</Link>}
+        {!isPre && subtopicId && <Link href={backTo} className={buttonVariants({ variant: "outline", size: "lg" })}>Back to sub-topic</Link>}
+        {!isPre && <Link href={base} className={buttonVariants({ variant: "outline", size: "lg" })}>Course</Link>}
+        {!isPre && result.next_task && <span className="text-sm text-muted-foreground">{TASK_LABEL[result.next_task.type]} · {relDay(result.next_task.date)}</span>}
       </div>
     </div>
   );

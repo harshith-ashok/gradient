@@ -66,6 +66,26 @@ services:
       chromadb: {condition: service_started}
     restart: unless-stopped
 
+  # The image student code runs in (compilers + the runner). Built once, never started as a service.
+  sandbox-image:
+    build: ../backend/sandbox
+    image: gradient-sandbox:latest
+    entrypoint: ["true"]
+    restart: "no"
+
+  # Runs student code for coding challenges: one throwaway container per submission, no network, strict limits.
+  # It needs the Docker socket to start those containers, which is a powerful permission: only this service
+  # has it, and it only ever starts the fixed sandbox image with a fixed hardened configuration.
+  judge:
+    build: ../backend
+    environment: *backend-env
+    command: python -m app.judge
+    volumes: ["../backend/app:/app/app", "/var/run/docker.sock:/var/run/docker.sock"]
+    depends_on:
+      backend: {condition: service_started}
+      sandbox-image: {condition: service_completed_successfully}
+    restart: unless-stopped
+
   frontend:
     build: ../frontend
     environment:

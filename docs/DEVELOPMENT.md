@@ -165,6 +165,52 @@ In the course editor, **Import or export questions (Excel)** (faculty who own th
 API: `GET /faculty/courses/{id}/questions.xlsx`, `GET /faculty/questions/template.xlsx`,
 `POST /faculty/courses/{id}/questions/import` (multipart: `file`, `mode`, `dry_run`).
 
+## Rendering code in quizzes and study material
+
+Question text, options, explanations, flashcards, summaries and remediation are **Markdown**: a fenced block
+(```c on its own line, code, closing ```) renders as a syntax-highlighted code block, `backticks` as inline code. Raw HTML is never
+rendered, images are dropped and only http(s)/mailto links survive (`components/Rich.tsx`). Quiz options render
+inline so they stay valid inside a button. The AI question prompt asks for fenced code with real line breaks, the
+faculty question editor has a "Preview as a student sees it", and Excel sheets carry the same Markdown. Programming
+questions whose options differ only in punctuation (`i++` / `i--`) are no longer rejected as duplicates.
+
+## Coding challenges (LeetCode-style, run in a Docker sandbox)
+
+Faculty add challenges to a sub-topic in the course editor: statement (Markdown), languages (C, C++, Python),
+starter code, time and memory limits, and tests (stdin and expected stdout; mark some as *sample*, the rest stay
+hidden). "Check the tests with a reference solution" runs a solution against every test with full detail.
+Students open the challenge from the sub-topic page, write code in an editor (drafts are kept in the browser),
+**Run samples** (sample tests only, not counted) or **Submit** (all tests; counts as an attempt, `Solved` on
+Accepted). Output is compared ignoring line endings, trailing spaces and trailing blank lines. Hidden tests only ever
+report pass or fail: their input, expected output and the program's output are never sent to students.
+Coding challenges do not change mastery or the study plan; they are practice.
+
+```
+POST /student/problems/{id}/submit        → submission id (queued)       judge: python -m app.judge
+GET  /student/submissions/{id}            → state, verdict, per-test results (poll)
+```
+
+**How student code is contained** (`backend/sandbox/runner.py`, `app/services/judge.py`). The `judge` service claims
+queued submissions and starts one throwaway container from the `gradient-sandbox` image for each:
+
+- no network (`network_mode: none`), memory and swap capped, one CPU, at most 128 processes, `no-new-privileges`,
+  Docker's default seccomp profile, all capabilities dropped except those the runner needs to switch user and stop
+  the student's process; filesystem writes only to small size-capped tmpfs mounts; the container is deleted afterwards;
+- the tests are sent in a file the runner reads and deletes *before* any student code runs; student code runs as
+  `nobody`, with CPU time, file size, open files and process limits and a wall-clock timeout, and cannot read the
+  runner or its memory;
+- a per-user limit of one active run and `SUBMISSIONS_PER_MINUTE` (default 10); code is limited to `MAX_CODE_BYTES`.
+
+`make sandbox-test` (and a CI job) check these properties against real Docker: unprivileged uid, no network, hidden
+tests unreadable, filesystem read-only for the student, and infinite loops, fork bombs, memory bombs and output
+floods contained. **The judge needs the Docker socket**, which is host-level power. Only the `judge` service has
+it, and it only starts the fixed image with the fixed configuration above; the API and worker never touch Docker. In
+production the judge is opt-in (`docker compose --profile coding up`); consider gVisor (`SANDBOX_RUNTIME=runsc`) for
+an extra kernel boundary. Do not run it on a machine you would not trust with a student's code; for a shared
+production host prefer a dedicated one. Without the judge running, submissions finish as "The code runner is
+unavailable" and System shows the code runner as down. Dev and tests can use `JUDGE_BACKEND=local`, which runs code
+as a plain subprocess with no isolation and is refused outside `ENV=dev`.
+
 ## Admin tools
 
 Sign in as an admin. The top bar has **Users**, **Roles & endpoints**, **Logs**, **Issues** and **System**

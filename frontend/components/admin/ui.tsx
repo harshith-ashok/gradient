@@ -1,33 +1,36 @@
 import Link from "next/link";
+import type { BadgeTone } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
-export const LEVEL_TONE: Record<string, string> = {
-  INFO: "badge-info",
-  WARNING: "badge-warn",
-  ERROR: "badge-bad",
-  CRITICAL: "badge-bad",
+export const LEVEL_TONE: Record<string, BadgeTone> = {
+  INFO: "secondary",
+  WARNING: "warning",
+  ERROR: "destructive",
+  CRITICAL: "destructive",
 };
-export const statusTone = (s?: number | null) =>
-  !s ? "badge-info" : s >= 500 ? "badge-bad" : s >= 400 ? "badge-warn" : "badge-ok";
+export const statusTone = (s?: number | null): BadgeTone =>
+  !s ? "secondary" : s >= 500 ? "destructive" : s >= 400 ? "warning" : "success";
 
 /** Previous / next links that keep the other filters in the URL. */
 export function Pager({ page, size, total, href }: { page: number; size: number; total: number; href: (p: number) => string }) {
   const pages = Math.max(1, Math.ceil(total / size));
   if (pages <= 1) return null;
   return (
-    <nav aria-label="Pagination" className="flex items-center justify-between border-t border-line-soft px-4 py-3 text-sm">
-      {page > 1 ? <Link href={href(page - 1)} className="btn btn-secondary btn-sm">← Previous</Link> : <span />}
-      <span className="text-muted">Page {page} of {pages}</span>
-      {page < pages ? <Link href={href(page + 1)} className="btn btn-secondary btn-sm">Next →</Link> : <span />}
+    <nav aria-label="Pagination" className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">
+      {page > 1 ? <Link href={href(page - 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>← Previous</Link> : <span />}
+      <span className="text-muted-foreground">Page {page} of {pages}</span>
+      {page < pages ? <Link href={href(page + 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>Next →</Link> : <span />}
     </nav>
   );
 }
 
 export function Stat({ value, label, tone }: { value: string | number; label: string; tone?: "bad" | "warn" }) {
   return (
-    <div className="card card-pad">
-      <div className={`font-serif text-4xl tabular-nums ${tone === "bad" ? "text-bad" : tone === "warn" ? "text-warn" : ""}`}>{value}</div>
-      <div className="mt-1 text-sm text-muted">{label}</div>
-    </div>
+    <Card className="gap-0 p-6">
+      <div className={` text-4xl font-semibold tabular-nums ${tone === "bad" ? "text-destructive" : tone === "warn" ? "text-warning" : ""}`}>{value}</div>
+      <div className="mt-1 text-sm text-muted-foreground">{label}</div>
+    </Card>
   );
 }
 

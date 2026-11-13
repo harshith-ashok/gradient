@@ -17,14 +17,14 @@ for (const c of fixture)
 /** Answer every question in the quiz runner, all right or all wrong, then submit. */
 async function answerQuiz(page: Page, right: boolean) {
   for (;;) {
-    const text = (await page.locator("p.font-serif").first().textContent())!.trim();
+    const text = (await page.locator("[data-question]").first().getAttribute("data-question"))!.trim();  // raw Markdown source
     const answer = correct.get(text);
     expect(answer, `unknown question: ${text}`).toBeTruthy();
     const options = page.locator(".opt");
     const n = await options.count();
     let target = -1;
     for (let i = 0; i < n; i++) {
-      const label = (await options.nth(i).locator("span").nth(1).textContent())!.trim();
+      const label = (await options.nth(i).locator("[data-option]").getAttribute("data-option"))!.trim();
       if (right ? label === answer : label !== answer) { target = i; break; }
     }
     await options.nth(target).click();

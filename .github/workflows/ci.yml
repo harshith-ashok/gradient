@@ -33,6 +33,17 @@ jobs:
       - run: npx next typegen && npm run typecheck
       - run: npm run lint
 
+  sandbox:
+    # The code sandbox's security properties, checked against real Docker: no network, unprivileged user,
+    # hidden tests unreadable, fork/memory bombs and infinite loops contained.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: docker build -t gradient-sandbox backend/sandbox
+      - run: uv sync && LIVE_DOCKER=1 uv run pytest tests/test_sandbox_docker.py -q
+        working-directory: backend
+
   e2e:
     # The whole stack on the fake model (no model server in CI), driven by a real browser.
     runs-on: ubuntu-latest

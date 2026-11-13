@@ -317,6 +317,10 @@ def system(db: Session) -> dict:
     except Exception:  # noqa: BLE001
         checks["redis"] = "down"
 
+    from app.services import judge  # late: it pulls in the sandbox client
+
+    checks["code runner"] = "ok" if judge.alive() else "down"
+
     now = utcnow()
     since = now - timedelta(hours=24)
     req = (LogEntry.method.is_not(None), LogEntry.ts >= since)

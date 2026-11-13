@@ -26,18 +26,21 @@ def _student(u: User) -> dict:
 
 
 def overview(db: Session, q: str = "", course_id: str | None = None, status: str | None = None,
-             page: int = 1, page_size: int = 20) -> dict:
+             page: int = 1, page_size: int = 20, owner_id: str | None = None) -> dict:
     """KPIs and course stats cover everyone; the student table is filtered and paginated.
 
     Everything is loaded in a fixed number of queries (relationships are batch-loaded), so the cost
     does not grow with the number of students beyond the work of summarising each enrolment.
+
+    With `owner_id` (faculty view) only that person's courses are counted, and only students enrolled
+    in them are listed.
     """
     page, page_size = max(1, page), min(max(1, page_size), MAX_PAGE_SIZE)
     students = list(db.scalars(select(User).where(User.role == "student").order_by(User.name)))
-    courses = {c.id: c for c in course_repo.all_with_structure(db)}
+    courses = {c.id: c for c in course_repo.all_with_structure(db) if owner_id is None or c.owner_id == owner_id}
     thresholds = {cid: threshold_for(db, c) for cid, c in courses.items()}  # once per course, not per row
     enrollments = db.scalars(
-        select(Enrollment).options(
+        select(Enrollment).where(Enrollment.course_id.in_(list(courses))).options(
             selectinload(Enrollment.tasks), selectinload(Enrollment.mastery),
             selectinload(Enrollment.attempts), selectinload(Enrollment.day_statuses),
         )
@@ -47,6 +50,8 @@ def overview(db: Session, q: str = "", course_id: str | None = None, status: str
         summary = metrics.enrollment_summary(db, e, courses[e.course_id], thresholds[e.course_id])
         by_student.setdefault(e.user_id, []).append(summary)
 
+    if owner_id is not None:
+        students = [s for s in students if s.id in by_student]
     rows: list[dict] = []
     for s in students:
         mine = sorted(by_student.get(s.id, []), key=lambda x: x["code"])
@@ -89,7 +94,8 @@ def overview(db: Session, q: str = "", course_id: str | None = None, status: str
     }
 
 
-def student_detail(db: Session, student_id: str) -> dict:
+def student_detail(db: Session, student_id: str, owner_id: str | None = None) -> dict:
+    """One student's progress. With `owner_id`, only enrolments in that faculty member's courses."""
     u = db.get(User, student_id)
     if u is None or u.role != "student":
         raise AdminError("Student not found.")
@@ -97,5 +103,9 @@ def student_detail(db: Session, student_id: str) -> dict:
     out = []
     for e in enrs:
         course = course_repo.get_with_tree(db, e.course_id)
+        if owner_id is not None and course.owner_id != owner_id:
+            continue
         out.append(metrics.enrollment_detail(db, e, course))
+    if owner_id is not None and not out:
+        raise AdminError("Student not found.")  # not in any of their courses: indistinguishable from missing
     return {"student": _student(u), "enrollments": out}

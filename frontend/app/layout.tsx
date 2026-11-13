@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
-import { Public_Sans, Spectral } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
-const sans = Public_Sans({ variable: "--font-public-sans", subsets: ["latin"] });
-const serif = Spectral({
-  variable: "--font-spectral",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+const sans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+const mono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500"] });
 
 export const metadata: Metadata = {
   title: { default: "Gradient", template: "%s · Gradient" },
@@ -16,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
-      <body className="min-h-screen">{children}</body>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+      <body className="min-h-screen font-sans">{children}</body>
     </html>
   );
 }

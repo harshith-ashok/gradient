@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "@/lib/api";
 import { useToast } from "./Toast";
+import { NativeSelect } from "@/components/ui/native-select";
 
 const MINUTES = [30, 45, 60, 90, 120];
 const DAYS = [7, 14, 21, 30, 45, 60, 90];
@@ -37,18 +38,16 @@ export function PlanSettings({
   return (
     <div className="flex flex-wrap items-center gap-4 text-sm">
       <label className="flex items-center gap-2">
-        <span className="text-muted">Finish within</span>
-        <select className="input !w-auto" value={days} disabled={busy}
-          onChange={(e) => change({ target_days: Number(e.target.value) })}>
+        <span className="text-muted-foreground">Finish within</span>
+        <NativeSelect value={days} disabled={busy} onChange={(e) => change({ target_days: Number(e.target.value) })} className="!w-auto">
           {DAYS.map((d) => <option key={d} value={d}>{d} days</option>)}
-        </select>
+        </NativeSelect>
       </label>
       <label className="flex items-center gap-2">
-        <span className="text-muted">Daily study time</span>
-        <select className="input !w-auto" value={minutes} disabled={busy}
-          onChange={(e) => change({ minutes_per_day: Number(e.target.value) })}>
+        <span className="text-muted-foreground">Daily study time</span>
+        <NativeSelect value={minutes} disabled={busy} onChange={(e) => change({ minutes_per_day: Number(e.target.value) })} className="!w-auto">
           {MINUTES.map((m) => <option key={m} value={m}>{m} minutes</option>)}
-        </select>
+        </NativeSelect>
       </label>
     </div>
   );

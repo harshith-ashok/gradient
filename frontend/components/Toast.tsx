@@ -19,9 +19,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const value = useMemo(() => toast, [toast]);
   const tone: Record<Kind, string> = {
-    info: "bg-ink-900 text-white",
-    success: "bg-ok text-white",
-    error: "bg-bad text-white",
+    info: "bg-primary text-white",
+    success: "bg-success text-white",
+    error: "bg-destructive text-white",
   };
   return (
     <Ctx.Provider value={value}>

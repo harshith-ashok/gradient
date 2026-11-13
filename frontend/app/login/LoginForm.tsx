@@ -46,14 +46,14 @@ export function LoginForm({ redirectTo }: { redirectTo: string | null }) {
   }
 
   const input =
-    "w-full rounded-sm border border-line bg-surface px-3 py-2.5 text-ink placeholder:text-faint";
+    "w-full rounded-sm border border-border bg-card px-3 py-2.5 text-foreground placeholder:text-muted-foreground";
 
   return (
     <div className="w-full max-w-[420px]">
       <h2 className="text-3xl font-semibold">Welcome back</h2>
-      <p className="mt-1 text-muted">Choose your portal and sign in with your university credentials.</p>
+      <p className="mt-1 text-muted-foreground">Choose your portal and sign in with your university credentials.</p>
 
-      <div role="group" aria-label="Portal" className="mb-6 mt-5 grid grid-cols-2 rounded-md bg-ink-100 p-1">
+      <div role="group" aria-label="Portal" className="mb-6 mt-5 grid grid-cols-2 rounded-md bg-muted p-1">
         {PORTALS.map((p) => (
           <button
             key={p.id}
@@ -63,7 +63,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string | null }) {
               setPortal(p.id);
               setError("");
             }}
-            className="rounded-sm px-3 py-2 text-sm font-medium text-muted transition-colors aria-pressed:bg-surface aria-pressed:text-ink-900 aria-pressed:shadow-sm"
+            className="rounded-sm px-3 py-2 text-sm font-medium text-muted-foreground transition-colors aria-pressed:bg-card aria-pressed:text-foreground aria-pressed:shadow-sm"
           >
             {p.label}
           </button>
@@ -87,38 +87,38 @@ export function LoginForm({ redirectTo }: { redirectTo: string | null }) {
             />
             <button
               type="button" aria-pressed={show} onClick={() => setShow(!show)}
-              className="rounded-sm border border-line px-3 text-sm text-ink-700 hover:bg-ink-50"
+              className="rounded-sm border border-border px-3 text-sm text-foreground hover:bg-muted"
             >
               {show ? "Hide" : "Show"}
             </button>
           </div>
         </div>
         {error && (
-          <div role="alert" className="rounded-sm bg-bad-bg px-3 py-2.5 text-sm text-bad">{error}</div>
+          <div role="alert" className="rounded-sm bg-destructive/10 px-3 py-2.5 text-sm text-destructive">{error}</div>
         )}
         <button
           type="submit" disabled={busy || !email || !password}
-          className="w-full rounded-sm bg-ink-900 px-4 py-3 font-medium text-white transition-colors hover:bg-ink-700 disabled:opacity-50"
+          className="w-full rounded-sm bg-primary px-4 py-3 font-medium text-white transition-colors hover:bg-primary/80 disabled:opacity-50"
         >
           {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
       {demos.length > 0 && (
-        <div className="mt-8 rounded-md border border-line-soft bg-ink-50 p-4">
-          <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-muted">Demo accounts</h3>
-          <div className="mt-2 divide-y divide-line-soft">
+        <div className="mt-8 rounded-md border border-border bg-muted p-4">
+          <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-muted-foreground">Demo accounts</h3>
+          <div className="mt-2 divide-y divide-border">
             {demos.filter((d) => d.portal === portal).map((d) => (
               <button
                 key={d.email} type="button"
                 onClick={() => { setEmail(d.email); setPassword(d.password); setError(""); }}
-                className="flex w-full items-center justify-between py-2.5 text-left hover:text-crimson"
+                className="flex w-full items-center justify-between py-2.5 text-left hover:text-primary"
               >
                 <span>
                   <b className="block text-sm font-medium">{d.name}</b>
-                  <small className="text-xs text-muted">{d.note}</small>
+                  <small className="text-xs text-muted-foreground">{d.note}</small>
                 </span>
-                <small className="text-xs text-faint">Use</small>
+                <small className="text-xs text-muted-foreground">Use</small>
               </button>
             ))}
           </div>

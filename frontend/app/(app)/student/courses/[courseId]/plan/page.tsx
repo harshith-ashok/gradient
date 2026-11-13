@@ -5,10 +5,14 @@ import { PlanSettings } from "@/components/PlanSettings";
 import { TaskRow } from "@/components/TaskRow";
 import { fmtDay, fmtTs } from "@/lib/format";
 import { serverApi, unwrap } from "@/lib/server-api";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "Study plan" };
 
-const NOTICE_TONE = { reschedule: "badge-warn", recalc: "badge-info", info: "badge-crimson" } as const;
+const NOTICE_TONE = { reschedule: "warning", recalc: "secondary", info: "default" } as const;
 const NOTICE_LABEL = { reschedule: "Rescheduled", recalc: "Recalculated", info: "Created" } as const;
 
 export default async function PlanPage({ params }: PageProps<"/student/courses/[courseId]/plan">) {
@@ -19,11 +23,11 @@ export default async function PlanPage({ params }: PageProps<"/student/courses/[
 
   if (!e) {
     return (
-      <div className="card empty">
+      <Card className="gap-0 py-0 empty">
         <h3>No plan yet</h3>
         <p>Your plan is created from the pre-test.</p>
-        <Link href={`/student/courses/${courseId}/pretest`} className="btn">Take the pre-test</Link>
-      </div>
+        <Link href={`/student/courses/${courseId}/pretest`} className={buttonVariants()}>Take the pre-test</Link>
+      </Card>
     );
   }
 
@@ -45,15 +49,12 @@ export default async function PlanPage({ params }: PageProps<"/student/courses/[
         actions={<PlanSettings courseId={courseId} minutes={e.minutes_per_day} days={e.target_days} planning={e.planning} />}
       />
       {e.planning && (
-        <div className="card mb-4 border-l-4 px-4 py-3 text-sm" role="status" style={{ borderLeftColor: "var(--crimson)" }}>
+        <Card role="status" style={{ borderLeftColor: "var(--primary)" }} className="block gap-0 py-0 mb-4 border-l-4 px-4 py-3 text-sm">
           The AI planner is tailoring your study time to your results. Your plan below is already usable and will
           update in a moment.
-        </div>
+        </Card>
       )}
-      <div
-        className={`card mb-4 px-4 py-3 text-sm ${e.plan_window.fits ? "" : "border-l-4"}`}
-        style={e.plan_window.fits ? undefined : { borderLeftColor: "var(--warn, #b45309)" }}
-      >
+      <Card className={cn("mb-4 block gap-0 px-4 py-3 text-sm", !e.plan_window.fits && "border-l-4 border-l-warning")}>
         {e.plan_window.fits ? (
           <>Everything is scheduled to finish by <strong>{fmtDay(e.plan_window.finish_date ?? e.plan_window.ends_on)}</strong>,
           inside your {e.target_days}-day time frame (ends {fmtDay(e.plan_window.ends_on)}).</>
@@ -61,35 +62,35 @@ export default async function PlanPage({ params }: PageProps<"/student/courses/[
           <>At {e.minutes_per_day} minutes a day this plan does not fit your {e.target_days}-day time frame. About{" "}
           <strong>{e.plan_window.needed_minutes_per_day} minutes a day</strong>, or a longer time frame, would cover everything.</>
         )}
-      </div>
+      </Card>
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
           {days.map((d) => (
-            <article key={d.day} className="card" style={d.today ? { borderColor: "var(--crimson)" } : undefined}>
-              <div className="card-head !py-3">
+            <Card key={d.day} style={d.today ? { borderColor: "var(--primary)" } : undefined} className="gap-0 py-0">
+              <div className="flex items-center justify-between gap-4 border-b px-6 py-4 !py-3">
                 <div className="flex items-center gap-3">
-                  <span className="font-serif text-lg font-semibold">Day {d.day + 1}</span>
-                  <span className="text-sm text-muted">{fmtDay(d.date)}</span>
-                  {d.today && <span className="badge badge-crimson">Today</span>}
+                  <span className=" text-lg font-semibold">Day {d.day + 1}</span>
+                  <span className="text-sm text-muted-foreground">{fmtDay(d.date)}</span>
+                  {d.today && <Badge variant="default">Today</Badge>}
                 </div>
-                {d.status ? <span className="badge badge-ok">{d.status.message}</span>
-                  : d.done ? <span className="badge badge-ok">Completed</span>
-                  : <span className="text-sm text-muted">{d.minutes} min</span>}
+                {d.status ? <Badge variant="success">{d.status.message}</Badge>
+                  : d.done ? <Badge variant="success">Completed</Badge>
+                  : <span className="text-sm text-muted-foreground">{d.minutes} min</span>}
               </div>
-              <div className="card-body !py-1">
+              <div className="px-6 py-4 !py-1">
                 {d.tasks.map((t) => <TaskRow key={t.id} task={t} courseId={courseId} today={e.today} />)}
               </div>
-            </article>
+            </Card>
           ))}
         </div>
-        <aside className="card lg:sticky lg:top-4">
-          <div className="card-head"><h3 className="text-lg font-semibold">Plan updates</h3></div>
-          <div className="card-body divide-y divide-line-soft !py-1">
+        <aside className="rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 lg:sticky lg:top-4">
+          <div className="flex items-center justify-between gap-4 border-b px-6 py-4"><h3 className="text-lg font-semibold">Plan updates</h3></div>
+          <div className="px-6 py-4 divide-y divide-border !py-1">
             {e.notices.map((n) => (
               <div key={n.id} className="space-y-1 py-3 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className={`badge ${NOTICE_TONE[n.kind]}`}>{NOTICE_LABEL[n.kind]}</span>
-                  <span className="text-xs text-faint">{fmtTs(n.created_at)}</span>
+                  <Badge variant={NOTICE_TONE[n.kind]}>{NOTICE_LABEL[n.kind]}</Badge>
+                  <span className="text-xs text-muted-foreground">{fmtTs(n.created_at)}</span>
                 </div>
                 <div>{n.text}</div>
               </div>

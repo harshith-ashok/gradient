@@ -1,4 +1,4 @@
-const COLORS: Record<string, string> = { ok: "var(--ok)", warn: "#c4871f", bad: "var(--bad)" };
+const COLORS: Record<string, string> = { ok: "var(--success)", warn: "var(--warning)", bad: "var(--destructive)" };
 
 export function RingProgress({
   value, size = 64, stroke = 6, tone = "",
@@ -11,7 +11,7 @@ export function RingProgress({
       <svg width={size} height={size} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#ebe6d8" strokeWidth={stroke} />
         <circle
-          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={COLORS[tone] ?? "var(--ink-700)"}
+          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={COLORS[tone] ?? "var(--foreground)"}
           strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)}
           style={{ transition: "stroke-dashoffset 0.8s cubic-bezier(0.22,0.8,0.24,1)" }}
         />

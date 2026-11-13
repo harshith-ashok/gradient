@@ -5,9 +5,13 @@ import { useState } from "react";
 import { api, errorMessage } from "@/lib/api";
 import type { components } from "@/lib/api-client/schema";
 import { useToast } from "../Toast";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 
 type Issue = components["schemas"]["IssueDetail"];
-const TONE = { open: "badge-bad", resolved: "badge-ok", ignored: "badge-info" } as const;
+const TONE = { open: "destructive", resolved: "success", ignored: "secondary" } as const;
 
 export function IssueActions({ issue }: { issue: Issue }) {
   const router = useRouter();
@@ -25,27 +29,27 @@ export function IssueActions({ issue }: { issue: Issue }) {
   }
 
   return (
-    <div className="card card-pad space-y-4">
+    <Card className="gap-0 p-6 space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <span className="text-sm text-muted">Status</span>
-        <span className={`badge ${TONE[issue.status]}`}>{issue.status}</span>
+        <span className="text-sm text-muted-foreground">Status</span>
+        <Badge variant={TONE[issue.status]}>{issue.status}</Badge>
         <div className="ml-auto flex gap-2">
           {issue.status !== "resolved" && (
-            <button type="button" className="btn btn-sm" disabled={busy} onClick={() => save({ status: "resolved" }, "Marked as resolved. It reopens if it happens again.")}>Mark resolved</button>
+            <Button type="button" disabled={busy} onClick={() => save({ status: "resolved" }, "Marked as resolved. It reopens if it happens again.")} size="sm">Mark resolved</Button>
           )}
           {issue.status !== "ignored" && (
-            <button type="button" className="btn btn-secondary btn-sm" disabled={busy} onClick={() => save({ status: "ignored" }, "Ignored.")}>Ignore</button>
+            <Button type="button" disabled={busy} onClick={() => save({ status: "ignored" }, "Ignored.")} variant="outline" size="sm">Ignore</Button>
           )}
           {issue.status !== "open" && (
-            <button type="button" className="btn btn-secondary btn-sm" disabled={busy} onClick={() => save({ status: "open" }, "Reopened.")}>Reopen</button>
+            <Button type="button" disabled={busy} onClick={() => save({ status: "open" }, "Reopened.")} variant="outline" size="sm">Reopen</Button>
           )}
         </div>
       </div>
       <div>
         <label htmlFor="note" className="mb-1 block text-sm font-semibold">Note</label>
-        <textarea id="note" rows={2} maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} className="input" placeholder="What you found, or the fix" />
-        <button type="button" className="btn btn-secondary btn-sm mt-2" disabled={busy || note === (issue.note ?? "")} onClick={() => save({ note }, "Note saved.")}>Save note</button>
+        <Textarea id="note" rows={2} maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} placeholder="What you found, or the fix" />
+        <Button type="button" disabled={busy || note === (issue.note ?? "")} onClick={() => save({ note }, "Note saved.")} variant="outline" size="sm" className="mt-2">Save note</Button>
       </div>
-    </div>
+    </Card>
   );
 }

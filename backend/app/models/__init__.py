@@ -1,3 +1,4 @@
+from app.models.coding import CodeSubmission, CodingProblem
 from app.models.course import (
     Course,
     Flashcard,
@@ -23,7 +24,8 @@ from app.models.setting import Setting
 from app.models.user import User
 
 __all__ = [
-    "Course", "DayStatus", "Enrollment", "Flashcard", "Issue", "IssueEvent", "Job", "LogEntry",
+    "CodeSubmission", "CodingProblem", "Course", "DayStatus", "Enrollment", "Flashcard", "Issue", "IssueEvent",
+    "Job", "LogEntry",
     "Mastery", "PlanNotice", "PlanTask",
     "PretestResult", "Question", "QuizAttempt", "QuizSession", "RemediationItem", "Setting",
     "Subtopic", "SyllabusUpload", "Topic", "User",

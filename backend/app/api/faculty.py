@@ -1,12 +1,13 @@
 from typing import Literal
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Response, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.db import get_db
 from app.core.deps import require_role
 from app.models import User
+from app.schemas.admin import Overview, StudentDetailOut
 from app.schemas.auth import Message
 from app.schemas.course import (
     CourseFull,
@@ -16,6 +17,7 @@ from app.schemas.course import (
     StatusChange,
     StatusOut,
 )
+from app.services import admin as admin_svc
 from app.services import courses as svc
 from app.services import question_sheet as sheet
 
@@ -28,6 +30,28 @@ def _guard(fn, *args):
     try:
         return fn(*args)
     except svc.CourseError as e:
+        raise HTTPException(e.status_code, e.message) from e
+
+
+@router.get("/students", response_model=Overview)
+def students_overview(
+    q: str = "",
+    course_id: str | None = None,
+    status: Literal["on-track", "attention", "completed"] | None = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=admin_svc.MAX_PAGE_SIZE),
+    db: Session = Depends(get_db),
+    user: User = Depends(staff),
+):
+    """Progress of the students enrolled in the caller's own courses (admins see their own too)."""
+    return admin_svc.overview(db, q, course_id, status, page, page_size, owner_id=user.id)
+
+
+@router.get("/students/{student_id}", response_model=StudentDetailOut, responses={404: {"model": Message}})
+def student_progress(student_id: str, db: Session = Depends(get_db), user: User = Depends(staff)):
+    try:
+        return admin_svc.student_detail(db, student_id, owner_id=user.id)
+    except admin_svc.AdminError as e:
         raise HTTPException(e.status_code, e.message) from e
 
 

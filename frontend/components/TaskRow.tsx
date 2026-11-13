@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { components } from "@/lib/api-client/schema";
 import { TASK_LABEL, TASK_TONE, relDay, taskHref } from "@/lib/format";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 
 type Task = components["schemas"]["TaskOut"];
 
@@ -20,9 +22,9 @@ export function TaskRow({
         </div>
         {task.note && !task.done && <div className="t-meta italic">{task.note}</div>}
       </div>
-      <span className={`badge ${TASK_TONE[task.type] ?? "badge-info"}`}>{TASK_LABEL[task.type]}</span>
+      <Badge variant={TASK_TONE[task.type] ?? "secondary"}>{TASK_LABEL[task.type]}</Badge>
       {!task.done && !locked && (
-        <Link href={taskHref(courseId, task)} className="btn btn-secondary btn-sm">Open →</Link>
+        <Link href={taskHref(courseId, task)} className={buttonVariants({ variant: "outline", size: "sm" })}>Open →</Link>
       )}
     </div>
   );

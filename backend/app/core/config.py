@@ -56,6 +56,15 @@ class Settings(BaseSettings):
     verify_questions: bool = True  # have the model answer each question blind and drop mismatches
     job_stale_minutes: int = 15
 
+    # --- coding challenges: student code runs in throwaway Docker containers, run by `python -m app.judge` ---
+    # "docker" is the real sandbox. "local" runs code as a plain subprocess of the judge: for tests only.
+    judge_backend: str = "docker"
+    sandbox_image: str = "gradient-sandbox:latest"
+    sandbox_runtime: str = ""  # e.g. "runsc" to use gVisor for stronger isolation
+    judge_concurrency: int = 2
+    max_code_bytes: int = 50_000
+    submissions_per_minute: int = 10
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

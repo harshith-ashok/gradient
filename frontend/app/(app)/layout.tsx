@@ -12,16 +12,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <ToastProvider>
     <div className="min-h-screen">
-      <header className="border-b border-line bg-surface">
+      <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-[68px] max-w-[1200px] items-center gap-6 px-6">
           <a href={homeFor(user.role)} className="flex items-center gap-3">
             <Crest size={32} />
-            <span className="font-serif text-xl font-bold text-ink-900">Gradient</span>
+            <span className=" text-xl font-bold text-foreground">Gradient</span>
           </a>
           <NavLinks role={user.role} />
           <div className="text-right text-sm leading-tight">
-            <div className="font-medium text-ink-900">{user.name}</div>
-            <div className="text-xs text-muted">{ROLE_LABEL[user.role]}</div>
+            <div className="font-medium text-foreground">{user.name}</div>
+            <div className="text-xs text-muted-foreground">{ROLE_LABEL[user.role]}</div>
           </div>
           <SignOutButton />
         </div>

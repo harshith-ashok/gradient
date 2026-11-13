@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 
-from app.api import admin, ai, auth, faculty, health, ops, student
+from app.api import admin, ai, auth, coding, faculty, health, ops, student
 from app.core.config import get_settings
 from app.core.observability import RequestContextMiddleware, actor, configure_logging, route_template
 from app.services import monitor
@@ -12,7 +12,7 @@ from app.services import monitor
 ROUTERS = [
     (health.router, "/api"), (auth.router, "/api/v1"), (student.router, "/api/v1"),
     (faculty.router, "/api/v1"), (admin.router, "/api/v1"), (ops.router, "/api/v1"),
-    (ai.router, "/api/v1"),
+    (ai.router, "/api/v1"), (coding.router, "/api/v1"),
 ]
 
 

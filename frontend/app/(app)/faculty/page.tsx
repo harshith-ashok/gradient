@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { serverApi, unwrap } from "@/lib/server-api";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "My courses" };
 
@@ -17,40 +20,40 @@ export default async function FacultyHome() {
         eyebrow="Faculty portal"
         title="My courses"
         lede="Upload a syllabus and the AI drafts the topics, summaries, flashcards and quizzes. You review and edit everything before students see it."
-        actions={<Link href="/faculty/new" className="btn btn-crimson">New course from syllabus</Link>}
+        actions={<Link href="/faculty/new" className={buttonVariants()}>New course from syllabus</Link>}
       />
       {health && !health.ok && (
-        <div className="card mb-5 border-l-4 px-4 py-3 text-sm" role="status" style={{ borderLeftColor: "var(--warn)" }}>
+        <Card role="status" style={{ borderLeftColor: "var(--warning)" }} className="block gap-0 py-0 mb-5 border-l-4 px-4 py-3 text-sm">
           The AI model server is not reachable right now, so generating content will fail until it is back.
           You can still write and edit courses by hand.
-        </div>
+        </Card>
       )}
       {courses.length === 0 ? (
-        <div className="card empty">
+        <Card className="gap-0 py-0 empty">
           <h3>No courses yet</h3>
           <p>Start from a syllabus (PDF, Word, a scan or pasted text).</p>
-          <Link href="/faculty/new" className="btn">Upload a syllabus</Link>
-        </div>
+          <Link href="/faculty/new" className={buttonVariants()}>Upload a syllabus</Link>
+        </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {courses.map((c) => (
-            <article key={c.id} className="card card-pad">
+            <Card key={c.id} className="gap-0 p-6">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">{c.code}</p>
+                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{c.code}</p>
                   <h2 className="mt-1 text-xl font-semibold">{c.title}</h2>
                 </div>
-                <span className={`badge ${c.status === "published" ? "badge-ok" : "badge-warn"}`}>
+                <Badge variant={c.status === "published" ? "success" : "warning"}>
                   {c.status === "published" ? "Published" : "Draft"}
-                </span>
+                </Badge>
               </div>
-              <p className="mt-3 text-sm text-muted">
+              <p className="mt-3 text-sm text-muted-foreground">
                 {c.topic_count} topics · {c.subtopic_count} sub-topics · {c.enrolled} enrolled · pass mark {c.threshold}%
               </p>
               <div className="mt-4">
-                <Link href={`/faculty/courses/${c.id}`} className="btn btn-secondary btn-sm">Review and edit →</Link>
+                <Link href={`/faculty/courses/${c.id}`} className={buttonVariants({ variant: "outline", size: "sm" })}>Review and edit →</Link>
               </div>
-            </article>
+            </Card>
           ))}
         </div>
       )}
